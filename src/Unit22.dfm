@@ -11,12 +11,13 @@ object Form22: TForm22
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  FormStyle = fsStayOnTop
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 8
-    Top = 8
+    Left = 16
+    Top = 16
     Width = 31
     Height = 13
     Caption = 'Label1'
@@ -64,12 +65,13 @@ object Form22: TForm22
     Width = 113
     Height = 25
     Caption = 'Button2'
+    ModalResult = 11
     TabOrder = 1
     OnClick = Button2Click
   end
   object Edit1: TEdit
-    Left = 192
-    Top = 5
+    Left = 176
+    Top = 8
     Width = 121
     Height = 21
     TabOrder = 2

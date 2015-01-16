@@ -9,6 +9,8 @@
 #include <Forms.hpp>
 #include <Dialogs.hpp>
 #include <ExtCtrls.hpp>
+#include <StrUtils.hpp> //SplitString(String,Delimiter)  EFP 1/11/2015
+#include <SysUtils.hpp> //TReplaceFlags(,),StringReplace()  EFP 1/15/2015
 //---------------------------------------------------------------------------
 class TForm21 : public TForm
 {
@@ -70,28 +72,16 @@ __published:	// IDE-managed Components
 	void __fastcall RadioButton5Click(TObject *Sender);
 	void __fastcall RadioButton6Click(TObject *Sender);
 private:	// User declarations
-	int F21_sel;
+	int F21_sel,getISEL(),getRadioGroup1();
 //	int ParseSteps(String);
-	int getISEL();
 	long RB1_count;
-//	AnsiString getEdit1();void setEdit1(AnsiString);
-//	AnsiString getEdit8();void setEdit8(AnsiString);
-	String getEdit1();void setEdit1(String);
-	String getEdit5a();void setEdit5a(String);
-	String getEdit8();void setEdit8(String);
-//	char getEdit1();void setEdit1(char []);
-//	char getEdit8();void setEdit8(char []);
-	double getEdit2();void setEdit2(double);
-	double getEdit3();void setEdit3(double);
-	double getEdit4();void setEdit4(double);
-	double getEdit5();void setEdit5(double);
-	double getEdit6();void setEdit6(double);
-	double getEdit7();void setEdit7(double);
-	int getRadioGroup1();void setRadioGroup1(int);
-	bool getGroupBox3();void setGroupBox3(bool);
-	bool getGroupBox4();void setGroupBox4(bool);
-	bool getCheckBox1();void setCheckBox1(bool);
+	String getEdit1(),getEdit5a(),getEdit8();
+	void setEdit1(String),setEdit5a(String),setEdit8(String),setEdit2(double),setEdit3(double),setEdit4(double),setEdit5(double),
+		 setEdit6(double),setEdit7(double),setRadioGroup1(int),setGroupBox3(bool),setGroupBox4(bool),setCheckBox1(bool);
+	double getEdit2(),getEdit3(),getEdit4(),getEdit5(),getEdit6(),getEdit7();
+	bool getGroupBox3(),getGroupBox4(),getCheckBox1();
 public:		// User declarations
+    void getItemIndex5_public();
 	__property int CheckISEL={read=getISEL};
 //	__property AnsiString CheckEdit1={read=getEdit1,write=setEdit1};
 //	__property char CheckEdit1={read=getEdit1,write=setEdit1};

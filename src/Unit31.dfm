@@ -2,7 +2,7 @@ object Form31: TForm31
   Left = 0
   Top = 0
   Caption = 'Form31'
-  ClientHeight = 278
+  ClientHeight = 303
   ClientWidth = 394
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -61,5 +61,12 @@ object Form31: TForm31
     Width = 31
     Height = 13
     Caption = 'Label6'
+  end
+  object Label7: TLabel
+    Left = 8
+    Top = 282
+    Width = 31
+    Height = 13
+    Caption = 'Label7'
   end
 end

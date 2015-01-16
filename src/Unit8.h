@@ -17,12 +17,12 @@ __published:	// IDE-managed Components
         TButton *Button3;
         void __fastcall Button1Click(TObject *Sender);
         void __fastcall Button2Click(TObject *Sender);
-        void __fastcall Button3Click(TObject *Sender);
+//        void __fastcall Button3Click(TObject *Sender);
 private:	// User declarations
   int isw;float ac1;
 public:		// User declarations
- float getAngle0();void setAngle0(float);
- int getISW();void setISW(int);
+ int getISW();float getAngle0();
+ void setAngle0(float),setISW(int);
  __property float Angle0={read=getAngle0,write=setAngle0};
  __property int checkISW={read=getISW,write=setISW};
  __fastcall TForm8(int,float,TComponent*);

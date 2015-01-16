@@ -25,33 +25,34 @@ void TForm8::setISW(int s){isw=s;}
 int TForm8::getISW(){return isw;}
 //---------------------------------------------------------------------------
 void __fastcall TForm8::Button1Click(TObject *Sender)
-{if(Edit1->Text=="0")ac1=0.;
-// else ac1=atof(Edit1->Text.c_str());  //Necessary since Edit ignores 0
- else ac1=StrToFloat(Edit1->Text);  //Necessary since Edit ignores 0
- if(isw==1){Close();Form1->res_scalehea_public();}
- else if(isw==2 || isw==4 || isw==5){Close();Form1->tshiftCTSP_public();}
-// else if(isw){Close();Form1->tdeltCTSP_public();}
- else if(isw==3){Close();Form1->tdeltCTSP_public();}
-//// Option 6 not used anymore
-// else if(isw==6){Close();Form1->exportWARP3D1a_public();} //epWARP3D steps EFP 12/19/2012 NOT USED BY WARP3D_DEC
- else if(isw==7 || isw==8 || isw==9){Close();Form1->tshiftCTSP3_public();} //EFP 5/09/2013
- else Form1->defshapehea_public();
+{
+ try {StrToFloat(Edit1->Text);
+	  if(Edit1->Text=="0")ac1=0.;
+	  else ac1=StrToFloat(Edit1->Text);  //Necessary since Edit ignores 0
+//	  if(isw==1){Close();Form1->res_scalehea_public();}
+	  if(isw==2 || isw==4 || isw==5){Close();Form1->tshiftCTSP_public();}
+//	  else if(isw==3){Close();Form1->tdeltCTSP_public();}
+	  else if(isw==7 || isw==8 || isw==9){Close();Form1->tshiftCTSP3_public();} //EFP 5/09/2013
+//	  else Form1->defshapehea_public();
+	 }
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit1->Text.w_str(),L"Inadmissable: Reenter a floating-point number",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm8::Button2Click(TObject *Sender){
-//													  if(isw){Close();Form1->res_scalehea1_public();}
-													  if(isw==1){Close();Form1->res_scalehea1_public();}
-													  else if(isw==2 || isw==4 || isw==5 ||
+//													  if(isw==1){Close();Form1->res_scalehea1_public();}
+													  if(isw==2 || isw==4 || isw==5 ||
 															  isw==7 || isw==8 || isw==9){//Close();
 																   Form1->tshiftCTSP1_public();
 																  }
-													  else if(isw){//Close();
-																   Form1->tdeltCTSP1_public();
-																  }
-													  else Form1->defshapehea1_public();}
+//													  else if(isw){//Close();
+//																   Form1->tdeltCTSP1_public();
+//																  }
+//													  else Form1->defshapehea1_public();
+													  }
 //---------------------------------------------------------------------------
-void __fastcall TForm8::Button3Click(TObject *Sender)
-{if(!isw){Close();Form1->Form8TRASH_public();} // Modeless (isw=1 -> Modal)
-}
+//// The following is only used for *ShapeForm (Modeless)
+//void __fastcall TForm8::Button3Click(TObject *Sender)
+//{if(!isw){Close();Form1->Form8TRASH_public();} // Modeless (isw=1 -> Modal)
+//}
 //---------------------------------------------------------------------------
 

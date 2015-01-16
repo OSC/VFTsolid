@@ -20,8 +20,27 @@ String TForm29::getEdit1(){return Edit1->Text.w_str();}// EFP 2/27/2012
 String TForm29::getEdit2(){return Edit2->Text;}
 String TForm29::getEdit3(){return Edit3->Text;}
 String TForm29::getEdit5(){return Edit5->Text;}
-int TForm29::getEdit4(){return StrToInt(Edit4->Text);}
-float TForm29::getEdit6(){return StrToFloat(Edit6->Text);}
+//---------------------------------------------------------------------------
+int TForm29::getEdit4(){
+//						return StrToInt(Edit4->Text);
+ try {StrToInt(Edit4->Text);
+	  if(Edit4->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Zero #multicores: Reenter a positive integer",MB_OK);return 0;}
+	  else if(StrToInt(Edit4->Text)>0)return StrToInt(Edit4->Text);
+	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Negative #multicores: Reenter a positive integer",MB_OK);return 0;}
+	 }
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Inadmissable #multicores: Reenter a positive integer",MB_OK);return 0;}
+					   }
+//---------------------------------------------------------------------------
+float TForm29::getEdit6(){
+//						  return StrToFloat(Edit6->Text);
+ try {StrToFloat(Edit6->Text);
+	  if(Edit6->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Zero suggested core-to-core overlap: Reenter a positive floating point",MB_OK);return 0.f;}
+	  else if(StrToFloat(Edit6->Text)>0.000001f)return StrToFloat(Edit6->Text);
+	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Negative/zero suggested core-to-core overlap: Reenter a positive floating point",MB_OK);return 0.f;}
+	 }
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Inadmissable suggested core-to-core overlap: Reenter a positive floating point",MB_OK);return 0.f;}
+						 }
+//---------------------------------------------------------------------------
 //void TForm29::setEdit1(String s){Edit1->Text=s;}
 void TForm29::setEdit1(String s){Edit1->Text=s.c_str();}// EFP 2/27/2012
 void TForm29::setEdit2(String s){Edit2->Text=s;}
@@ -38,22 +57,28 @@ void __fastcall TForm29::Button1Click(TObject *Sender)
  if(loc_isel){Form1->exportCTSP2_public();
 			  Close(); //Emergency Close() EFP 4/19/2010
 			 }
- else {try {StrToInt(Edit4->Text);}
+ else {try {StrToInt(Edit4->Text);
+			if(Edit4->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Zero #multicores: Reenter a positive floating point",MB_OK);}
+			else if(StrToFloat(Edit4->Text)<=0){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Negative/zero #multicores: Reenter a positive floating point",MB_OK);}
+		   }
 	   catch (EConvertError &E){isw=0;extern PACKAGE void __fastcall Beep(void);
-								ShowMessage(Label4->Caption +" "+ Edit4->Text + " must be integer");
+								ShowMessage(Label4->Caption +" "+ Edit4->Text + " must be positive integer");
 							   }
-	   try {StrToFloat(Edit6->Text);}
+	   try {StrToFloat(Edit6->Text);
+			if(Edit6->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Zero suggested core-to-core overlap: Reenter a positive floating point",MB_OK);}
+			else if(StrToFloat(Edit6->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Negative/zero suggested core-to-core overlap: Reenter a positive floating point",MB_OK);}
+		   }
 	   catch (EConvertError &E){jsw=0;extern PACKAGE void __fastcall Beep(void);
-								ShowMessage(Label10->Caption +" "+ Edit6->Text + " must be float");
+								ShowMessage(Label10->Caption +" "+ Edit6->Text + " must be positive float");
 							   }
 	   if(isw & jsw){if(loc_pass<max_core)mval=loc_pass;else mval=max_core;
 //					 if(StrToInt(Edit4->Text)>0 && StrToInt(Edit4->Text)<loc_pass+1)
 					 if(StrToInt(Edit4->Text)>0 && StrToInt(Edit4->Text)<=mval)Form1->exportCTSP3_public();
-					 else ShowMessage("Multi-core value must be in range 1 to "+IntToStr(__int64(mval)));
+					 else ShowMessage("For this model, multi-core value must be in range 1 to "+IntToStr(__int64(mval)));
 			        }
 	  }
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm29::Button2Click(TObject *Sender){Close();}
+//void __fastcall TForm29::Button2Click(TObject *Sender){Close();}
 //---------------------------------------------------------------------------
 

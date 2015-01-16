@@ -11,8 +11,8 @@ TForm31 *Form31;
 //---------------------------------------------------------------------------
 __fastcall TForm31::TForm31(char comboCWD[],TComponent* Owner) : TForm(Owner)
 {TJPEGImage *jp;jp= new TJPEGImage();
-// jp->LoadFromFile(L"icons/image001.jpg");
- jp->LoadFromFile(comboCWD);
+ jp->LoadFromFile(L"icons/image001.jpg");
+// jp->LoadFromFile(comboCWD);
  jp->DIBNeeded();// VFT(tm) image
 // Image1->Visible=false;
  Image1->Picture->Bitmap->Assign(jp);delete jp;

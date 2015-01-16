@@ -4,7 +4,7 @@ object Form8: TForm8
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   BorderIcons = []
-  Caption = 'Deformed shape'
+  Caption = 'caption'
   ClientHeight = 49
   ClientWidth = 155
   Color = clPurple
@@ -49,7 +49,7 @@ object Form8: TForm8
     Width = 49
     Height = 17
     Caption = 'Button3'
+    ModalResult = 11
     TabOrder = 3
-    OnClick = Button3Click
   end
 end

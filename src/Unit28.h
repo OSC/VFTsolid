@@ -20,12 +20,10 @@ __published:	// IDE-managed Components
 	void __fastcall Button2Click(TObject *Sender);
 	void __fastcall Button3Click(TObject *Sender);
 private:	// User declarations
-	int F28_isel,F28_imode,F28_fORint;long lreset,lmin,lmax,lc1;float freset,fmin,fmax,fc1;
-	int getISEL();
-	int getMODE();
-	int getForI();
-	long getLval();void setLval(long);
-	float getFval();void setFval(float);
+	int F28_isel,F28_imode,F28_fORint,getISEL(),getMODE(),getForI();
+	long lreset,lmin,lmax,lc1,getLval();
+	float freset,fmin,fmax,fc1,getFval();
+	void setLval(long),setFval(float);
 public:		// User declarations
 	__property int CheckISEL={read=getISEL};
 	__property int CheckMODE={read=getMODE};

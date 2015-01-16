@@ -1,70 +1,88 @@
 object Form3: TForm3
-  Left = 32
-  Top = 29
-  Hint = 'Legend max/min'
-  HorzScrollBar.Visible = False
-  VertScrollBar.Visible = False
+  Left = 0
+  Top = 0
   BorderIcons = []
-  Caption = 'Custom legend'
-  ClientHeight = 67
-  ClientWidth = 132
-  Color = clTeal
+  Caption = 'Form3'
+  ClientHeight = 173
+  ClientWidth = 206
+  Color = clLime
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Visible = True
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 0
-    Top = 0
-    Width = 43
+    Left = 8
+    Top = 8
+    Width = 31
     Height = 13
-    Caption = 'Leg_max'
+    Caption = 'Label1'
   end
   object Label2: TLabel
-    Left = 0
-    Top = 16
-    Width = 40
+    Left = 8
+    Top = 40
+    Width = 31
     Height = 13
-    Caption = 'Leg_min'
+    Caption = 'Label2'
   end
-  object Button1: TButton
-    Left = 0
-    Top = 48
-    Width = 65
-    Height = 17
-    Caption = 'OK'
-    TabOrder = 0
-    OnClick = Button1Click
+  object Label3: TLabel
+    Left = 8
+    Top = 72
+    Width = 31
+    Height = 13
+    Caption = 'Label3'
+  end
+  object Label4: TLabel
+    Left = 8
+    Top = 104
+    Width = 31
+    Height = 13
+    Caption = 'Label4'
   end
   object Edit1: TEdit
-    Left = 48
-    Top = 0
-    Width = 73
+    Left = 63
+    Top = 8
+    Width = 135
     Height = 21
-    TabOrder = 1
+    TabOrder = 0
     Text = 'Edit1'
   end
   object Edit2: TEdit
-    Left = 48
-    Top = 16
-    Width = 73
+    Left = 63
+    Top = 35
+    Width = 135
     Height = 21
-    TabOrder = 2
+    TabOrder = 1
     Text = 'Edit2'
   end
-  object Button2: TButton
-    Left = 72
-    Top = 48
-    Width = 57
-    Height = 17
-    Caption = 'Close'
+  object Edit3: TEdit
+    Left = 63
+    Top = 77
+    Width = 135
+    Height = 21
+    TabOrder = 2
+    Text = 'Edit3'
+  end
+  object Edit4: TEdit
+    Left = 63
+    Top = 104
+    Width = 135
+    Height = 21
     TabOrder = 3
-    OnClick = Button2Click
+    Text = 'Edit4'
+  end
+  object Button1: TButton
+    Left = 48
+    Top = 131
+    Width = 75
+    Height = 25
+    Caption = 'Close'
+    ModalResult = 8
+    TabOrder = 4
+    OnClick = Button1Click
   end
 end

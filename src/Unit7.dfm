@@ -1,129 +1,82 @@
 object Form7: TForm7
-  Left = 1
-  Top = 478
-  HorzScrollBar.Visible = False
-  VertScrollBar.Visible = False
+  Left = 0
+  Top = 0
   BorderIcons = []
-  Caption = 'Section'
-  ClientHeight = 76
-  ClientWidth = 244
-  Color = clFuchsia
+  Caption = 'Form7'
+  ClientHeight = 242
+  ClientWidth = 370
+  Color = clAqua
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 8
-    Top = 0
-    Width = 17
+    Left = 16
+    Top = 8
+    Width = 31
     Height = 13
-    Caption = 'Min'
+    Caption = 'Label1'
   end
   object Label2: TLabel
-    Left = 152
-    Top = 0
-    Width = 20
+    Left = 120
+    Top = 8
+    Width = 31
     Height = 13
-    Caption = 'Max'
+    Caption = 'Label2'
   end
   object Label3: TLabel
-    Left = 128
-    Top = 24
-    Width = 34
+    Left = 256
+    Top = 8
+    Width = 31
     Height = 13
-    Caption = 'Search'
+    Caption = 'Label3'
   end
-  object ScrollBar1: TScrollBar
-    Left = 48
-    Top = 0
-    Width = 97
-    Height = 16
-    PageSize = 0
+  object Label4: TLabel
+    Left = 8
+    Top = 221
+    Width = 31
+    Height = 13
+    Caption = 'Label4'
+  end
+  object ListBox1: TListBox
+    Left = 8
+    Top = 27
+    Width = 106
+    Height = 185
+    ItemHeight = 13
     TabOrder = 0
+    OnClick = ListBox1Click
   end
-  object Edit1: TEdit
-    Left = 192
-    Top = 0
-    Width = 49
-    Height = 21
+  object ListBox2: TListBox
+    Left = 120
+    Top = 27
+    Width = 105
+    Height = 185
+    ItemHeight = 13
     TabOrder = 1
-    Text = 'Edit1'
+    OnClick = ListBox2Click
+  end
+  object ListBox3: TListBox
+    Left = 256
+    Top = 27
+    Width = 105
+    Height = 137
+    ItemHeight = 13
+    TabOrder = 2
+    OnClick = ListBox3Click
   end
   object Button1: TButton
-    Left = 8
-    Top = 48
-    Width = 41
-    Height = 17
-    Caption = 'OK'
-    TabOrder = 2
-    OnClick = Button1Click
-  end
-  object Button2: TButton
-    Left = 112
-    Top = 48
-    Width = 65
-    Height = 17
-    Caption = 'Continuous'
+    Left = 256
+    Top = 187
+    Width = 105
+    Height = 25
+    Caption = 'Button1'
     TabOrder = 3
-    OnClick = Button2Click
-  end
-  object Button3: TButton
-    Left = 56
-    Top = 48
-    Width = 49
-    Height = 17
-    Caption = 'Reset'
-    TabOrder = 4
-    OnClick = Button3Click
-  end
-  object Button4: TButton
-    Left = 208
-    Top = 24
-    Width = 33
-    Height = 17
-    Caption = 'Max'
-    TabOrder = 5
-    OnClick = Button4Click
-  end
-  object Button7: TButton
-    Left = 168
-    Top = 24
-    Width = 41
-    Height = 17
-    Caption = 'Min'
-    TabOrder = 6
-    OnClick = Button7Click
-  end
-  object RadioButton1: TRadioButton
-    Left = 8
-    Top = 24
-    Width = 41
-    Height = 17
-    Caption = 'Left'
-    TabOrder = 7
-    OnClick = RadioButton1Click
-  end
-  object RadioButton2: TRadioButton
-    Left = 56
-    Top = 24
-    Width = 49
-    Height = 17
-    Caption = 'Right'
-    TabOrder = 8
-    OnClick = RadioButton2Click
-  end
-  object Button5: TButton
-    Left = 184
-    Top = 48
-    Width = 59
-    Height = 17
-    Caption = 'Close'
-    TabOrder = 9
-    OnClick = Button5Click
+    OnClick = Button1Click
   end
 end

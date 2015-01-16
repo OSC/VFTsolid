@@ -31,16 +31,11 @@ __published:	// IDE-managed Components
 	TLabel *Label10;
 	TLabel *Label11;
 	void __fastcall Button1Click(TObject *Sender);
-	void __fastcall Button2Click(TObject *Sender);
+//	void __fastcall Button2Click(TObject *Sender);
 private:	// User declarations
-	int isel;
-	int getIsel();void setIsel(int);
-	String getEdit1();void setEdit1(String);
-	String getEdit2();void setEdit2(String);
-	String getEdit3();void setEdit3(String);
-	String getEdit4();void setEdit4(String);
-	String getEdit5();void setEdit5(String);
-	String getEdit6();void setEdit6(String);
+	int isel,getIsel();
+	void setIsel(int),setEdit1(String),setEdit2(String),setEdit3(String),setEdit4(String),setEdit5(String),setEdit6(String);
+	String            getEdit1(),getEdit2(),getEdit3(),getEdit4(),getEdit5(),getEdit6();
 public:		// User declarations
 	__property int CheckIsel={read=getIsel,write=setIsel};
 	__property String CheckEdit1={read=getEdit1,write=setEdit1};

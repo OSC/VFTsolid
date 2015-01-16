@@ -10,8 +10,7 @@
 #pragma resource "*.dfm"
 TForm25 *Form25;
 //---------------------------------------------------------------------------
-__fastcall TForm25::TForm25(int mess_isel,TComponent* Owner)
-	: TForm(Owner)
+__fastcall TForm25::TForm25(int mess_isel,TComponent* Owner) : TForm(Owner)
 {isel=mess_isel;
 }
 //---------------------------------------------------------------------------
@@ -37,13 +36,16 @@ void __fastcall TForm25::Button1Click(TObject *Sender)
 // else if(isel==2)Form1->exportCTSP_public();
 // else if(isel==1){Form1->exportABAQUS1_public();Close();} //Emergency Close() EFP 4/19/2010
 
-// if(isel==3){Form1->exportWARP3D1_public();Close();} //Emergency Close() EFP 12/16/2012
+//// if(isel==3){Form1->exportWARP3D1_public();Close();} //Emergency Close() EFP 12/16/2012
+// if(isel==3){Form1->exportWARP3D1a_public();Close();} //Emergency Close() EFP 12/16/2012
  if(isel==3){Form1->exportWARP3D1a_public();Close();} //Emergency Close() EFP 12/16/2012
- else if(isel==2)Form1->exportWARP3D_public(); //EFP 12/16/2012
- else if(isel==1){Form1->exportABAQUS1_public();Close();} //Emergency Close() EFP 4/19/2010
- else     Form1->exportABAQUS_public();
+ else if(isel==2){Form1->exportWARP3D_public();
+//                  Close();
+				 } //EFP 12/16/2012
+// else if(isel==1){Form1->exportABAQUS1_public();Close();} //Emergency Close() EFP 4/19/2010
+// else     Form1->exportABAQUS_public();
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm25::Button2Click(TObject *Sender){Close();}
+//void __fastcall TForm25::Button2Click(TObject *Sender){Close();}
 //---------------------------------------------------------------------------
 

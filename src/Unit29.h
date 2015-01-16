@@ -30,16 +30,13 @@ __published:	// IDE-managed Components
 	TLabel *Label10;
 	TEdit *Edit6;
 	void __fastcall Button1Click(TObject *Sender);
-	void __fastcall Button2Click(TObject *Sender);
+//	void __fastcall Button2Click(TObject *Sender);
 private:	// User declarations
-	int loc_isel;long loc_pass;
-	int getIsel();void setIsel(int);
-	String getEdit1();void setEdit1(String);
-	String getEdit2();void setEdit2(String);
-	String getEdit3();void setEdit3(String);
-	String getEdit5();void setEdit5(String);
-	int getEdit4();void setEdit4(int);
-	float getEdit6();void setEdit6(float);
+	int loc_isel,getIsel(),getEdit4();
+	long loc_pass;
+	float getEdit6();
+	void setIsel(int),setEdit1(String),setEdit2(String),setEdit3(String),setEdit5(String),setEdit4(int),setEdit6(float);
+	String getEdit1(),getEdit2(),getEdit3(),getEdit5();
 public:		// User declarations
 	__property int CheckIsel={read=getIsel,write=setIsel};
 	__property String CheckEdit1={read=getEdit1,write=setEdit1};

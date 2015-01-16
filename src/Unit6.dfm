@@ -5,8 +5,8 @@ object Form6: TForm6
   VertScrollBar.Visible = False
   BorderIcons = []
   Caption = 'Query element'
-  ClientHeight = 103
-  ClientWidth = 436
+  ClientHeight = 131
+  ClientWidth = 454
   Color = clYellow
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

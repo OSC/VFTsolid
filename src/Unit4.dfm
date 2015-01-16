@@ -1,203 +1,208 @@
 object Form4: TForm4
-  Left = 75
-  Top = 537
-  HorzScrollBar.Visible = False
-  VertScrollBar.Visible = False
+  Left = 0
+  Top = 0
   BorderIcons = []
-  Caption = 'Incremental Rotation (degrees)'
-  ClientHeight = 95
-  ClientWidth = 307
-  Color = clGreen
+  Caption = 'Form4'
+  ClientHeight = 181
+  ClientWidth = 602
+  Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 68
-    Top = 0
-    Width = 55
+    Left = 8
+    Top = 19
+    Width = 31
     Height = 13
-    Caption = 'X-axis  -180'
+    Caption = 'Label1'
   end
   object Label2: TLabel
-    Left = 224
-    Top = 0
-    Width = 18
+    Left = 8
+    Top = 51
+    Width = 31
     Height = 13
-    Caption = '180'
+    Caption = 'Label2'
   end
   object Label3: TLabel
-    Left = 68
-    Top = 29
-    Width = 55
+    Left = 8
+    Top = 83
+    Width = 31
     Height = 13
-    Caption = 'Y-axis  -180'
+    Caption = 'Label3'
   end
   object Label4: TLabel
-    Left = 224
-    Top = 24
-    Width = 18
+    Left = 8
+    Top = 115
+    Width = 31
     Height = 13
-    Caption = '180'
+    Caption = 'Label4'
   end
   object Label5: TLabel
-    Left = 68
-    Top = 54
-    Width = 55
+    Left = 208
+    Top = 24
+    Width = 31
     Height = 13
-    Caption = 'Z-axis  -180'
+    Caption = 'Label5'
   end
   object Label6: TLabel
-    Left = 224
+    Left = 208
     Top = 53
-    Width = 18
+    Width = 31
     Height = 13
-    Caption = '180'
+    Caption = 'Label6'
   end
-  object ScrollBar1: TScrollBar
-    Left = 129
-    Top = 2
-    Width = 89
-    Height = 16
-    PageSize = 0
-    TabOrder = 0
-    OnScroll = ScrollBar1Scroll
+  object Label7: TLabel
+    Left = 208
+    Top = 85
+    Width = 31
+    Height = 13
+    Caption = 'Label7'
+  end
+  object Label8: TLabel
+    Left = 208
+    Top = 115
+    Width = 31
+    Height = 13
+    Caption = 'Label8'
+  end
+  object Label9: TLabel
+    Left = 416
+    Top = 19
+    Width = 31
+    Height = 13
+    Caption = 'Label9'
+  end
+  object Label10: TLabel
+    Left = 416
+    Top = 48
+    Width = 37
+    Height = 13
+    Caption = 'Label10'
+  end
+  object Label11: TLabel
+    Left = 416
+    Top = 78
+    Width = 37
+    Height = 13
+    Caption = 'Label11'
+  end
+  object Label12: TLabel
+    Left = 416
+    Top = 112
+    Width = 37
+    Height = 13
+    Caption = 'Label12'
   end
   object Edit1: TEdit
-    Left = 256
-    Top = -3
-    Width = 41
+    Left = 56
+    Top = 21
+    Width = 121
     Height = 21
-    TabOrder = 1
+    TabOrder = 0
     Text = 'Edit1'
   end
-  object ScrollBar2: TScrollBar
-    Left = 129
-    Top = 28
-    Width = 89
-    Height = 16
-    PageSize = 0
-    TabOrder = 2
-    OnScroll = ScrollBar2Scroll
-  end
   object Edit2: TEdit
-    Left = 256
-    Top = 24
-    Width = 41
+    Left = 56
+    Top = 48
+    Width = 121
     Height = 21
-    TabOrder = 3
+    TabOrder = 1
     Text = 'Edit2'
   end
-  object ScrollBar3: TScrollBar
-    Left = 129
-    Top = 50
-    Width = 89
-    Height = 16
-    PageSize = 0
-    TabOrder = 4
-    OnScroll = ScrollBar3Scroll
-  end
   object Edit3: TEdit
-    Left = 256
-    Top = 51
-    Width = 41
+    Left = 56
+    Top = 75
+    Width = 121
     Height = 21
-    TabOrder = 5
+    TabOrder = 2
     Text = 'Edit3'
   end
-  object Button1: TButton
-    Left = 8
-    Top = 72
-    Width = 41
-    Height = 17
-    Caption = 'OK'
+  object Edit4: TEdit
+    Left = 56
+    Top = 102
+    Width = 121
+    Height = 21
+    TabOrder = 3
+    Text = 'Edit4'
+  end
+  object Edit5: TEdit
+    Left = 256
+    Top = 16
+    Width = 121
+    Height = 21
+    TabOrder = 4
+    Text = 'Edit5'
+  end
+  object Edit6: TEdit
+    Left = 256
+    Top = 48
+    Width = 121
+    Height = 21
+    TabOrder = 5
+    Text = 'Edit6'
+  end
+  object Edit7: TEdit
+    Left = 256
+    Top = 75
+    Width = 121
+    Height = 21
     TabOrder = 6
-    OnClick = Button1Click
+    Text = 'Edit7'
   end
-  object Button2: TButton
-    Left = 68
-    Top = 73
-    Width = 33
-    Height = 17
-    Caption = 'Undo'
+  object Edit8: TEdit
+    Left = 256
+    Top = 102
+    Width = 121
+    Height = 21
     TabOrder = 7
-    OnClick = Button2Click
+    Text = 'Edit8'
   end
-  object Button3: TButton
-    Left = 112
-    Top = 73
-    Width = 41
-    Height = 17
-    Caption = 'Reset'
+  object Edit9: TEdit
+    Left = 473
+    Top = 16
+    Width = 121
+    Height = 21
     TabOrder = 8
-    OnClick = Button3Click
+    Text = 'Edit9'
   end
-  object Button4: TButton
-    Left = 175
-    Top = 72
-    Width = 34
-    Height = 17
-    Caption = 'Close'
+  object Edit10: TEdit
+    Left = 473
+    Top = 43
+    Width = 121
+    Height = 21
     TabOrder = 9
-    OnClick = Button4Click
+    Text = 'Edit10'
   end
-  object Button5: TButton
-    Left = 8
-    Top = 8
-    Width = 25
-    Height = 17
-    Caption = 'XY'
+  object Edit11: TEdit
+    Left = 473
+    Top = 80
+    Width = 121
+    Height = 21
     TabOrder = 10
-    OnClick = Button5Click
+    Text = 'Edit11'
   end
-  object Button6: TButton
-    Left = 39
-    Top = 8
-    Width = 25
-    Height = 17
-    Caption = '-XY'
+  object Edit12: TEdit
+    Left = 473
+    Top = 107
+    Width = 121
+    Height = 21
     TabOrder = 11
-    OnClick = Button6Click
+    Text = 'Edit12'
   end
-  object Button7: TButton
-    Left = 8
-    Top = 31
-    Width = 25
-    Height = 17
-    Caption = 'YZ'
+  object Button1: TButton
+    Left = 208
+    Top = 134
+    Width = 75
+    Height = 25
+    Caption = 'Button1'
+    ModalResult = 11
     TabOrder = 12
-    OnClick = Button7Click
-  end
-  object Button8: TButton
-    Left = 39
-    Top = 31
-    Width = 26
-    Height = 17
-    Caption = '-YZ'
-    TabOrder = 13
-    OnClick = Button8Click
-  end
-  object Button9: TButton
-    Left = 8
-    Top = 54
-    Width = 25
-    Height = 17
-    Caption = 'ZX'
-    TabOrder = 14
-    OnClick = Button9Click
-  end
-  object Button10: TButton
-    Left = 39
-    Top = 54
-    Width = 25
-    Height = 17
-    Caption = '-ZX'
-    TabOrder = 15
-    OnClick = Button10Click
+    OnClick = Button1Click
   end
 end

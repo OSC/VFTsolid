@@ -89,7 +89,7 @@ __published:	// IDE-managed Components
 	TButton *Button4;
 	TListBox *ListBox1;
 	TRadioGroup *RadioGroup1;
-        void __fastcall Button1Click(TObject *Sender);
+	void __fastcall Button1Click(TObject *Sender);
 	void __fastcall Button4Click(TObject *Sender);
 	void __fastcall ListBox1Click(TObject *Sender);
 	void __fastcall ListBox2Click(TObject *Sender);
@@ -98,38 +98,17 @@ __published:	// IDE-managed Components
 	void __fastcall RadioGroup1Click(TObject *Sender);
 
 private:	// User declarations
-		int F15_isel;
-		long Pl1norm,Pl2norm; //EFP 5/31/2011
-		int kflagForm15,jflagForm15,nMatPS,nWeldPS;
-		int getRadioBstatus();
-		int getCheckBstatus();
-		String getEdit1();void setEdit1(String);
-		long getEdit2();void setEdit2(long);
-		double getEdit9();void setEdit9(double);
-		double getEdit10();void setEdit10(double);
-		double getEdit11();void setEdit11(double);
-		double getEdit12();void setEdit12(double);
-		double getEdit13();void setEdit13(double);
-		double getEdit14();void setEdit14(double);
-		double getEdit15();void setEdit15(double);
-		double getEdit16();void setEdit16(double);
-		double getEdit17();void setEdit17(double);
-		double getEdit18();void setEdit18(double);
-		int getEdit19();void setEdit19(int);
-		double getEdit20();void setEdit20(double);
-		double getEdit21();void setEdit21(double);
-		double getEdit22();void setEdit22(double);
-		long getEdit23();void setEdit23(long);
-		long getEdit24();void setEdit24(long);
-		int input_checker(int,AnsiString);
-		int getISEL();
-		int getFunc();void setFunc(int);
-		int getType();void setType(int);
-		int getShape();void setShape(int);
-		int getMatName();
-		int getWeldParName();
-		TColor getWColor();void setWColor(TColor);
-		void setNorm1(long);void setNorm2(long); //EFP 5/31/2011
+		int F15_isel,kflagForm15,jflagForm15,nMatPS,nWeldPS,getRadioBstatus(),getCheckBstatus(),getEdit19(),
+			getISEL(),getFunc(),getType(),getShape(),getMatName(),getWeldParName();
+		long Pl1norm,Pl2norm,getEdit2(),getEdit23(),getEdit24();
+		double getEdit9(),getEdit10(),getEdit11(),getEdit12(),getEdit13(),getEdit14(),getEdit15(),getEdit16(),
+			   getEdit17(),getEdit18(),getEdit20(),getEdit21(),getEdit22();
+		void setEdit1(String),setEdit2(long),setEdit9(double),setEdit10(double),setEdit11(double),setEdit12(double),
+			 setEdit13(double),setEdit14(double),setEdit15(double),setEdit16(double),setEdit17(double),setEdit18(double),
+			 setEdit19(int),setEdit20(double),setEdit21(double),setEdit22(double),setEdit23(long),setEdit24(long),
+			 setFunc(int),setType(int),setShape(int),setWColor(TColor),setNorm1(long),setNorm2(long); //EFP 5/31/2011
+		String getEdit1();
+		TColor getWColor();
 public:		// User declarations
 		__property int CheckRadioB={read=getRadioBstatus};
 		__property String CheckEdit1={read=getEdit1,write=setEdit1};
@@ -164,10 +143,7 @@ public:		// User declarations
 		__property TColor CheckWeldColor={read=getWColor,write=setWColor};
 		__property long CheckNorm1={write=setNorm1}; //EFP 5/31/2011
 		__property long CheckNorm2={write=setNorm2}; //EFP 5/31/2011
-		__fastcall TForm15(int,long,long,long,long,long,long,
-						   long,String [],
-						   long,String [],
-						   TComponent* Owner);
+		__fastcall TForm15(int,long,long,long,long,long,long,long,String [],long,String [],TComponent* Owner);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TForm15 *Form15;

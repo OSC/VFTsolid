@@ -34,7 +34,7 @@ __fastcall TForm28::TForm28(int isel,int imode,int fORint,
 void TForm28::setFval(float s){Edit1->Text=FloatToStr(s);}
 float TForm28::getFval(){return fc1;}
 //---------------------------------------------------------------------------
-void TForm28::setLval(long s){Edit1->Text=IntToStr(INT64(s));}
+void TForm28::setLval(long s){Edit1->Text=IntToStr(__int64(s));}
 long TForm28::getLval(){return lc1;}
 //---------------------------------------------------------------------------
 int TForm28::getISEL(){return F28_isel;}
@@ -45,7 +45,13 @@ void __fastcall TForm28::Button1Click(TObject *Sender)//Enter
 {int isw=1;
 
  if(F28_fORint){try {StrToFloat(Edit1->Text);
-					 if(StrToFloat(Edit1->Text)<fmin || StrToFloat(Edit1->Text)>fmax)
+					 if(Edit1->Text==L"0"){if(0.f<fmin || 0.f>fmax)
+					   {isw=0;extern PACKAGE void __fastcall Beep(void);
+						ShowMessage(Edit1->Text+" outside limits "+FloatToStr(fmin)+", "+FloatToStr(fmax));
+					   }
+										  else {lc1=0;fc1=0.f;}
+										 }
+					 else if(StrToFloat(Edit1->Text)<fmin || StrToFloat(Edit1->Text)>fmax)
 					   {isw=0;extern PACKAGE void __fastcall Beep(void);
 						ShowMessage(Edit1->Text+" outside limits "+FloatToStr(fmin)+", "+FloatToStr(fmax));
 					   }
@@ -56,11 +62,17 @@ void __fastcall TForm28::Button1Click(TObject *Sender)//Enter
 										}
 			   }
  else {try {StrToInt(Edit1->Text);
-			if(StrToInt(Edit1->Text)<lmin || StrToInt(Edit1->Text)>lmax)
+			if(Edit1->Text==L"0"){if(0<lmin || 0>lmax)
 			  {isw=0;extern PACKAGE void __fastcall Beep(void);
-			   ShowMessage(Edit1->Text+" outside limits "+IntToStr(INT64(lmin))+", "+IntToStr(INT64(lmax)));
+			   ShowMessage(Edit1->Text+" outside limits "+IntToStr(__int64(lmin))+", "+IntToStr(__int64(lmax)));
 			  }
-			else {lc1=StrToInt(Edit1->Text);fc1=0.;}
+			                     else {lc1=0;fc1=0.f;}
+								}
+			else if(StrToInt(Edit1->Text)<lmin || StrToInt(Edit1->Text)>lmax)
+			  {isw=0;extern PACKAGE void __fastcall Beep(void);
+			   ShowMessage(Edit1->Text+" outside limits "+IntToStr(__int64(lmin))+", "+IntToStr(__int64(lmax)));
+			  }
+			else {lc1=StrToInt(Edit1->Text);fc1=0.f;}
 		   }
 	   catch (EConvertError &E){isw=0;extern PACKAGE void __fastcall Beep(void);
 								ShowMessage(Edit1->Text + " must be integer");

@@ -14,9 +14,7 @@ __published:	// IDE-managed Components
 	TListBox *ListBox1;
 	void __fastcall ListBox1Click(TObject *Sender);
 private:	// User declarations
-    int F26_sel;
-	int getISEL();
-	int getItemIndex();
+    int F26_sel,getISEL(),getItemIndex();
 public:		// User declarations
 	__property int CheckISEL={read=getISEL};
 	__property int CheckItemIndex={read=getItemIndex};

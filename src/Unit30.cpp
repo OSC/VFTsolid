@@ -11,12 +11,11 @@
 TForm30 *Form30;
 //---------------------------------------------------------------------------
 //__fastcall TForm30::TForm30(long nWeldPass,String name[],TColor WeldColor[],int seqNum[],TComponent* Owner)
-__fastcall TForm30::TForm30(long nWeldPass,String name[],TColor WeldColor[],int seqNum[],long reset[],TComponent* Owner)
-	: TForm(Owner)
+__fastcall TForm30::TForm30(long nWeldPass,String name[],TColor WeldColor[],int seqNum[],long reset[],TComponent* Owner) : TForm(Owner)
 {long i=0,j=0;
  for(i=0;i<nWeldPass;i++) //Each order
    {for(j=0;j<nWeldPass;j++)if(seqNum[j]-1==i)break;   // Note that seqNum is numbered 1 to...
-	CheckListBox1->Items->Add(name[j].t_str());CheckListBox2->Items->Add(name[j].t_str());
+	CheckListBox1->Items->Add(name[j].w_str());CheckListBox2->Items->Add(name[j].w_str());
 	if(reset[j]-10*(reset[j]/10)){CheckListBox1->Checked[j]=true;CheckListBox2->Checked[j]=true;}
 	invColor[i]=invorigColor[i]=WeldColor[j];localseqInv[i]=origseqInv[i]=j;
    }
@@ -32,7 +31,7 @@ long TForm30::getEdit1(){
 						   return StrToInt(Edit1->Text);
 						  }
 //---------------------------------------------------------------------------
-void TForm30::setEdit1(long x){Edit1->Text=IntToStr(INT64(x));}
+void TForm30::setEdit1(long x){Edit1->Text=IntToStr(__int64(x));}
 //---------------------------------------------------------------------------
 void __fastcall TForm30::Button1Click(TObject *Sender){Form1->WeldPassEditSeqn2_public();} //Enter
 //---------------------------------------------------------------------------

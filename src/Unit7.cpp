@@ -1,10 +1,8 @@
 //---------------------------------------------------------------------------
-// Revision
-//  2003/11/19 Button5&6 replaced with RadioButton1&2 (but Button5&6 coding not removable)
+
 #include <vcl.h>
 #pragma hdrstop
-#include <stdlib.h>
-#include <math.h>
+
 #include "Unit7.h"
 #include "Unit1.h"
 //---------------------------------------------------------------------------
@@ -12,71 +10,43 @@
 #pragma resource "*.dfm"
 TForm7 *Form7;
 //---------------------------------------------------------------------------
-__fastcall TForm7::TForm7
- (int sectionsel0,float Angle0,float Angle1,float Angle2,TComponent* Owner) : TForm(Owner)
-{ScrollBar1->Max=100;ScrollBar1->Min=0;ScrollBar1->LargeChange=10;ScrollBar1->SmallChange=1;
- sect_ic=sectionsel0;ac1=Angle1;ac2=Angle2;setAngle0(Angle0);
- if(sect_ic)RadioButton1->Checked=true;else RadioButton2->Checked=true;
+__fastcall TForm7::TForm7(int numlist,TComponent* Owner) : TForm(Owner)
+{nlist=numlist;iClickOrder=1;
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm7::Button1Click(TObject *Sender)
-{float AA=0.,VV=0.;
- if(Edit1->Text=="0")
-//Necessary since Edit ignores 0
-   {if(ac2>0. && ac1<0.)
-      {if(ac2-ac1> 0.0001)VV=ac2-ac1;else VV=0.0001;
-       ScrollBar1->Position=int( -100.*ac1/VV+0.5);
-      }
-    else ScrollBar1->Position=0;
+{int isw=1,i=0;
+ for(i=0;i<nlist;i++){//ListBox2->ItemIndex=i;
+					  if(ListBox2->Items->Strings[i]==L"****")isw=0;
+					 }
+ if(isw){Form1->exportWARP4_public();Close();}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"There is an unassigned entity.",L"Incomplete",MB_OK);}
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm7::ListBox1Click(TObject *Sender)
+{LB1ItemIndex=ListBox1->ItemIndex;
+ iClickOrder=1;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm7::ListBox3Click(TObject *Sender)
+{if(iClickOrder)
+   {iClickOrder=0;
+	ListBox2->ItemIndex=LB1ItemIndex;
+////ListBox2->AddItem(ListBox3->Items(ListBox3->ItemIndex,this));
+//ListBox2->AddItem(ListBox3->Items,this);
+	ListBox2->Items->Strings[ListBox2->ItemIndex]=ListBox3->Items->Strings[ListBox3->ItemIndex];
    }
- else
-   {//AA=atof(Edit1->Text.c_str());
-    AA=StrToFloat(Edit1->Text);
-	if(AA>ac2)AA=ac2;else if(AA<ac1)AA=ac1;
-    if(ac2-ac1> 0.0001)VV=ac2-ac1;else VV=0.0001;
-    ScrollBar1->Position=int(100.*(AA-ac1)/VV+0.5);
-   }
- Form1->secthea_public();
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"First click on Entity; then click Avaliable Material.",L"Incorrect",MB_OK);}
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm7::ScrollBar1Scroll(TObject *Sender,TScrollCode ScrollCode,int &ScrollPos)
-{Edit1->Text=FloatToStr(ac1+(ac2-ac1)*float(ScrollBar1->Position)/100.);
+void __fastcall TForm7::ListBox2Click(TObject *Sender)
+{extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"First click on Entity; then click Avaliable Material.",L"Can not click Chosen material",MB_OK);
 }
 //---------------------------------------------------------------------------
-void TForm7::setAngle0(float s)
-{float VV=0.,BB=0.;
- if(ac2-ac1> 0.0001)VV=ac2-ac1;else VV=0.0001;
- if(s>ac2)BB=ac2;else if(s<ac1)BB=ac1;else BB=s;
- Edit1->Text=FloatToStr(BB);ScrollBar1->Position=int(100.*(BB-ac1)/VV+0.5);
-}
+int TForm7::getNlist(){return nlist;}
 //---------------------------------------------------------------------------
-void TForm7::setAngle1(float s){}
-void TForm7::setAngle2(float s){}
-void TForm7::setSection0(int s){sect_ic=s;}
+void TForm7::setLB2ItemIndex(int s){ListBox2->ItemIndex=s;}
 //---------------------------------------------------------------------------
-float TForm7::getAngle0(){return ac1+(ac2-ac1)*float(ScrollBar1->Position)/100.;}
-float TForm7::getAngle1(){return 0.;}
-float TForm7::getAngle2(){return 0.;}
-int TForm7::getSection0(){return sect_ic;}
-//---------------------------------------------------------------------------
-void __fastcall TForm7::Button3Click(TObject *Sender){Form1->secthea1_public();}
-//---------------------------------------------------------------------------
-void __fastcall TForm7::Button7Click(TObject *Sender)
-{if(sect_ic)sect_ic=sect_ic+10;else sect_ic=sect_ic-10;Form1->secthea2_public();
-}
-//---------------------------------------------------------------------------
-void __fastcall TForm7::Button4Click(TObject *Sender)
-{if(sect_ic)sect_ic=sect_ic+100;else sect_ic=sect_ic-100;Form1->secthea2_public();
-}
-//---------------------------------------------------------------------------
-void __fastcall TForm7::Button2Click(TObject *Sender){Form1->secthea3_public();}
-//---------------------------------------------------------------------------
-void __fastcall TForm7::RadioButton1Click(TObject *Sender){sect_ic=abs(sect_ic);}
-//---------------------------------------------------------------------------
-void __fastcall TForm7::RadioButton2Click(TObject *Sender){sect_ic= -abs(sect_ic);}
-//---------------------------------------------------------------------------
-void __fastcall TForm7::Button5Click(TObject *Sender)
-{Close();Form1->sectheaTRASH_public();
-}
+String TForm7::getLB2Item(){return ListBox2->Items->Strings[ListBox2->ItemIndex];}
 //---------------------------------------------------------------------------
 

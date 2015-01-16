@@ -28,11 +28,9 @@ __published:	// IDE-managed Components
 private:	// User declarations
     int F22_sel;
 	int getISEL();
-	String getEdit1();void setEdit1(String);
-	double getEdit2();void setEdit2(double);
-	double getEdit3();void setEdit3(double);
-	double getEdit4();void setEdit4(double);
-	double getEdit5();void setEdit5(double);
+	String getEdit1();
+	void setEdit1(String),setEdit2(double),setEdit3(double),setEdit4(double),setEdit5(double);
+	double getEdit2(),getEdit3(),getEdit4(),getEdit5();
 public:		// User declarations
 	__property int CheckISEL={read=getISEL};
 	__property String CheckEdit1={read=getEdit1,write=setEdit1};

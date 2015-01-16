@@ -1,6 +1,7 @@
 object Form29: TForm29
   Left = 0
   Top = 0
+  BorderIcons = []
   Caption = 'Form29'
   ClientHeight = 209
   ClientWidth = 391
@@ -10,6 +11,7 @@ object Form29: TForm29
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  FormStyle = fsStayOnTop
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
@@ -130,8 +132,8 @@ object Form29: TForm29
     Width = 75
     Height = 25
     Caption = 'Button2'
+    ModalResult = 11
     TabOrder = 5
-    OnClick = Button2Click
   end
   object Edit5: TEdit
     Left = 96

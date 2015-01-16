@@ -107,8 +107,8 @@ object Form25: TForm25
     Width = 75
     Height = 25
     Caption = 'Button2'
+    ModalResult = 11
     TabOrder = 1
-    OnClick = Button2Click
   end
   object Edit1: TEdit
     Left = 136

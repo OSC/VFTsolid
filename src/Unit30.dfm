@@ -143,6 +143,7 @@ object Form30: TForm30
     Width = 75
     Height = 25
     Caption = 'Button8'
+    ModalResult = 11
     TabOrder = 10
     OnClick = Button8Click
   end

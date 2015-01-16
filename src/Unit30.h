@@ -39,13 +39,11 @@ __published:	// IDE-managed Components
 	void __fastcall CheckListBox2Click(TObject *Sender);
 	void __fastcall Button8Click(TObject *Sender);
 private:	// User declarations
-	int seqIndex;
-	TColor invColor[256],invorigColor[256];  //Cat's ass coding...
-	int localseqInv[256],origseqInv[256];
-	int getSeq();void setSeqIndex(int);
+	int seqIndex,getSeq(),localseqInv[256],origseqInv[256];
+	long getEdit1();
 	bool getDir();
-	long getEdit1();void setEdit1(long);
-	TColor getWColor1();void setWColor1(TColor);
+	void setSeqIndex(int),setEdit1(long),setWColor1(TColor);
+	TColor getWColor1(),invColor[256],invorigColor[256];  //Cat's ass coding...
 public:		// User declarations
 	__property int CheckSeq={read=getSeq,write=setSeqIndex};
 	__property bool CheckDir={read=getDir};
