@@ -259,6 +259,8 @@ void TForm21::setEdit4(double x){Edit4->Text=FloatToStr(x);}
 void TForm21::setEdit5(double x){Edit6->Text=FloatToStr(x);}
 void TForm21::setEdit6(double x){Edit7->Text=FloatToStr(x);}
 void TForm21::setEdit7(double x){Edit8->Text=FloatToStr(x);}
+
+/*
 //---------------------------------------------------------------------------
 void __fastcall TForm21::Button2Click(TObject *Sender)
 {int isw=1,j=0,icount=0,iactive=0;float TOL=0.000001f;
@@ -346,6 +348,105 @@ void __fastcall TForm21::Button2Click(TObject *Sender)
 //		 Close();
 		}
 }
+*/
+//---------------------------------------------------------------------------
+void __fastcall TForm21::Button2Click(TObject *Sender)
+{int isw=1,j=0,icount=0,bufferSize=0,nrc=0;long larr[11];float TOL=0.000001f,darr[11];
+ try {StrToFloat(Edit2->Text);
+	  if(Edit2->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit2->Text.w_str(),L"Zero thermal conductivity: Reenter a positive floating point",MB_OK);}
+	  else if(StrToFloat(Edit2->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit2->Text.w_str(),L"Negative/zero thermal conductivity: Reenter a positive floating point",MB_OK);}
+	 }
+ catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
+						   ShowMessage(Label2->Caption +" "+ Edit2->Text + " must be positive floating-point");
+						  }
+ try {StrToFloat(Edit3->Text);
+	  if(Edit3->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit3->Text.w_str(),L"Zero specific heat: Reenter a positive floating point",MB_OK);}
+	  else if(StrToFloat(Edit3->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit3->Text.w_str(),L"Negative/zero specific heat: Reenter a positive floating point",MB_OK);}
+	 }
+ catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
+						   ShowMessage(Label3->Caption +" "+ Edit3->Text + " must be positive floating-point");
+						  }
+ try {StrToFloat(Edit4->Text);
+	  if(Edit4->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Zero density: Reenter a positive floating point",MB_OK);}
+	  else if(StrToFloat(Edit4->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Negative/zero density: Reenter a positive floating point",MB_OK);}
+	 }
+ catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
+						   ShowMessage(Label4->Caption +" "+ Edit4->Text + " must be positive floating-point");
+						  }
+ try {StrToFloat(Edit6->Text);
+	  if(Edit6->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Zero annealing initiation temperature: Reenter a positive floating point",MB_OK);}
+	  else if(StrToFloat(Edit6->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Negative/zero annealing initiation temperature: Reenter a positive floating point",MB_OK);}
+	 }
+ catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
+						   ShowMessage(Label6->Caption +" "+ Edit6->Text + " must be positive floating-point");
+						  }
+ try {StrToFloat(Edit7->Text);
+	  if(Edit7->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit7->Text.w_str(),L"Zero annealing temperature: Reenter a positive floating point",MB_OK);}
+	  else if(StrToFloat(Edit7->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit7->Text.w_str(),L"Negative/zero annealing temperature: Reenter a positive floating point",MB_OK);}
+	 }
+ catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
+						   ShowMessage(Label7->Caption +" "+ Edit7->Text + " must be positive floating-point");
+						  }
+ try {StrToFloat(Edit8->Text);
+	  if(Edit8->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit8->Text.w_str(),L"Zero material melting temperature: Reenter a positive floating point",MB_OK);}
+	  else if(StrToFloat(Edit8->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit8->Text.w_str(),L"Negative/zero material melting temperature: Reenter a positive floating point",MB_OK);}
+	 }
+ catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
+						   ShowMessage(Label8->Caption +" "+ Edit8->Text + " must be positive floating-point");
+						  }
+//////////////////// Special-purpose coding for VFT only  EFP 8/22/2010
+// if(StrToFloat(Edit2->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
+//								 ShowMessage(Label2->Caption +" "+ Edit2->Text + " must be positive");
+//								}
+// if(StrToFloat(Edit3->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
+//								 ShowMessage(Label3->Caption +" "+ Edit3->Text + " must be positive");
+//								}
+// if(StrToFloat(Edit4->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
+//								 ShowMessage(Label4->Caption +" "+ Edit4->Text + " must be positive");
+//								}
+// if(StrToFloat(Edit6->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
+//								 ShowMessage(Label7->Caption +" "+ Edit6->Text + " must be positive");//Note Label/Edit noncoincidence
+//								}
+// if(StrToFloat(Edit7->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
+//								 ShowMessage(Label8->Caption +" "+ Edit7->Text + " must be positive");//Note Label/Edit noncoincidence
+//								}
+// if(StrToFloat(Edit8->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
+//								 ShowMessage(Label9->Caption +" "+ Edit8->Text + " must be positive");//Note Label/Edit noncoincidence
+//								}
+ if(Edit9->Text==L"****"){isw=0;extern PACKAGE void __fastcall Beep(void);
+						  ShowMessage(Label10->Caption +" "+ Edit9->Text + " must be a filename");//Note Label/Edit noncoincidence
+						 }
+ if(CheckBox1->Checked){
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+//						icount=iactive=0;        //THIS IS ALL WRONG
+//						for(j=0;j<Edit5->Text.Length();j++){if(Edit5->Text==' ')iactive=0;
+//															else if(iactive==0){icount++;iactive=1;}
+//														   }
+//yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+						if(Edit5->Text==L"****"){isw=0;extern PACKAGE void __fastcall Beep(void);
+												 ShowMessage(Label6->Caption +" "+ Edit5->Text + " must be a set of steps (e.g. 9,10,11)");//Note Label/Edit noncoincidence
+												}
+//						else if(!ParseSteps(Edit5->Text)){isw=0;extern PACKAGE void __fastcall Beep(void);
+						else {// TBD: test this   EFP 1/26/2015
+icount=0;
+bufferSize=WideCharToMultiByte(CP_UTF8,0,Edit5->Text.w_str(), -1,NULL,0,NULL,NULL);
+char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,Edit5->Text.w_str(), -1,m,bufferSize,NULL,NULL);
+//Form1->parse_cdmQ_public(m,&icount,&nrc,larr,darr);
+parse_cdmQ_fixthis(m,&icount,&nrc,larr,darr);
+							  delete [] m;
+							  if(!icount){isw=0;extern PACKAGE void __fastcall Beep(void);
+										  ShowMessage(Label6->Caption +" "+ Edit5->Text + " must be a set of comma-delimited steps (e.g. 9,10,11)");//Note Label/Edit noncoincidence
+										 }
+							 }
+					   }
+/////////////////////////////////////////////////////////
+ if(isw){Form1->MatProperties_public();
+//		 Close();
+		}
+}
+
+
+
 //---------------------------------------------------------------------------
 void __fastcall TForm21::Button1Click(TObject *Sender)
 {
@@ -398,7 +499,8 @@ void __fastcall TForm21::Button1Click(TObject *Sender)
  if(ntape){ntape.close();
 		   Form5->ListBox1->AddItem(L"alloy82_fph",this);
 		  }
- Form5->ListBox1->AddItem(L"Other",this);
+// Form5->ListBox1->AddItem(L"Other",this);
+ Form5->ListBox1->AddItem(L"Browse...",this);
  Form5->ListBox1->ItemIndex=0;Form5->ShowModal();delete Form5;
 }
 //---------------------------------------------------------------------------
@@ -425,7 +527,8 @@ void __fastcall TForm21::RadioButton3Click(TObject *Sender){RB1_count=0;
 														   }
 //---------------------------------------------------------------------------
 void __fastcall TForm21::RadioButton4Click(TObject *Sender){RB1_count=0;
- Button1->Caption=L"Choose Mechanical Property File for Combined Hardening (linear)...";
+// Button1->Caption=L"Choose Mechanical Property File for Combined Hardening (linear)...";
+ Button1->Caption=L"Choose Mechanical Property File for Kinematic Hardening (linear)...";
 														   }
 //---------------------------------------------------------------------------
 void __fastcall TForm21::RadioButton5Click(TObject *Sender){RB1_count=0;
@@ -526,6 +629,8 @@ void __fastcall TForm21::Plantains(TObject *Sender)//Doubleclick RadioButton5
  Label6->Enabled=false;
  RadioGroup1->Visible=false;
 }
+
+/*
 //---------------------------------------------------------------------------
 void TForm21::getItemIndex5_public()
 {String dumA,dumB,s66=L".dat",s77=L"#",s33=L"\\"; //CAUTION: s33 is MS_Windows ONLY
@@ -567,6 +672,214 @@ else {Edit1->Text=DynStrings[0];setEdit8(DynStrings[0]+s66);
  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unable to create MAT file-open dialog",L"Failure",MB_OK);}
 	  }
 }
+*/
+//---------------------------------------------------------------------------
+void TForm21::getItemIndex5_public()
+{String dumA,dumB,s66=L".dat",s77=L"#",s33=L"\\"; //CAUTION: s33 is MS_Windows ONLY
+ TReplaceFlags Flags;// Note: Flags would be set by WHAT??? Flags not set (I HOPE).
+ int ic=0,icrec=0,index=Form5->CheckItemIndex;Form5->Close();
+ if(Form5->ListBox1->Count >1)
+   {
+/////////////////
+ if     (index== 0){Edit1->Text=L"mildsteel_iso";Edit9->Text=L"mildsteel_iso_file.dat";}
+ else if(index== 1){Edit1->Text=L"reactorsteel_iso";Edit9->Text=L"reactorsteel_iso_file.dat";}
+ else if(index== 2){Edit1->Text=L"inconel718_iso";Edit9->Text=L"inconel718_iso_file.dat";}
+ else if(index== 3){Edit1->Text=L"monel_iso";Edit9->Text=L"monel_iso_file.dat";}
+ else if(index== 4){Edit1->Text=L"aluminum_iso";Edit9->Text=L"aluminum_iso_file.dat";}
+ else if(index== 5){Edit1->Text=L"alloy82_iso";Edit9->Text=L"alloy82_iso_file.dat";}
+ else if(index== 6){Edit1->Text=L"alloy82_kin";Edit9->Text=L"alloy82_kin_file.dat";}
+ else if(index== 7){Edit1->Text=L"alloy82_mln";Edit9->Text=L"alloy82_mln_file.dat";}
+ else if(index== 8){Edit1->Text=L"alloy82_mix";Edit9->Text=L"alloy82_mix_file.dat";}
+ else if(index== 9){Edit1->Text=L"alloy82_phs";Edit9->Text=L"alloy82_phs_file.dat";}
+ else if(index==10){Edit1->Text=L"alloy82_fph";Edit9->Text=L"alloy82_fph_file.dat";}
+ else {
+//             Edit9->Text=L"aluminum_file.dat";
+ OpenDialog1->Filter= "ABA_mat (*.dat)|*.dat;*.DAT";
+ if(OpenDialog1->Execute()){
+TStringDynArray DynStrings=SplitString(OpenDialog1->FileName,L"."); //How to delete DynStrings after this?
+dumA=DynStrings[0];icrec=0;
+for(ic=0;ic<128-1;ic++){if(ContainsStr(dumA,s33)){icrec++; //Replace one-at-a-time
+												  dumB=StringReplace(dumA,s33,s77,Flags);dumA=dumB;
+												 }
+						else break;
+					   }
+if(icrec){dumA=DynStrings[0];
+		  for(ic=0;ic<icrec-1;ic++){dumB=StringReplace(dumA,s33,s77,Flags);dumA=dumB;
+								   }
+		  TStringDynArray DynStrings1=SplitString(dumA,s33); //How to delete DynStrings after this?
+		  Edit1->Text=DynStrings1[1];setEdit8(DynStrings1[1]+s66);
+		 }
+else {Edit1->Text=DynStrings[0];setEdit8(DynStrings[0]+s66);
+	 }
+//							Edit1->Text=OpenDialog1->FileName;
+//							setEdit8(OpenDialog1->FileName);
+						   }
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unable to create MAT file-open dialog",L"Failure",MB_OK);}
+	  }
+/////////////////
+   }
+ else {
+/////////////////
+ OpenDialog1->Filter= "ABA_mat (*.dat)|*.dat;*.DAT";
+ if(OpenDialog1->Execute()){
+TStringDynArray DynStrings=SplitString(OpenDialog1->FileName,L"."); //How to delete DynStrings after this?
+dumA=DynStrings[0];icrec=0;
+for(ic=0;ic<128-1;ic++){if(ContainsStr(dumA,s33)){icrec++; //Replace one-at-a-time
+												  dumB=StringReplace(dumA,s33,s77,Flags);dumA=dumB;
+												 }
+						else break;
+					   }
+if(icrec){dumA=DynStrings[0];
+		  for(ic=0;ic<icrec-1;ic++){dumB=StringReplace(dumA,s33,s77,Flags);dumA=dumB;
+								   }
+		  TStringDynArray DynStrings1=SplitString(dumA,s33); //How to delete DynStrings after this?
+		  Edit1->Text=DynStrings1[1];setEdit8(DynStrings1[1]+s66);
+		 }
+else {Edit1->Text=DynStrings[0];setEdit8(DynStrings[0]+s66);
+	 }
+						   }
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unable to create MAT file-open dialog",L"Failure",MB_OK);}
+/////////////////
+	  }
+}
+//---------------------------------------------------------------------------
+void TForm21::parse_cdmQ_fixthis(char descript[],int* nic,int* nrc,long iparse[],float parse[])
+// Integers and/or float(E)/double(D) numbers delimited by ' ' or ','
+// Read up to ncol "integer + real" or end of record (siza=record length without \n), whichever comes first.
+// Delimited by comma, except at end. There may or may not be a space before the comma. (i.e. 7543 , 7544 , etc)
+// CORRECTION: EFP 5/11/2010 for possible space before comma
+// BIG siza BUG HERE
+// Note: This routine can accommodate spaces befor/after commas. It can accommodate an extra comma at end.
+{int isel=0,inel=0,pre=0,ileft=0,nleft=0,nright=0,nexp=0,sign=0,esign=0,vexp=0,ist=0,irflag=0,isw=0;
+ long dii=0,lse=0;float div=0.f,rse=0.f;char stchar[18],cleft[25],cright[25],cexp[25];
+ stchar[0]='0';stchar[1]='1';stchar[2]='2';stchar[3]='3';stchar[4]='4';
+ stchar[5]='5';stchar[6]='6';stchar[7]='7';stchar[8]='8';stchar[9]='9';
+ stchar[10]='+';stchar[11]='-';stchar[12]='.';stchar[13]='E';stchar[14]='e';
+ stchar[15]='D';stchar[16]='d';stchar[17]=','; *nic=0;*nrc=0;isel= -1;
+//siza=sizeof(descript);
+//honk<<sizeof(descript)<<" SSSSSSS "<<sizb<<"\n";
+
+//for(ist=0;ist<100;ist++){//if(descript[isel]== \n)honk<<" LF\n";
+//						 honk<<ist<<" "<<descript[ist]<<" descrit\n";
+//						}
+ isw=1;
+ do {rse=0.f;lse=0;pre=nleft=nright=nexp=0;esign=1;sign=1;irflag=0;
+	 for(ist=0;ist<100;ist++){isel++;if(descript[isel] != ' '){isel--;break;}}
+////	 for(ist=0;ist<100;ist++){isel++;if(descript[isel]==stchar[17] || descript[isel]=='\n'){isel--;break;}
+////							 } //comma
+//	 for(ist=0;ist<100;ist++){isel++;if(descript[isel]==stchar[17]){isel--;break;}
+//							 } //comma
+	 for(ist=0;ist<25;ist++)
+		{isel++;
+		 if(descript[isel] == stchar[11]){if(pre == 0)sign= -1;else esign= -1;}
+		 else if(descript[isel] == stchar[12]){pre=1;irflag=1;}
+		 else if(descript[isel] == stchar[13] || descript[isel] == stchar[14] ||
+				 descript[isel] == stchar[15] || descript[isel] == stchar[16]){pre=2;irflag=1;}
+		 else if(descript[isel] == stchar[10])continue;
+		 else if(descript[isel] == stchar[0])
+			 {inel=0;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[1])
+			 {inel=1;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[2])
+			 {inel=2;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[3])
+			 {inel=3;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[4])
+			 {inel=4;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[5])
+			 {inel=5;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[6])
+			 {inel=6;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[7])
+			 {inel=7;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[8])
+			 {inel=8;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[9])
+			 {inel=9;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+//		 else break;
+		 else if(descript[isel] ==' ')continue;
+		 else if(descript[isel] == stchar[17])break;
+		 else {isw=0;break;}
+		}
+//if(isw){
+	 if(irflag){for(ileft=0;ileft<nleft;ileft++)
+				 {for(inel=0;inel<10;inel++)if(cleft[ileft] == stchar[inel]){rse=rse*10+float(inel);break;}
+				 }
+				div=1.f;for(ileft=0;ileft<nright;ileft++)
+						 {div=div*10.f;
+						  for(inel=1;inel<10;inel++)if(cright[ileft] == stchar[inel]){rse=rse+float(inel)/div;break;}
+						 }
+				vexp=0;for(ileft=0;ileft<nexp;ileft++)
+						 {for(inel=0;inel<10;inel++)if(cexp[ileft] == stchar[inel]){vexp=vexp*10+inel;break;}
+						 }
+				if(vexp>37)vexp=37; // Revision
+				div=1.f;if(vexp>0){for(ileft=0;ileft<vexp;ileft++)div=div*10.f;}
+				if(esign<0)rse=float(sign)*rse/div;else rse=float(sign)*rse*div;
+				parse[*nrc]=rse;*nrc=*nrc+1;
+			   }
+	 else {for(ileft=0;ileft<nleft;ileft++)
+			{for(inel=0;inel<10;inel++)if(cleft[ileft] == stchar[inel]){lse=lse*10+long(inel);break;}
+			}
+		   dii=1;for(ileft=0;ileft<nright;ileft++)
+				   {dii=dii*10;
+					for(inel=1;inel<10;inel++)if(cright[ileft] == stchar[inel]){lse=lse+long(inel)/dii;break;}
+				   }
+		   vexp=0;for(ileft=0;ileft<nexp;ileft++)
+				   {for(inel=0;inel<10;inel++)if(cexp[ileft] == stchar[inel]){vexp=vexp*10+inel;break;}
+				   }
+		   if(vexp>37)vexp=37; // Revision
+		   dii=1;if(vexp>0){for(ileft=0;ileft<vexp;ileft++)dii=dii*10;}
+		   if(esign<0)lse=long(sign)*lse/dii;else lse=long(sign)*lse*dii;
+		   iparse[*nic]=lse;*nic=*nic+1;
+		  }
+//	   }
+	}
+// while (isel+1<siza && (*nic+ *nrc)<ncol);
+ while (isw);
+}
+
+
+
 //---------------------------------------------------------------------------
 /*
 //---------------------------------------------------------------------------

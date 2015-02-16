@@ -78,6 +78,7 @@ private:	// User declarations
 	String getEdit1(),getEdit5a(),getEdit8();
 	void setEdit1(String),setEdit5a(String),setEdit8(String),setEdit2(double),setEdit3(double),setEdit4(double),setEdit5(double),
 		 setEdit6(double),setEdit7(double),setRadioGroup1(int),setGroupBox3(bool),setGroupBox4(bool),setCheckBox1(bool);
+    void parse_cdmQ_fixthis(char [],int*,int*,long [],float []);
 	double getEdit2(),getEdit3(),getEdit4(),getEdit5(),getEdit6(),getEdit7();
 	bool getGroupBox3(),getGroupBox4(),getCheckBox1();
 public:		// User declarations

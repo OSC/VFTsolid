@@ -448,7 +448,8 @@ char *comboCWD;
 	   persistVFT2(long,long []),
 	   ImportAba_prog(int),
 	   degen8_test(long*,long*,long []);// Convert degenerate hex to wedge/tetra  EFP 8/30/2014
-  void parse_cdm3ff(char [],long,int*,int*,long [],float []),parse_cdmQ(char [],int*,int*,long [],float []),
+  void parse_cdm3ff(char [],long,int*,int*,long [],float []),
+	   parse_cdmQ(char [],int*,int*,long [],float []),  //This is repeated in Unit21.cpp as ....fixthis()
 	   parse_cdm(char [],long,int*,int*,long [],float []),parse_cdmQn(char [],long,int*,int*,long [],float []),
 	   parse_cdmQb(char [],int*,int*,long [],float [],long);
   int parse_cdmV(char [],long,int*,int*,long [],float []),parse_cdmVc(char [],long,int*,int*,long [],float []);
@@ -506,7 +507,7 @@ public:		// User declarations
 		 exportCTSP2_public(),exportCTSP3_public(),exportWARP4_public(),
 		 exportWARP3D_public(),exportWARP3D1a_public(),exportWARP3D5_public();
 	void Form28_public(),Form28Close_public(),
-	     tshiftCTSP_public(),tshiftCTSP3_public(),tshiftCTSP1_public();
+		 tshiftCTSP_public(),tshiftCTSP3_public(),tshiftCTSP1_public();
 	__fastcall TForm1(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
