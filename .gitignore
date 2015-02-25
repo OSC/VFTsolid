@@ -1,0 +1,8 @@
+# IDE files
+*.~*~
+*.local
+__history
+
+# C++ Builder Compiler output directories
+Win32
+Win64
