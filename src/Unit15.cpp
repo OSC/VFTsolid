@@ -236,15 +236,30 @@ void TForm15::setWColor(TColor s){Shape1->Brush->Color=s;}
 void __fastcall TForm15::Button1Click(TObject *Sender)
 {int isw=1,testTflag=1,heattimeflag=1;float TOL=0.000001f,roomT=0.f,meltT=0.f,lowcutT=0.f,preheatT=0.f,maxheattime=0.f,minheattime=0.f;
  try {StrToFloat(Edit9->Text);
-	  if(Edit9->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit9->Text.w_str(),L"Zero weld current: Reenter a positive floating point",MB_OK);}
-	  else if(StrToFloat(Edit9->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit9->Text.w_str(),L"Negative/zero weld current: Reenter a positive floating point",MB_OK);}
+	  if(Edit9->Text==L"0"){isw=0;
+							extern PACKAGE void __fastcall Beep(void);
+//							Application->MessageBox(Edit9->Text.w_str(),L"Zero weld current: Reenter a positive floating point",MB_OK);
+							Application->MessageBoxW(Edit9->Text.w_str(),L"Zero weld current: Reenter a positive floating point",MB_OK);
+						   }
+	  else if(StrToFloat(Edit9->Text)<=0.000001f){isw=0;
+												  extern PACKAGE void __fastcall Beep(void);
+												  Application->MessageBox(Edit9->Text.w_str(),L"Negative/zero weld current: Reenter a positive floating point",MB_OK);
+												 }
 	 }
- catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
+ catch (EConvertError &E) {isw=0;
+						   extern PACKAGE void __fastcall Beep(void);
 						   ShowMessage(Label10->Caption +" "+ Edit9->Text + " must be positive floating-point");
 						  }
  try {StrToFloat(Edit10->Text);
-	  if(Edit10->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit10->Text.w_str(),L"Zero weld voltage: Reenter a positive floating point",MB_OK);}
-	  else if(StrToFloat(Edit10->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit10->Text.w_str(),L"Negative/zero weld voltage: Reenter a positive floating point",MB_OK);}
+	  if(Edit10->Text==L"0"){isw=0;
+							 extern PACKAGE void __fastcall Beep(void);
+//							 Application->MessageBox(Edit10->Text.w_str(),L"Zero weld voltage: Reenter a positive floating point",MB_OK);
+							 ShowMessage(Edit10->Text+L" weld voltage: Reenter a positive floating point");
+							}
+	  else if(StrToFloat(Edit10->Text)<=0.000001f){isw=0;
+												   extern PACKAGE void __fastcall Beep(void);
+												   Application->MessageBox(Edit10->Text.w_str(),L"Negative/zero weld voltage: Reenter a positive floating point",MB_OK);
+												  }
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
 						   ShowMessage(Label11->Caption +" "+ Edit10->Text + " must be positive floating-point");
