@@ -18169,8 +18169,8 @@ viewfile4>>hielem;viewfile4.close();
  buffersize=WideCharToMultiByte(CP_UTF8,0,gWsiAlias.w_str(), -1,NULL,0,NULL,NULL);
  char* m=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,gWsiAlias.w_str(), -1,m,buffersize,NULL,NULL);
 //xxxxxxxxxx
-outfile<<"c23456789012345678901234567890    limit: 80 char per line   12345678901234567890\n"; //EFP 1/27/2015
-outfile<<"c\nc\nc *.wrp file\n";
+//outfile<<"c23456789012345678901234567890    limit: 80 char per line   12345678901234567890\n"; //EFP 1/27/2015
+//outfile<<"c\nc\nc *.wrp file\n";
 outfile<<"structure "<<m<<"\n";
 outfile<<"c\nc\nc\n";
 outfile<<"c Material VFT UMAT commands\n";
