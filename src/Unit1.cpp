@@ -18556,12 +18556,13 @@ outfile<<"   extrapolate off\n";
    {for(ir=0;ir<wms.nMatPropSet;ir++)if(wms.name[ir]==wp.matName[ic]){rollcall[ir]=1;break;}
    }
  irec=0;for(ir=0;ir<wms.nMatPropSet;ir++)if(rollcall[ir])irec++;
- outfile4<<irec<<"\n";
+// outfile4<<irec<<"\n"; //EMERGENCY return to SINGLE-MATERIAL  EFP 2/27/2015
  for(ir=0;ir<wms.nMatPropSet;ir++)if(rollcall[ir]){
 buffersize=WideCharToMultiByte(CP_UTF8,0,wms.matFileName[ir].w_str(), -1,NULL,0,NULL,NULL);
 char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wms.matFileName[ir].w_str(), -1,m1,buffersize,NULL,NULL);
 outfile4<<"./"<<m1<<"\n";// EFP 12/10/2014
 delete[] m1;
+                                                   break;//EMERGENCY return
 												  }
  delete [] rollcall;
  outfile4<<"./VED.dat\n";
