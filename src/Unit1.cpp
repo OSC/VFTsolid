@@ -1246,7 +1246,7 @@ else {do {ntape1.getline(cht,200-1);
 				   }
 				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d'))
 				  {
-////				   if(ntape1.peek()!= '*')break; // multiple use for *End/*End Part/*End Assembly/*End Instance  EFP 4/22/2011
+////				   if(ntape1.peek()!= '*')break;
 ////				   else continue;
 honk<<" *END found\n";break;
 //honk<<" *END found\n";if(1==1)exit(0);
@@ -1262,7 +1262,7 @@ while (ntape1.peek()!= '*')ntape1.getline(cht,200-1);
 			 while (!ntape1.eof()); //EndDO02
 
 //////////////////////////////////////////
-// This did not work for *.msh so maybe it should be revised for *.inp/*.abq  EFP 4/06/2011
+// This did not work for *.msh so maybe it should be revised for *.inp and *.abq
 			 for(j=0;j<totEnum;j++)
 			   {eltype=base.matno[j]/t7;bscode=(base.matno[j]-eltype*t7)/t5;node=(base.matno[j]-eltype*t7-bscode*t5)/t3;
 				for(in=0;in<node;in++)base.nop1[MXNPEL*j+in]=revnode_map[base.nop1[MXNPEL*j+in]-nodelolim+1];
@@ -2618,7 +2618,7 @@ void __fastcall TForm1::ImportMshExecute(TObject *Sender)
 // Data card input length=200 below
 // This version does NOT require   ** End    by means of ntape.peek()== -1 (i.e. no more characters in file)
 // nodelolim,nodeuplim,eluplim begin with 1 (not 0)
-// Note current convention: *.msh & Simulia/Abaqus *.inp/*.abq files contain weld groups (never weld passes), regardless of name
+// Note current convention: *.msh & Simulia+Abaqus *.inp and *.abq files contain weld groups (never weld passes), regardless of name
 //     Hence wp.nWeldGroup is incremented but not wp.nWeldPass
 // 8n hex elements only
 {
@@ -2994,7 +2994,7 @@ honk<<iallGrp<<" "<<temp_cht1<<" first base.ELSETinputnames\n";
 						for(i=0;i<nic;i++){if(larr[i]) //This accommodates comma-end or no-comma EFOP 4/15/2011
 											 {
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
-if(j== -1){honk<<"TERMINATE: WG el_map crash in *.abq/*.inp\n";exit(0);}
+if(j== -1){honk<<"TERMINATE: WG el_map crash in *.abq and *.inp\n";exit(0);}
 else {base.arrELSET[j]=totWG;sumWG++;
 	  k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
 	 }
@@ -3029,7 +3029,7 @@ honk<<iallGrp<<" "<<temp_cht1<<" secnd base.ELSETinputnames\n";
 						for(i=0;i<nic;i++){if(larr[i]) //This accommodates comma-end or no-comma EFOP 4/15/2011
 											 {
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
-if(j== -1){honk<<"TERMINATE: ELSETinput el_map crash in *.abq/*.inp\n";exit(0);}
+if(j== -1){honk<<"TERMINATE: ELSETinput el_map crash in *.abq and *.inp\n";exit(0);}
 else {k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
 	 }
 											 }
@@ -3055,7 +3055,7 @@ else {k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGr
 // Place integrity check here
 ////
 //////////////////////////////////////////
-// This did not work for *.msh so maybe it should be revised for *.inp/*.abq  EFP 4/06/2011
+// This did not work for *.msh so maybe it should be revised for *.inp and *.abq  EFP 4/06/2011
 			 for(j=0;j<totEnum;j++)
 			   {eltype=base.matno[j]/t7;bscode=(base.matno[j]-eltype*t7)/t5;node=(base.matno[j]-eltype*t7-bscode*t5)/t3;
 				for(in=0;in<node;in++)base.nop1[MXNPEL*j+in]=revnode_map[base.nop1[MXNPEL*j+in]-nodelolim+1];
@@ -16661,6 +16661,9 @@ honk<<(i+1)<<" Unsupp in exportWARP3D1a_public() "<<eltype<<" "<<bscode<<" "<<no
 ////		  export_VED(gWsiAlias.c_str(),&timesave2); // VED= virtual element detection
 //		  export_VED(gWsiAlias,&timesave2); // VED= virtual element detection
 		  export_VED(gWsiAlias,&timesave2,1); // VED= virtual element detection (Abaqus 0,WARP3D 1)
+//aaaaaaaaaaaaaa
+		  export_WARP_BC(gWsiAlias); // Write WARP-format ASCII nodal BC  EFP 2/26/2015
+//bbbbbbbbbbbbbb
 ////		  WARP3DepBlock();
 //		  WARP3DepBlock(gWsiAlias);
 		  Screen->Cursor=Save_Cursor;
@@ -18678,10 +18681,6 @@ delete[] m1;
 							   }
 				  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Missing param.in file",L"Failure",MB_OK);}
 }
-
-
-
-
 //---------------------------------------------------------------------------
 void TForm1::exportWARP3D5_public()
 //Routine to write "output_commands.inp"  EFP 1/16/2015
@@ -19017,10 +19016,45 @@ outfile<<"   extrapolate off\n";
 // else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not create FileOpen selector",L"Failure",MB_OK);}
 // F28_Form->Close();
 // delete F28_Form;
-
-
 }
-
+//---------------------------------------------------------------------------
+//c
+//*echo off
+//constraints
+//      12      u    0.000000E+00      v    0.000000E+00      w    0.000000E+00
+//      49      u    0.000000E+00      v    0.000000E+00      w    0.000000E+00
+//     359      v    0.000000E+00
+//c
+//*echo on
+void TForm1::export_WARP_BC(String gWsiAlias) // Write WARP-format ASCII nodal BC
+{long i=0,ir=0,icount=0;
+ String fnNeed,extensChar=L".constraints";
+ fnNeed=gWsiAlias+extensChar;
+ icount=0;for(i=0;i<base.npoin;i++)if(base.nofix[2*i+1])icount++;
+ if(icount){
+ ofstream viewfile(fnNeed.w_str());viewfile.setf(ios::scientific);viewfile.precision(6);
+ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+ viewfile<<"*echo off\nconstraints\n";
+//// try {
+ for(ir=0;ir<base.npoin;ir++){
+if     (base.nofix[2*ir+1]==1)viewfile<<setw(8)<<(base.node_map[ir]+1)<<"      u"<<setw(16)<<base.presc[NDF*ir+0]<<"\n";
+else if(base.nofix[2*ir+1]==2)viewfile<<setw(8)<<(base.node_map[ir]+1)<<"      v"<<setw(16)<<base.presc[NDF*ir+1]<<"\n";
+else if(base.nofix[2*ir+1]==3)viewfile<<setw(8)<<(base.node_map[ir]+1)<<"      w"<<setw(16)<<base.presc[NDF*ir+2]<<"\n";
+else if(base.nofix[2*ir+1]==4)viewfile<<setw(8)<<(base.node_map[ir]+1)<<"      u"<<setw(16)<<base.presc[NDF*ir+0]<<"      v"<<setw(16)<<base.presc[NDF*ir+1]<<"\n";
+else if(base.nofix[2*ir+1]==5)viewfile<<setw(8)<<(base.node_map[ir]+1)<<"      u"<<setw(16)<<base.presc[NDF*ir+0]<<"      w"<<setw(16)<<base.presc[NDF*ir+2]<<"\n";
+else if(base.nofix[2*ir+1]==6)viewfile<<setw(8)<<(base.node_map[ir]+1)<<"      v"<<setw(16)<<base.presc[NDF*ir+1]<<"      w"<<setw(16)<<base.presc[NDF*ir+2]<<"\n";
+else if(base.nofix[2*ir+1]==7)viewfile<<setw(8)<<(base.node_map[ir]+1)<<"      u"<<setw(16)<<base.presc[NDF*ir+0]
+						 <<"      v"<<setw(16)<<base.presc[NDF*ir+1]<<"      w"<<setw(16)<<base.presc[NDF*ir+2]<<"\n";
+							 }
+ viewfile<<"*echo on\n";
+////	 }
+////__finally {
+Screen->Cursor=Save_Cursor;
+////}
+ viewfile.close();
+		   }
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No BCs found",L"Notice",MB_OK);}
+}
 //---------------------------------------------------------------------------
 void __fastcall TForm1::ChAllWParam_currExecute(TObject *Sender)
 // Usage:

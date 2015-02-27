@@ -488,6 +488,9 @@ char *comboCWD;
 			export_CTSP_INPUTp_mcm(long,long,int,float);
 //	   void export_VED(char [],float *); // VED= virtual element detection  (based on WSIExportABA.java export_VED)
 	   void export_VED(String,float *,int); // VED= virtual element detection  (based on WSIExportABA.java export_VED)
+//aaaaaaaaaaaaaa
+	   void export_WARP_BC(String); // Write WARP-format ASCII nodal BC  EFP 2/26/2015
+//bbbbbbbbbbbbbb
 //	   void WARP3DepBlock(); //THIS IS ORIGINAL OUTPUT FORMAT (pre 12/2012)
 	   void WARP3DepBlock(String); //THIS IS ORIGINAL OUTPUT FORMAT (pre 12/2012)
 	   void tshiftCTSP2(int);
