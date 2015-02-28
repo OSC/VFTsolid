@@ -357,42 +357,42 @@ void __fastcall TForm21::Button2Click(TObject *Sender)
 	  else if(StrToFloat(Edit2->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit2->Text.w_str(),L"Negative/zero thermal conductivity: Reenter a positive floating point",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label2->Caption +" "+ Edit2->Text + " must be positive floating-point");
+						   ShowMessage(Label2->Caption +L" "+ Edit2->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit3->Text);
 	  if(Edit3->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit3->Text.w_str(),L"Zero specific heat: Reenter a positive floating point",MB_OK);}
 	  else if(StrToFloat(Edit3->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit3->Text.w_str(),L"Negative/zero specific heat: Reenter a positive floating point",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label3->Caption +" "+ Edit3->Text + " must be positive floating-point");
+						   ShowMessage(Label3->Caption +L" "+ Edit3->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit4->Text);
 	  if(Edit4->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Zero density: Reenter a positive floating point",MB_OK);}
 	  else if(StrToFloat(Edit4->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Negative/zero density: Reenter a positive floating point",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label4->Caption +" "+ Edit4->Text + " must be positive floating-point");
+						   ShowMessage(Label4->Caption +L" "+ Edit4->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit6->Text);
 	  if(Edit6->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Zero annealing initiation temperature: Reenter a positive floating point",MB_OK);}
 	  else if(StrToFloat(Edit6->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Negative/zero annealing initiation temperature: Reenter a positive floating point",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label6->Caption +" "+ Edit6->Text + " must be positive floating-point");
+						   ShowMessage(Label6->Caption +L" "+ Edit6->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit7->Text);
 	  if(Edit7->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit7->Text.w_str(),L"Zero annealing temperature: Reenter a positive floating point",MB_OK);}
 	  else if(StrToFloat(Edit7->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit7->Text.w_str(),L"Negative/zero annealing temperature: Reenter a positive floating point",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label7->Caption +" "+ Edit7->Text + " must be positive floating-point");
+						   ShowMessage(Label7->Caption +L" "+ Edit7->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit8->Text);
 	  if(Edit8->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit8->Text.w_str(),L"Zero material melting temperature: Reenter a positive floating point",MB_OK);}
 	  else if(StrToFloat(Edit8->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit8->Text.w_str(),L"Negative/zero material melting temperature: Reenter a positive floating point",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label8->Caption +" "+ Edit8->Text + " must be positive floating-point");
+						   ShowMessage(Label8->Caption +L" "+ Edit8->Text + L" must be positive floating-point");
 						  }
 //////////////////// Special-purpose coding for VFT only  EFP 8/22/2010
 // if(StrToFloat(Edit2->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
@@ -414,7 +414,7 @@ void __fastcall TForm21::Button2Click(TObject *Sender)
 //								 ShowMessage(Label9->Caption +" "+ Edit8->Text + " must be positive");//Note Label/Edit noncoincidence
 //								}
  if(Edit9->Text==L"****"){isw=0;extern PACKAGE void __fastcall Beep(void);
-						  ShowMessage(Label10->Caption +" "+ Edit9->Text + " must be a filename");//Note Label/Edit noncoincidence
+						  ShowMessage(Label10->Caption +L" "+ Edit9->Text + L" must be a filename");//Note Label/Edit noncoincidence
 						 }
  if(CheckBox1->Checked){
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -424,7 +424,7 @@ void __fastcall TForm21::Button2Click(TObject *Sender)
 //														   }
 //yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
 						if(Edit5->Text==L"****"){isw=0;extern PACKAGE void __fastcall Beep(void);
-												 ShowMessage(Label6->Caption +" "+ Edit5->Text + " must be a set of steps (e.g. 9,10,11)");//Note Label/Edit noncoincidence
+												 ShowMessage(Label6->Caption +L" "+ Edit5->Text + L" must be a set of steps (e.g. 9,10,11)");//Note Label/Edit noncoincidence
 												}
 //						else if(!ParseSteps(Edit5->Text)){isw=0;extern PACKAGE void __fastcall Beep(void);
 						else {// TBD: test this   EFP 1/26/2015
@@ -435,7 +435,7 @@ char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,Edit5->Text.w_str(), 
 parse_cdmQ_fixthis(m,&icount,&nrc,larr,darr);
 							  delete [] m;
 							  if(!icount){isw=0;extern PACKAGE void __fastcall Beep(void);
-										  ShowMessage(Label6->Caption +" "+ Edit5->Text + " must be a set of comma-delimited steps (e.g. 9,10,11)");//Note Label/Edit noncoincidence
+										  ShowMessage(Label6->Caption +L" "+ Edit5->Text + L" must be a set of comma-delimited steps (e.g. 9,10,11)");//Note Label/Edit noncoincidence
 										 }
 							 }
 					   }
@@ -694,7 +694,7 @@ void TForm21::getItemIndex5_public()
  else if(index==10){Edit1->Text=L"alloy82_fph";Edit9->Text=L"alloy82_fph_file.dat";}
  else {
 //             Edit9->Text=L"aluminum_file.dat";
- OpenDialog1->Filter= "ABA_mat (*.dat)|*.dat;*.DAT";
+ OpenDialog1->Filter= L"ABA_mat (*.dat)|*.dat;*.DAT";
  if(OpenDialog1->Execute()){
 TStringDynArray DynStrings=SplitString(OpenDialog1->FileName,L"."); //How to delete DynStrings after this?
 dumA=DynStrings[0];icrec=0;
@@ -720,7 +720,7 @@ else {Edit1->Text=DynStrings[0];setEdit8(DynStrings[0]+s66);
    }
  else {
 /////////////////
- OpenDialog1->Filter= "ABA_mat (*.dat)|*.dat;*.DAT";
+ OpenDialog1->Filter= L"ABA_mat (*.dat)|*.dat;*.DAT";
  if(OpenDialog1->Execute()){
 TStringDynArray DynStrings=SplitString(OpenDialog1->FileName,L"."); //How to delete DynStrings after this?
 dumA=DynStrings[0];icrec=0;

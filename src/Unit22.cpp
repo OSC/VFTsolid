@@ -67,28 +67,28 @@ void __fastcall TForm22::Button1Click(TObject *Sender)
 	  else if(StrToFloat(Edit2->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit2->Text.w_str(),L"Negative/zero weld current: Reenter a positive floating point",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label2->Caption +" "+ Edit2->Text + " must be positive floating-point");
+						   ShowMessage(Label2->Caption +L" "+ Edit2->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit3->Text);
 	  if(Edit3->Text=="0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit3->Text.w_str(),L"Zero weld voltage: Reenter a positive floating point",MB_OK);}
 	  else if(StrToFloat(Edit3->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit3->Text.w_str(),L"Negative/zero weld voltage: Reenter a positive floating point",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label3->Caption +" "+ Edit3->Text + " must be positive floating-point");
+						   ShowMessage(Label3->Caption +L" "+ Edit3->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit4->Text);
 	  if(Edit4->Text=="0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Zero arc efficiency: Reenter a positive floating point 0-to-1",MB_OK);}
 	  else if(StrToFloat(Edit4->Text)<=TOL || StrToFloat(Edit4->Text)>1.f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Negative/zero arc efficiency: Reenter a positive floating point 0-to-1",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label4->Caption +" "+ Edit4->Text + " must be positive floating-point 0-to-1");
+						   ShowMessage(Label4->Caption +L" "+ Edit4->Text + L" must be positive floating-point 0-to-1");
 						  }
  try {StrToFloat(Edit5->Text);
 	  if(Edit5->Text=="0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit5->Text.w_str(),L"Zero torch speed: Reenter a positive floating point",MB_OK);}
 	  else if(StrToFloat(Edit5->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit5->Text.w_str(),L"Negative/zero torch speed: Reenter a positive floating point",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label5->Caption +" "+ Edit5->Text + " must be positive floating-point");
+						   ShowMessage(Label5->Caption +L" "+ Edit5->Text + L" must be positive floating-point");
 						  }
 //////////////////// Special-purpose coding for VFT only  EFP 8/22/2010
 // if(StrToFloat(Edit2->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);

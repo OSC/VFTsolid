@@ -47,35 +47,35 @@ void __fastcall TForm28::Button1Click(TObject *Sender)//Enter
  if(F28_fORint){try {StrToFloat(Edit1->Text);
 					 if(Edit1->Text==L"0"){if(0.f<fmin || 0.f>fmax)
 					   {isw=0;extern PACKAGE void __fastcall Beep(void);
-						ShowMessage(Edit1->Text+" outside limits "+FloatToStr(fmin)+", "+FloatToStr(fmax));
+						ShowMessage(Edit1->Text+L" outside limits "+FloatToStr(fmin)+L", "+FloatToStr(fmax));
 					   }
 										  else {lc1=0;fc1=0.f;}
 										 }
 					 else if(StrToFloat(Edit1->Text)<fmin || StrToFloat(Edit1->Text)>fmax)
 					   {isw=0;extern PACKAGE void __fastcall Beep(void);
-						ShowMessage(Edit1->Text+" outside limits "+FloatToStr(fmin)+", "+FloatToStr(fmax));
+						ShowMessage(Edit1->Text+L" outside limits "+FloatToStr(fmin)+L", "+FloatToStr(fmax));
 					   }
 					 else {lc1=0;fc1=StrToFloat(Edit1->Text);}
 					}
 				catch (EConvertError &E){isw=0;extern PACKAGE void __fastcall Beep(void);
-										 ShowMessage(Edit1->Text + " must be floating-point");
+										 ShowMessage(Edit1->Text + L" must be floating-point");
 										}
 			   }
  else {try {StrToInt(Edit1->Text);
 			if(Edit1->Text==L"0"){if(0<lmin || 0>lmax)
 			  {isw=0;extern PACKAGE void __fastcall Beep(void);
-			   ShowMessage(Edit1->Text+" outside limits "+IntToStr(__int64(lmin))+", "+IntToStr(__int64(lmax)));
+			   ShowMessage(Edit1->Text+L" outside limits "+IntToStr(__int64(lmin))+L", "+IntToStr(__int64(lmax)));
 			  }
 			                     else {lc1=0;fc1=0.f;}
 								}
 			else if(StrToInt(Edit1->Text)<lmin || StrToInt(Edit1->Text)>lmax)
 			  {isw=0;extern PACKAGE void __fastcall Beep(void);
-			   ShowMessage(Edit1->Text+" outside limits "+IntToStr(__int64(lmin))+", "+IntToStr(__int64(lmax)));
+			   ShowMessage(Edit1->Text+L" outside limits "+IntToStr(__int64(lmin))+L", "+IntToStr(__int64(lmax)));
 			  }
 			else {lc1=StrToInt(Edit1->Text);fc1=0.f;}
 		   }
 	   catch (EConvertError &E){isw=0;extern PACKAGE void __fastcall Beep(void);
-								ShowMessage(Edit1->Text + " must be integer");
+								ShowMessage(Edit1->Text + L" must be integer");
 							   }
 	  }
  if(isw)Form1->Form28_public();

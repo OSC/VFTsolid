@@ -58,23 +58,24 @@ void __fastcall TForm29::Button1Click(TObject *Sender)
 			  Close(); //Emergency Close() EFP 4/19/2010
 			 }
  else {try {StrToInt(Edit4->Text);
-			if(Edit4->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Zero #multicores: Reenter a positive floating point",MB_OK);}
-			else if(StrToFloat(Edit4->Text)<=0){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Negative/zero #multicores: Reenter a positive floating point",MB_OK);}
+			if(Edit4->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Zero #multicores: Reenter a positive integer",MB_OK);}
+//			else if(StrToFloat(Edit4->Text)<=0){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Negative/zero #multicores: Reenter a positive floating point",MB_OK);}
+			else if(StrToInt(Edit4->Text)<=0){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Negative/zero #multicores: Reenter a positive integer",MB_OK);}
 		   }
 	   catch (EConvertError &E){isw=0;extern PACKAGE void __fastcall Beep(void);
-								ShowMessage(Label4->Caption +" "+ Edit4->Text + " must be positive integer");
+								ShowMessage(Label4->Caption +L" "+ Edit4->Text + L" must be positive integer");
 							   }
 	   try {StrToFloat(Edit6->Text);
 			if(Edit6->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Zero suggested core-to-core overlap: Reenter a positive floating point",MB_OK);}
 			else if(StrToFloat(Edit6->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Negative/zero suggested core-to-core overlap: Reenter a positive floating point",MB_OK);}
 		   }
 	   catch (EConvertError &E){jsw=0;extern PACKAGE void __fastcall Beep(void);
-								ShowMessage(Label10->Caption +" "+ Edit6->Text + " must be positive float");
+								ShowMessage(Label10->Caption +L" "+ Edit6->Text + L" must be positive float");
 							   }
 	   if(isw & jsw){if(loc_pass<max_core)mval=loc_pass;else mval=max_core;
 //					 if(StrToInt(Edit4->Text)>0 && StrToInt(Edit4->Text)<loc_pass+1)
 					 if(StrToInt(Edit4->Text)>0 && StrToInt(Edit4->Text)<=mval)Form1->exportCTSP3_public();
-					 else ShowMessage("For this model, multi-core value must be in range 1 to "+IntToStr(__int64(mval)));
+					 else ShowMessage(L"For this model, multi-core value must be in range 1 to "+IntToStr(__int64(mval)));
 			        }
 	  }
 }

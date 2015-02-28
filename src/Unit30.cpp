@@ -38,9 +38,9 @@ void __fastcall TForm30::Button1Click(TObject *Sender){Form1->WeldPassEditSeqn2_
 void __fastcall TForm30::Button2Click(TObject *Sender)//Animate seq
 //{Form1->WeldPassEditSeqn2_public();
 {try {if(StrToInt(Edit1->Text)>0)Form1->WeldPassEditSeqn1_public();
-	  else {extern PACKAGE void __fastcall Beep(void);ShowMessage(Label4->Caption +" "+ Edit1->Text + " must be positive");}
+	  else {extern PACKAGE void __fastcall Beep(void);ShowMessage(Label4->Caption +L" "+ Edit1->Text + L" must be positive");}
 	 } //CAUTION: The user might have to click "Continue" after the following message.
- catch (EConvertError &E){extern PACKAGE void __fastcall Beep(void);ShowMessage(Label4->Caption +" "+ Edit1->Text + " must be positive integer");}
+ catch (EConvertError &E){extern PACKAGE void __fastcall Beep(void);ShowMessage(Label4->Caption +L" "+ Edit1->Text + L" must be positive integer");}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm30::Button3Click(TObject *Sender)//Move up

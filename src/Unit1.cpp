@@ -87,6 +87,9 @@
 //   (ii) ImportAba_prog() & ImportMshExecute() for(in=0;in<base.nelt;in++)base.arrELSET..)
 //   (iii) Missing  glGdiff=1.f in FDrestore() & Rot_program()  EFP 2/11/2015
 //   (iv) numElInSlice et al. added to FormMouseDown() [i.e. CreatePartLengthWP/PartSection added]
+//   (v) Unit29.cpp Button1Click() StrToFloat => StrToInt
+//   (vi) wpCreate_public() & wpEdit_public() Add missing CreateWeldColor....
+//   (vii) FormMouseDown() base.arrELSET[ie1]=wp.PRECORD+base.allGrp;  et al  EFP 2/28/2015 (2 occur)
 
 #include <vcl.h>
 #pragma hdrstop
@@ -1431,7 +1434,7 @@ i=0,j=0,k=0,kk=0,kp=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1
  base.npoin=base.nelt=base.nvfix=base.nedge=base.pload=base.mat=base.nblod=0;
  base.allGrp=1; //Try insisting on a base group???
  base.ELSETelsum=MXNPEL=wp.nWeldGroup=0; //Establish MXNPEL
- OpenDialog1->Filter= "SIMULIA/ABAQ (*.abq/*.inp)|*.inp;*.ABQ";
+ OpenDialog1->Filter= L"SIMULIA/ABAQ (*.abq/*.inp)|*.inp;*.ABQ";
 
 //// if(iswtype)OpenDialog1->Filter= "SIMULIA_Abq (*.abq)|*.abq;*.ABQ|SIMULIA_Abq (*.inp)|*.inp;*.INP";
 //// else       OpenDialog1->Filter= "SIMULIA_Abq (*.inp)|*.inp;*.INP|SIMULIA_Abq (*.abq)|*.abq;*.ABQ";
@@ -3158,7 +3161,7 @@ totWG=0,ELSETmobsize=0,exALLEL=0,exALLWD=0,iallGrp=0, *revnode_map=NULL;
  base.npoin=base.nelt=base.nvfix=base.nedge=base.pload=base.mat=base.nblod=0;
  base.allGrp=1; //Try insisting on a base group???
  base.ELSETelsum=MXNPEL=wp.nWeldGroup=0; //Establish MXNPEL
- OpenDialog1->Filter= "Msh (*.msh)|*.msh;*.MSH";
+ OpenDialog1->Filter= L"Msh (*.msh)|*.msh;*.MSH";
 /////////////////////////////////////
  if(OpenDialog1->Execute())
 //   {ifstream ntape2(OpenDialog1->FileName.t_str(),ios::nocreate|ios::binary,0);
@@ -3680,7 +3683,7 @@ _TCHAR *efpChar=NULL, *texasbuf;
  base.matsteps=base.ncoorf=1;MXNPEL=8;
  if(base.nop1){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"First, close current file->FileClose",L"Halt",MB_OK);}
  else {
- OpenDialog1->Filter= "VFTr format (*.VFTr,*.vftr)|*.VFTr;*.vftr";
+ OpenDialog1->Filter= L"VFTr format (*.VFTr,*.vftr)|*.VFTr;*.vftr";
  if(OpenDialog1->Execute())
    {ifstream ntape0(OpenDialog1->FileName.c_str(),ios::nocreate|ios::binary,0);
 	if(ntape0)
@@ -11886,18 +11889,12 @@ ieGID1=indat.arrELSET[ie1];
 //base.matno[ie1]=base.matno[ie1]-ieGID1+wp.PRECORD+wp.nWeldGroup+1; //Now obsolete
 
 if(ieGID1<=wp.nWeldGroup)wp.prevGID[wp.PRECORD]=ieGID1; // This might not allow for repeated edits..... FIX THIS
-arGID[wp.PRECORD+wp.nWeldGroup+1]=1; //Corrected EFP 11/12/2010
-//////for(ipx=base.trackELSET[ie1]+1;ipx<base.trackELSET[ie1+1];ipx++)
-//////  {if(ieGID1==base.orig_arrELSET[ipx])
-//////	 {base.arrELSET[ipx]=wp.PRECORD+wp.nWeldGroup+1;break;
-//////	 }
-//////  }
-////base.arrELSET[base.trackELSET[ie1]+2]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-////indat.arrELSET[indat.trackELSET[ie1]+2]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-//base.arrELSET[base.trackELSET[ie1]+1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-//indat.arrELSET[indat.trackELSET[ie1]+1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-base.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-indat.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
+//arGID[wp.PRECORD+wp.nWeldGroup+1]=1; //Corrected EFP 11/12/2010
+//base.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
+//indat.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
+arGID[wp.PRECORD+base.allGrp]=1; //Corrected EFP 2/28/2015 (3 lines)
+base.arrELSET[ie1]=wp.PRECORD+base.allGrp;
+indat.arrELSET[ie1]=wp.PRECORD+base.allGrp;
 
 
 //cccccccccccccccc start [EFP does not approve of this non-element-area-based algorithm] EFP 5/18/2012
@@ -12002,12 +11999,10 @@ ie1=dumarr[(icount/wp.count_curr_sttEl)*in+ipp]/10;eltype1=indat.matno[ie1]/t7;
 //	 }
 //  }
 
-////base.arrELSET[base.trackELSET[ie1]+2]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-////indat.arrELSET[indat.trackELSET[ie1]+2]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-//base.arrELSET[base.trackELSET[ie1]+1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-//indat.arrELSET[indat.trackELSET[ie1]+1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-base.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-indat.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
+//base.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
+//indat.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
+base.arrELSET[ie1]=wp.PRECORD+base.allGrp; //Corrected EFP 2/28/2015 (2 lines)
+indat.arrELSET[ie1]=wp.PRECORD+base.allGrp;
 
 //cccccccccccccccc start [EFP does not approve of this non-element-area-based algorithm] EFP 5/18/2012
 xc=yc=zc=0.f;iside1=dumarr[(icount/wp.count_curr_sttEl)*in+ipp]-10*ie1;
@@ -14257,6 +14252,7 @@ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Forgot
 	 }
 wp.hp[wp.nWeldPass]=0;// Moving arc only at present (selected by TForm15 RadioButton5&6)
 wp.nsegs[wp.nWeldPass]=CreateLinWeldPass->CheckEdit23; // Lumped pass heating procedure: Number of lumped segments
+wp.WeldColor[wp.nWeldPass]=CreateLinWeldPass->CheckWeldColor; //Correction for missing line EFP 2/28/2015
 if(CreateLinWeldPass->CheckMatName>=0){wp.matName[wp.nWeldPass]=wms.name[CreateLinWeldPass->CheckMatName];
 									   wp.mcr[wp.nWeldPass]=wms.mcr[CreateLinWeldPass->CheckMatName];
 //xxxxxxxxxxxxx New policy: replace Tab#2 T_melt value with T_melt from materials data
@@ -14333,6 +14329,7 @@ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Forgot
 	 }
 wp.hp[i]=0;// Moving arc only at present (selected by TForm15 RadioButton5&6)
 wp.nsegs[i]=CreateLinWeldPass->CheckEdit23; // Lumped pass heating procedure: Number of lumped segments
+wp.WeldColor[i]=CreateLinWeldPass->CheckWeldColor; //Correction for missing line EFP 2/28/2015
 //wp.XXX[wp.nWeldPass]=CreateLinWeldPass->CheckEdit24; // Near-edge effect: Number of required edges??? (Which array should this be???)
 
 //if(CreateLinWeldPass->CheckMatName>=0)wp.matName[wp.nWeldPass]=wms.matFileName[CreateLinWeldPass->CheckMatName]; // Need to test this INCORRECT

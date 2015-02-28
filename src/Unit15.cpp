@@ -248,7 +248,7 @@ void __fastcall TForm15::Button1Click(TObject *Sender)
 	 }
  catch (EConvertError &E) {isw=0;
 						   extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label10->Caption +" "+ Edit9->Text + " must be positive floating-point");
+						   ShowMessage(Label10->Caption +L" "+ Edit9->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit10->Text);
 	  if(Edit10->Text==L"0"){isw=0;
@@ -262,21 +262,21 @@ void __fastcall TForm15::Button1Click(TObject *Sender)
 												  }
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label11->Caption +" "+ Edit10->Text + " must be positive floating-point");
+						   ShowMessage(Label11->Caption +L" "+ Edit10->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit11->Text);
 	  if(Edit11->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit11->Text.w_str(),L"Zero arc efficiency: Reenter a positive floating point",MB_OK);}
 	  else if(StrToFloat(Edit11->Text)<=0.000001f || StrToFloat(Edit11->Text)>1.f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit11->Text.w_str(),L"Arc efficiency out-of-range: Reenter a floating point 0-to-1",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label12->Caption +" "+ Edit11->Text + " must be 0-to-1 floating-point");
+						   ShowMessage(Label12->Caption +L" "+ Edit11->Text + L" must be 0-to-1 floating-point");
 						  }
  try {StrToFloat(Edit12->Text);
 	  if(Edit12->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit12->Text.w_str(),L"Zero torch speed: Reenter a positive floating point",MB_OK);}
 	  else if(StrToFloat(Edit12->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit12->Text.w_str(),L"Negative/zero torch speed: Reenter a positive floating point",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label13->Caption +" "+ Edit12->Text + " must be positive floating-point");
+						   ShowMessage(Label13->Caption +L" "+ Edit12->Text + L" must be positive floating-point");
 						  }
 
  try {StrToFloat(Edit13->Text);
@@ -284,70 +284,70 @@ void __fastcall TForm15::Button1Click(TObject *Sender)
 	  else roomT=StrToFloat(Edit13->Text);
 	 }
  catch (EConvertError &E) {isw=testTflag=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label14->Caption +" "+ Edit13->Text + " must be floating-point");
+						   ShowMessage(Label14->Caption +L" "+ Edit13->Text + L" must be floating-point");
 						  }
  try {StrToFloat(Edit14->Text);
 	  if(Edit14->Text==L"0")meltT=0.f;
 	  else meltT=StrToFloat(Edit14->Text);
 	 }
  catch (EConvertError &E) {isw=testTflag=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label15->Caption +" "+ Edit14->Text + " must be floating-point");
+						   ShowMessage(Label15->Caption +L" "+ Edit14->Text + L" must be floating-point");
 						  }
  try {StrToFloat(Edit15->Text);
 	  if(Edit15->Text==L"0")lowcutT=0.f;
 	  else lowcutT=StrToFloat(Edit15->Text);
 	 }
  catch (EConvertError &E) {isw=testTflag=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label16->Caption +" "+ Edit15->Text + " must be floating-point");
+						   ShowMessage(Label16->Caption +L" "+ Edit15->Text + L" must be floating-point");
 						  }
  try {StrToFloat(Edit16->Text);
 	  if(Edit16->Text==L"0")preheatT=0.f;
 	  else preheatT=StrToFloat(Edit16->Text);
 	 }
  catch (EConvertError &E) {isw=testTflag=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label17->Caption +" "+ Edit16->Text + " must be floating-point");
+						   ShowMessage(Label17->Caption +L" "+ Edit16->Text + L" must be floating-point");
 						  }
 
  try {StrToFloat(Edit17->Text);}
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label20->Caption +" "+ Edit17->Text + " must be floating-point");
+						   ShowMessage(Label20->Caption +L" "+ Edit17->Text + L" must be floating-point");
 						  }
  try {StrToFloat(Edit18->Text);
 	  if(Edit18->Text==L"0"){isw=heattimeflag=0;extern PACKAGE void __fastcall Beep(void);
-							ShowMessage(Label22->Caption +" "+ Edit18->Text + " must be positive floating-point");
+							ShowMessage(Label22->Caption +L" "+ Edit18->Text + L" must be positive floating-point");
 						   }
 	  else if(StrToFloat(Edit18->Text)>0.000001f)maxheattime=StrToFloat(Edit18->Text);
 	  else {extern PACKAGE void __fastcall Beep(void);
-			ShowMessage(Label22->Caption +" "+ Edit18->Text + " must be positive floating-point");
+			ShowMessage(Label22->Caption +L" "+ Edit18->Text + L" must be positive floating-point");
 		   }
 	 }
  catch (EConvertError &E) {isw=heattimeflag=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label22->Caption +" "+ Edit18->Text + " must be positive floating-point");
+						   ShowMessage(Label22->Caption +L" "+ Edit18->Text + L" must be positive floating-point");
 						  }
  try {StrToInt(Edit19->Text);}
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label21->Caption +" "+ Edit19->Text + " must be positive integer");
+						   ShowMessage(Label21->Caption +L" "+ Edit19->Text + L" must be positive integer");
 						  }
  try {StrToFloat(Edit20->Text);
 	  if(Edit20->Text==L"0"){isw=heattimeflag=0;extern PACKAGE void __fastcall Beep(void);
-							ShowMessage(Label23->Caption +" "+ Edit20->Text + " must be positive floating-point");
+							ShowMessage(Label23->Caption +L" "+ Edit20->Text + L" must be positive floating-point");
 						   }
 	  else if(StrToFloat(Edit20->Text)>0.000001f)minheattime=StrToFloat(Edit20->Text);
 	  else {extern PACKAGE void __fastcall Beep(void);
-			ShowMessage(Label23->Caption +" "+ Edit20->Text + " must be positive floating-point");
+			ShowMessage(Label23->Caption +L" "+ Edit20->Text + L" must be positive floating-point");
 		   }
 	 }
  catch (EConvertError &E) {isw=heattimeflag=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label23->Caption +" "+ Edit20->Text + " must be positive floating-point");
+						   ShowMessage(Label23->Caption +L" "+ Edit20->Text + L" must be positive floating-point");
 						  }
 
  try {StrToFloat(Edit21->Text);}
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label24->Caption +" "+ Edit21->Text + " must be positive floating-point");
+						   ShowMessage(Label24->Caption +L" "+ Edit21->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit22->Text);}
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label25->Caption +" "+ Edit22->Text + " must be positive floating-point");
+						   ShowMessage(Label25->Caption +L" "+ Edit22->Text + L" must be positive floating-point");
 						  }
 
 //////////////////// Special-purpose coding for VFT only  EFP 8/22/2010
@@ -376,49 +376,49 @@ void __fastcall TForm15::Button1Click(TObject *Sender)
 //								  ShowMessage(Label17->Caption +" "+ Edit16->Text + " must be positive");
 //								 }
  if(testTflag){if(meltT<=roomT){isw=0;extern PACKAGE void __fastcall Beep(void);
-								ShowMessage("Inadmissable: room temperature exceeds melting temperature");
+								ShowMessage(L"Inadmissable: room temperature exceeds melting temperature");
 							   }
 			   if(meltT<=lowcutT){isw=0;extern PACKAGE void __fastcall Beep(void);
-								  ShowMessage("Inadmissable: lowcut temperature exceeds melting temperature");
+								  ShowMessage(L"Inadmissable: lowcut temperature exceeds melting temperature");
 								 }
 			   if(meltT<=preheatT){isw=0;extern PACKAGE void __fastcall Beep(void);
-								   ShowMessage("Inadmissable: preheat temperature exceeds melting temperature");
+								   ShowMessage(L"Inadmissable: preheat temperature exceeds melting temperature");
 								  }
 			  }
  if(kflagForm15<0){isw=0;extern PACKAGE void __fastcall Beep(void);ShowMessage(Label6->Caption);}
  if(jflagForm15<0){isw=0;extern PACKAGE void __fastcall Beep(void);ShowMessage(Label9->Caption);}
 
  if(StrToFloat(Edit17->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
-								  ShowMessage(Label20->Caption +" "+ Edit17->Text + " must be positive");
+								  ShowMessage(Label20->Caption +L" "+ Edit17->Text + L" must be positive");
 								 }
 // if(StrToFloat(Edit18->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
 //								  ShowMessage(Label22->Caption +" "+ Edit18->Text + " must be positive");
 //								 }
  if(StrToInt(Edit19->Text)<0){isw=0;extern PACKAGE void __fastcall Beep(void);
-							  ShowMessage(Label21->Caption +" "+ Edit19->Text + " must be greater/equal 0");
+							  ShowMessage(Label21->Caption +L" "+ Edit19->Text + L" must be greater/equal 0");
 							 }
 // if(StrToFloat(Edit20->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
 //								  ShowMessage(Label23->Caption +" "+ Edit20->Text + " must be positive");
 // 								 }
  if(heattimeflag){if(maxheattime<=minheattime){isw=0;extern PACKAGE void __fastcall Beep(void);
-											   ShowMessage("Inadmissable: min heating time exeeds max heating time");
+											   ShowMessage(L"Inadmissable: min heating time exeeds max heating time");
 											  }
 				 }
 
  if(StrToFloat(Edit21->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
-								  ShowMessage(Label24->Caption +" "+ Edit21->Text + " thickness must be positive");
+								  ShowMessage(Label24->Caption +L" "+ Edit21->Text + L" thickness must be positive");
 								 }
  if(StrToFloat(Edit22->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
-								  ShowMessage(Label25->Caption +" "+ Edit22->Text + " thickness must be positive");
+								  ShowMessage(Label25->Caption +L" "+ Edit22->Text + L" thickness must be positive");
 								 }
  if(Pl1norm<0 && Pl2norm<0){isw=0;extern PACKAGE void __fastcall Beep(void); //EFP 5/31/2011
-							ShowMessage("Plate normals #1 & #2 are missing.");
+							ShowMessage(L"Plate normals #1 & #2 are missing.");
 						   }
  else if(Pl1norm<0){isw=0;extern PACKAGE void __fastcall Beep(void);
-					ShowMessage("Plate normal #1 is missing.");
+					ShowMessage(L"Plate normal #1 is missing.");
 				   }
  else if(Pl2norm<0){isw=0;extern PACKAGE void __fastcall Beep(void);
-					ShowMessage("Plate normal #2 is missing.");
+					ShowMessage(L"Plate normal #2 is missing.");
 				   }
 
 /////////////////////////////////////////////////////////
