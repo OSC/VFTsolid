@@ -1801,7 +1801,7 @@ for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
 //if(1==1)exit(0);
 
 	   if(wp.nWeldGroup==0){extern PACKAGE void __fastcall Beep(void);
-							Application->MessageBox(L"No weld groups (*ELSET, ELSET=...weld...) found in *.abq",L"Terminate: Looking for WD,WG,WP,WELD",MB_OK);exit(0);
+							Application->MessageBox(L"No weld groups (*ELSET=WD,WG,WP,WELD) found in *.abq",L"Terminate: ",MB_OK);exit(0);
 						   }
 //honk<<base.allGrp<<" "<<wp.nWeldGroup<<" Early A & WG\n";
 //if(1==1)exit(0);
@@ -1818,17 +1818,17 @@ GeomFileName=OpenDialog1->FileName;
 //	   if(eluplim != totEnum){honk<<eluplim<<"TERMINATE: Nonconsecutive/duplicate element numbers in file "<<totEnum<<"\n";}
 	   if(nodeuplim != totNnum && eluplim != totEnum)
 		 {extern PACKAGE void __fastcall Beep(void);
-		  Application->MessageBox(L"Nonconsecutive elements & nodes found. Please renumber.",L"Terminate: WARP3D-inadmissable",MB_OK);
+		  Application->MessageBox(L"Nonconsecutive elements & nodes found. Please renumber.",L"WARP-inadmissable",MB_OK);
 		  exit(0);
 		 }
 	   else if(nodeuplim != totNnum)
 		 {extern PACKAGE void __fastcall Beep(void);
-		  Application->MessageBox(L"Nonconsecutive nodes found. Please renumber.",L"Terminate: WARP3D-inadmissable",MB_OK);
+		  Application->MessageBox(L"Nonconsecutive nodes found. Please renumber.",L"WARP-inadmissable",MB_OK);
 		  exit(0);
 		 }
 	   else if(eluplim != totEnum)
 		 {extern PACKAGE void __fastcall Beep(void);
-		  Application->MessageBox(L"Nonconsecutive elements found. Please renumber.",L"Terminate: WARP3D-inadmissable",MB_OK);
+		  Application->MessageBox(L"Nonconsecutive elements found. Please renumber.",L"WARP-inadmissable",MB_OK);
 		  exit(0);
 		 }
 //////
@@ -2025,7 +2025,7 @@ for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
 															   else if(nic-1==9){nic=9;eltype=8;}
 															   else {
 //															         honk<<"Halt2: Unsupported element with #nodes "<<(nic-1)<<"\n";
-																	 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(_ltow(nic-1,string0,10),L"Halt2: Unsupported element with #nodes in ImportAba_prog()",MB_OK);
+																	 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(_ltow(nic-1,string0,10),L"Unsupported element",MB_OK);
 																	 exit(0);
 																	}
 
@@ -2131,7 +2131,7 @@ base.orig_matno[totEnum]=eltype*t7+n8*t3;
 															   else if(nic-1==9){nic=9;eltype=8;}
 															   else {
 //															         honk<<"Halt3: Unsupported element with #nodes "<<(nic-1)<<"\n";
-																	 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(_ltow(nic-1,string0,10),L"Halt3: Unsupported element with #nodes in ImportAba_prog()",MB_OK);
+																	 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(_ltow(nic-1,string0,10),L"Unsupported element",MB_OK);
 																	 exit(0);
 																	}
 
@@ -2366,7 +2366,7 @@ if(jsw){temp_cht=new char[kp+1];
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==i){j=kk;break;}
 if(j== -1){
 //		   honk<<"TERMINATE: GENERATED WG el_map crash in *.abq/*.inp\n";
-		   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"GENERATED WG el_map crash in *.abq/*.inp",L"Exit: Unsupp elem ImportAba_prog()",MB_OK);
+		   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"GENERATED WG el_map crash in *.abq/*.inp",L"Unsupp elem",MB_OK);
 		   exit(0);}
 else {
 	  if(jsw){base.arrELSET[j]=totWG;sumWG++;}
@@ -3339,7 +3339,7 @@ gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
 //honk<<nodeuplim<<" "<<nodelolim<<" "<<totNnum<<" "<<eluplim<<" "<<ellolim<<" "<<totEnum<<" "<<MXNPEL<<" DDDDDDDD\n";
 //honk<<ELSETmobsize<<" "<<totEnum<<" "<<exALLEL<<" "<<base.allGrp<<" zoot suit\n";
 	   if(wp.nWeldGroup==0){extern PACKAGE void __fastcall Beep(void);
-							Application->MessageBox(L"No weld groups (*ELSET, ELSET=...weld...) found in *.msh",L"Terminate: Looking for WD,WG,WP,WELD,GROUP",MB_OK);exit(0);
+							Application->MessageBox(L"No weld groups (*ELSET=WD,WG,WP,WELD,GROUP) found in *.msh",L"Terminate: ",MB_OK);exit(0);
 						   }
 //honk<<base.allGrp<<" "<<wp.nWeldGroup<<" Early A & WG\n";
 GeomFileName=OpenDialog1->FileName;
@@ -3352,17 +3352,17 @@ GeomFileName=OpenDialog1->FileName;
 //	   if(eluplim != totEnum){honk<<eluplim<<"TERMINATE: Nonconsecutive/duplicate element numbers in file "<<totEnum<<"\n";}
 	   if(nodeuplim != totNnum && eluplim != totEnum)
 		 {extern PACKAGE void __fastcall Beep(void);
-		  Application->MessageBox(L"Nonconsecutive elements & nodes found. Please renumber.",L"Terminate: WARP3D-inadmissable",MB_OK);
+		  Application->MessageBox(L"Nonconsecutive elements & nodes found. Please renumber.",L"WARP-inadmissable",MB_OK);
 		  exit(0);
 		 }
 	   else if(nodeuplim != totNnum)
 		 {extern PACKAGE void __fastcall Beep(void);
-		  Application->MessageBox(L"Nonconsecutive nodes found. Please renumber.",L"Terminate: WARP3D-inadmissable",MB_OK);
+		  Application->MessageBox(L"Nonconsecutive nodes found. Please renumber.",L"WARP-inadmissable",MB_OK);
 		  exit(0);
 		 }
 	   else if(eluplim != totEnum)
 		 {extern PACKAGE void __fastcall Beep(void);
-		  Application->MessageBox(L"Nonconsecutive elements found. Please renumber.",L"Terminate: WARP3D-inadmissable",MB_OK);
+		  Application->MessageBox(L"Nonconsecutive elements found. Please renumber.",L"WARP-inadmissable",MB_OK);
 		  exit(0);
 		 }
 //////
@@ -3421,7 +3421,7 @@ revnode_map=new long[nodeuplim-nodelolim+1];
 								if(nic-1==8)eltype=8;
 								else {
 //								      honk<<"Halt3: Unsupported element with #nodes "<<(nic-1)<<"\n";
-									  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(_ltow(nic-1,string0,10),L"Halt3: Unsupported element with #nodes in MSHgeomOpen()",MB_OK);
+									  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(_ltow(nic-1,string0,10),L"Unsupported element",MB_OK);
 									  exit(0);
 									 }
 								n8=nic-1;in=larr[0]-1;
@@ -3539,7 +3539,7 @@ temp_cht1[kp-1]='\0';
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
 if(j== -1){
 //           honk<<"TERMINATE: WG el_map crash in *.abq/*.inp\n";
-		   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"WG el_map crash in *.abq/*.inp",L"Exit: Unsupp elem",MB_OK);
+		   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"WG el_map crash in *.abq/*.inp",L"Unsupp elem",MB_OK);
 		   exit(0);}
 else {base.arrELSET[j]=totWG;sumWG++;
 	  k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
@@ -3576,7 +3576,7 @@ temp_cht1[kp-1]='\0';
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
 if(j== -1){
 //		   honk<<"TERMINATE: ELSETinput el_map crash in *.abq/*.inp\n";
-		   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"WG el_map crash in *.abq/*.inp",L"Exit: Unsupp elem",MB_OK);
+		   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"WG el_map crash in *.abq/*.inp",L"Unsupp elem",MB_OK);
 		   exit(0);}
 else {k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
 	 }
@@ -10827,7 +10827,7 @@ void TForm1::CTSPinterpolate_prog(int solidshellsw)
 			 vcheck=parse_cdmV(descript,2,&nic,&nrc,larr,darr);
 //honk<<ntime1<<" "<<vcheck<<" 1v\n";
 			 if(!ntime1 && vcheck<0){
-extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number",L"Terminate: possible time.out file?",MB_OK);exit(0);
+extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number (possible time.out file?)",L"Terminate: ",MB_OK);exit(0);
 									}
 			 nndv1=larr[0];ntime1++;if(nndmax1<nndv1)nndmax1=nndv1;  //TBD: Check for errant time.out
 			 if(nndv1){if(solidshellsw)for(in=0;in<nndv1;in++){viewfile1>>id>>t11>>t12>>t13>>t14>>t15;if(inodemin>id)inodemin=id;if(inodemax<id)inodemax=id;} //setw(5->7) above & below for more space EFP 12/15/2011
@@ -10861,7 +10861,7 @@ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating poi
 				  vcheck=parse_cdmV(descript,2,&nic,&nrc,larr,darr);
 //honk<<ntime2<<" "<<vcheck<<" 2v\n";
 				  if(!ntime2 && vcheck<0){
-extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number",L"Terminate: possible time.out file?",MB_OK);exit(0);
+extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number (possible time.out file?)",L"Terminate: ",MB_OK);exit(0);
 										 }
 				  nndv2=larr[0];ntime2++;if(nndmax2<nndv2)nndmax2=nndv2;  //TBD: Check for errant time.out
 				  if(nndv2){if(solidshellsw)for(in=0;in<nndv2;in++){viewfile2>>id>>t11>>t12>>t13>>t14>>t15;if(inodemin>id)inodemin=id;if(inodemax<id)inodemax=id;}
@@ -11758,14 +11758,14 @@ dumgrp[wp.sttEles[wp.memWGa*wp.PRECORD+ip]/10]=wp.sttEles[wp.memWGa*wp.PRECORD+i
 ///////////////// end
 					   numdum=is;
 					   for(ip=0;ip<numdum;ip++){eltype=base.orig_matno[dumarr[ip]]/t7;
-if(eltype!=8){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex element found in candidate weld group",L"Terminate: Mesh must have hex in WG",MB_OK);exit(0);}
+if(eltype!=8){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex element found in candidate weld group (Mesh must have hex in WG)",L"Terminate: ",MB_OK);exit(0);}
 											   }
 					   dummap=new long[6*numdum];
 
 //honk<<numdum<<" NUMDUMmmmmmmm\n";//if(1==1)exit(0);
 /////////////// Test integrity of weld group mesh  EFP 3/23/2013
 if(CRBsection && numdum != wp.count_curr_sttEl*(numdum/wp.count_curr_sttEl)){extern PACKAGE void __fastcall Beep(void);
-	 Application->MessageBox(L"This full length/full section WG mesh does not have same #elements per slice",L"Fatal mesh defect",MB_OK);}
+	 Application->MessageBox(L"This full length/full section WG mesh does not have same #elements per slice",L"Mesh defect",MB_OK);}
 ///////////////
 					   for(ip=0;ip<6*numdum;ip++)dummap[ip]= -1;
 					   for(ip=0;ip<numdum-1;ip++){for(is=0;is<6;is++) // Assumes contiguous nodal numbering
@@ -14005,7 +14005,7 @@ void TForm1::DelMatPropProg(int VFTitemindex)
    }
  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Inadmissible nMatPropSet in DelWeldParam()",L"Terminate",MB_OK);exit(0);}
 		}
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"A weld pass uses this Material Property Set ",L"Halt: Can not be deleted",MB_OK);}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"A weld pass uses this Material Property Set (Can not delete)",L"Halt: ",MB_OK);}
 /////////// Cursor EFP 1/21/2011
 Screen->Cursor=crSizeAll;
 ///////////
@@ -15415,7 +15415,7 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
  StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess3);
  if(mcm==1){
 //honk<<"\n"<<" Writing CTSP(TM) files...\n";
-			extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing CTSP files exportCTSP2_public()",MB_OK);
+			extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing CTSP files",MB_OK);
 
 
 
@@ -15439,7 +15439,7 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 	   for(ip=0;ip<wp.nWeldPass;ip++)wp.lstart[ip]=double(CTSPnames->CheckEdit6);
 
 //honk<<"\n"<<wp.lstart[0]<<" "<<mcm<<" "<<wp.nWeldPass<<" "<<mcminc<<" Writing multi-core CTSP(TM) directories...\n";
-	   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing multi-core CTSP directories",MB_OK);
+	   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing multi-CTSP",MB_OK);
 	   for(ic=0;ic<mcm;ic++){stepsum=0;
 //							 for(ip=0;ip<wp.nWeldPass;ip++){stepsum=stepsum+loadBal[ip];
 //															if(stepsum>=mcminc*(ic+1))break;
@@ -15926,7 +15926,7 @@ void TForm1::export_CTSP_INPUTp1(float overlap) //Version with mirror file  EFP 
 		 icount=icount+i/wp.n_curr_sttEl[k] +wp.stepInterval[k]; //Corrected EFP 5/12/2010
 		 if(maxelp<i)maxelp=i; //EFP 3/08/2012
 		}
-	  if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Terminate: Corrupt data",L"Writing zero #time step data",MB_OK);exit(0);}
+	  if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Writing zero #time step data",L"Corrupt data",MB_OK);exit(0);}
 	  mstep=icount;
 //	  viewfile<<"1, "<<icount<<"\n";
 	  mirrorfile<<"1, "<<icount<<"\n";
@@ -15994,14 +15994,14 @@ outfile3<<0.<<" "<<1<<"\n";
 //		 viewfile<<wp.timeInterval[k]<<", "<<wp.stepInterval[k]<<", "<<wp.speed[k]<<", "<<wp.curr[k] * wp.volt[k]<<"\n";
 		 mirrorfile<<wp.timeInterval[k]<<", "<<wp.stepInterval[k]<<", "<<wp.speed[k]<<", "<<(wp.curr[k] * wp.volt[k])<<"\n";
 		 icount=0;for(i=wp.memWGa*k;i<wp.memWGa*(k+1);i++){if(wp.sttEles[i]> -1)icount++;else break;}
-		 if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Terminate: Corrupt data",L"Writing zero #weld start elements",MB_OK);exit(0);}
+		 if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Writing zero #weld start elements",L"Corrupt data",MB_OK);exit(0);}
 		 sttEles_size=icount;
 //		 viewfile<<icount<<"\n";
 		 mirrorfile<<icount<<"\n";
 //		 for(i=0;i<icount;i++)viewfile  <<base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+0]]+1<<", "<<base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+1]]+1<<", "<<base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+2]]+1<<", "<<base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+3]]+1<<"\n";
 		 for(i=0;i<icount;i++)mirrorfile<<(base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+0]]+1)<<", "<<(base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+1]]+1)<<", "<<(base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+2]]+1)<<", "<<(base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+3]]+1)<<"\n";
 		 icount=0;for(i=wp.memWGa*k;i<wp.memWGa*(k+1);i++){if(wp.eles[i]> -1)icount++;else break;}
-		 if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Terminate: Corrupt data",L"Writing zero #weld group elements",MB_OK);exit(0);}
+		 if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Writing zero #weld group elements",L"Corrupt data",MB_OK);exit(0);}
 		 eles_size=icount;
 /////////////////////////// EFP 10/12/2011
 		 if(mseg<icount/wp.n_curr_sttEl[k])mseg=icount/wp.n_curr_sttEl[k];
@@ -16381,7 +16381,7 @@ void TForm1::export_CTSP_INPUTp_mcm(long mcmlo,long mcmup,int isw,float lasttime
 //honk<<k<<" "<<laststep<<" "<<lasttime<<" kkkkkk "<<biasintv<<"\n";
 //honk<<astart<<" "<<LIMOVER<<" "<<lasttimecom<<" astart,LIMOVER,lasttimecom\n";
 /////////////////////////
-	  if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Terminate: Corrupt data",L"Writing zero #time step data",MB_OK);exit(0);}
+	  if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Writing zero #time step data",L"Corrupt data",MB_OK);exit(0);}
 //////////////////
 //cccccccccccccccc start Extra cooling steps for multi-core  EFP 5/20/2012
 	  laplim=icount-laststep;if(isw)icount=icount+max(LIMOVER,laststep)-laststep;
@@ -16451,12 +16451,12 @@ void TForm1::export_CTSP_INPUTp_mcm(long mcmlo,long mcmup,int isw,float lasttime
 //honk<<wp.timeInterval[k]<<", "<<wp.stepInterval[k]<<" "<<wp.speed[k]<<", "<<wp.curr[k] * wp.volt[k]<<" mcmCTSP overlapOFF "<<iseq<<" "<<mcmlo-1<<" "<<mcmup<<" "<<k<<"\n";
 			  }
 		 icount=0;for(i=wp.memWGa*k;i<wp.memWGa*(k+1);i++){if(wp.sttEles[i]> -1)icount++;else break;}
-		 if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Terminate: Corrupt data",L"Writing zero #weld start elements",MB_OK);exit(0);}
+		 if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Writing zero #weld start elements",L"Corrupt data",MB_OK);exit(0);}
 //		 sttEles_size=icount;
 		 mirrorfile<<icount<<"\n"; //sttEles_size=icount
 		 for(i=0;i<icount;i++)mirrorfile<<(base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+0]]+1)<<", "<<(base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+1]]+1)<<", "<<(base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+2]]+1)<<", "<<(base.node_map[wp.sttEleNodes[4*wp.memWGa*k+4*i+3]]+1)<<"\n";
 		 icount=0;for(i=wp.memWGa*k;i<wp.memWGa*(k+1);i++){if(wp.eles[i]> -1)icount++;else break;}
-		 if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Terminate: Corrupt data",L"Writing zero #weld group elements",MB_OK);exit(0);}
+		 if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Writing zero #weld group elements",L"Corrupt data",MB_OK);exit(0);}
 		 eles_size=icount;
 /////////////////////////// EFP 10/12/2011
 		 if(mseg<icount/wp.n_curr_sttEl[k])mseg=icount/wp.n_curr_sttEl[k];
@@ -16728,7 +16728,7 @@ viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[
 		  Screen->Cursor=Save_Cursor;
 //		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"default_coordinates.COORDINATES & default_INCIDandBLOCK.INCIDandBLOCK\nwritten but user must use PATGO to create default_constraints.CONSTRAINTS\nBlocking info must be added to default_INCIDandBLOCK.INCIDandBLOCK",L"Successful first step",MB_OK);
 //honk<<"\n"<<" Writing four WARP3D datafiles...\n";
-		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing 4 WARP3D files",MB_OK);
+		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing WARP files",MB_OK);
 ///////////////////////////////////////////
 ///////////////////////////////////////////
 ///////////////////////////////////////////
@@ -18263,7 +18263,7 @@ else if(ContainsStr(DynStrings[0],L"_mix_"))mtype=3; //Post-weld mixed
 else if(ContainsStr(DynStrings[0],L"_phs_"))mtype=5; //Simple phase-transformation (not full)
 else if(ContainsStr(DynStrings[0],L"_fph_"))mtype=6; //Full phase-transformation
 else {mtype=0;
-extern PACKAGE void __fastcall Beep(void);Application->MessageBox((L"material# "+IntToStr(__int64(ir+1))).w_str(),L"Warning: user must edit *.wrp um_7 for material type",MB_OK);
+extern PACKAGE void __fastcall Beep(void);Application->MessageBox((L"Edit *.wrp um_7 for material# "+IntToStr(__int64(ir+1))).w_str(),L"Warning: ",MB_OK);
 	 }
 outfile<<"  properties umat  rho "<<wms.den[ir]<<"  alpha 0.0,\n";
 outfile<<"       um_1 "<<(ir+1)<<" um_2 "<<wms.Ti[ir]<<" um_3 "<<wms.Ta[ir]<<",\n";
@@ -18740,7 +18740,7 @@ delete[] m1;
 
 
 												 }
-								else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"WARP3D is for solid models only",L"Failure: Shell model detected",MB_OK);}
+								else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"WARP3D is for solid models only (shell detected)",L"Failure: ",MB_OK);}
 							   }
 				  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Missing param.in file",L"Failure",MB_OK);}
 }
@@ -19068,7 +19068,7 @@ outfile<<"   extrapolate off\n";
  delete[] m;
 //xxxxxxxxxx
 												 }
-								else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"WARP3D is for solid models only",L"Failure: Shell model detected",MB_OK);}
+								else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"WARP3D is for solid models only (shell detected)",L"Failure: ",MB_OK);}
 							   }
 				  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Missing param.in file",L"Failure",MB_OK);}
 //////////////
@@ -19549,7 +19549,7 @@ void TForm1::tshiftCTSP_public()
 	  {vcount=0;viewfile1.getline(descript,76);
 	   if(strlen(descript))
 		 {vcheck=parse_cdmV(descript,2,&nic,&nrc,larr,darr);
-		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number",L"Failure: possible time.out file?",MB_OK);}
+		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number (possible time.out file?)",L"Failure: ",MB_OK);}
 		  else {nnd=larr[0];tstep=darr[0];vcount++;  //Code allows for non-zero nnd on first card
 //honk<<tstep<<" "<<nnd<<" First card of temp.out\n";
 ///////////////////////////
@@ -19622,7 +19622,7 @@ void TForm1::tshiftCTSP_public()
 	  {vcount=0;viewfile2.getline(descript,76);
 	   if(strlen(descript))
 		 {vcheck=parse_cdmVc(descript,2,&nic,&nrc,larr,darr);
-		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number",L"Failure: possible MatProp.dat file?",MB_OK);}
+		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number (possible MatProp.dat file?)",L"Failure: ",MB_OK);}
 		  else
 			{nnd=larr[0];tstep=darr[0];vcount++;
 //honk<<tstep<<" "<<nnd<<" First card of VED.dat\n";
@@ -19661,8 +19661,8 @@ void TForm1::tshiftCTSP_public()
 					 }
 ///////////
  if(isw==5 && icheck==11)     {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename tempShift.out & timeShift.out & VEDshift.dat",L"Success",MB_OK);}
- else if(isw==5 && icheck==1) {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename tempShift.out & timeShift.out",L"Partial success with CTSP",MB_OK);}
- else if(isw==5 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDshift.dat",L"Partial success with VED",MB_OK);}
+ else if(isw==5 && icheck==1) {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename tempShift.out & timeShift.out",L"Partial success CTSP",MB_OK);}
+ else if(isw==5 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDshift.dat",L"Partial success VED",MB_OK);}
  else if(isw==2 && icheck==1) {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename tempShift.out & timeShift.out",L"Success",MB_OK);}
  else if(isw==4 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDshift.dat",L"Success",MB_OK);}
 }
@@ -19696,7 +19696,7 @@ void TForm1::tshiftCTSP2(int isw)
 	   if(strlen(descript))
 		 {vcheck=parse_cdmV(descript,2,&nic,&nrc,larr,darr);
 		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);
-								  Application->MessageBox(L"Floating point not found in first number",L"Failure: possible time.out file?",MB_OK);
+								  Application->MessageBox(L"Floating point not found in first number (possible time.out file?)",L"Failure: ",MB_OK);
 								  viewfile1.close();return;
 								 }
 		  else {nnd=larr[0];tstep=darr[0];vcount++;  //Code allows for non-zero nnd on first card
@@ -19778,7 +19778,7 @@ void TForm1::tshiftCTSP2(int isw)
 	  {vcount=0;viewfile2.getline(descript,76);
 	   if(strlen(descript))
 		 {vcheck=parse_cdmVc(descript,2,&nic,&nrc,larr,darr);
-		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number",L"Failure: possible MatProp.dat file?",MB_OK);
+		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number (possible MatProp.dat file?)",L"Failure: ",MB_OK);
 								  viewfile2.close();return;
 								 }
 		  else
@@ -19824,7 +19824,7 @@ void TForm1::tshiftCTSP2(int isw)
    }
 // else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not create FileOpen selector",L"Failure",MB_OK);}
 					 }
- extern PACKAGE void __fastcall Beep(void);Application->MessageBox(FloatToStr(peakTime).w_str(),L"Highest time to date",MB_OK);
+ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(FloatToStr(peakTime).w_str(),L"High time to date",MB_OK);
  tshiftCTSP=new TForm8(isw,val,this);
  if(isw==7)tshiftCTSP->Caption=L"Merge+Timeshift CTSP";
  else if(isw==8)tshiftCTSP->Caption=L"Merge+Timeshift VED";
@@ -19868,7 +19868,7 @@ void TForm1::tshiftCTSP3_public()
 	  {vcount=0;viewfile1.getline(descript,76);
 	   if(strlen(descript))
 		 {vcheck=parse_cdmV(descript,2,&nic,&nrc,larr,darr);
-		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number",L"Failure: possible time.out file?",MB_OK);}
+		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number (possible time.out file?)",L"Failure: ",MB_OK);}
 		  else {nnd=larr[0];tstep=darr[0];vcount++;  //Code allows for non-zero nnd on first card
 //honk<<tstep<<" "<<nnd<<" First card of 2nd temp.out\n";
 ///////////////////////////
@@ -19877,7 +19877,7 @@ void TForm1::tshiftCTSP3_public()
 			 ifstream viewfile3("timeMerge.out",ios::nocreate);max1=0;
 			 while(!viewfile3.eof()){viewfile3.getline(descript,76);
 									 if(strlen(descript)){vcheck=parse_cdmV(descript,2,&nic,&nrc,larr,darr);
-if(vcheck>=0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Integer not found in first number of time.out",L"Terminate: possible temp.out file?",MB_OK);exit(0);}
+if(vcheck>=0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Integer not found in first number of time.out (possible temp.out file?)",L"Terminate: ",MB_OK);exit(0);}
 														  max1++;lastTime=darr[0];
 														 }
 									}
@@ -19886,7 +19886,7 @@ if(vcheck>=0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(
 
 //			 if(tstep+tshift>lastTime){
 			 tshift=lastTime-tstep;
-			 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(FloatToStr(tshift).w_str(),L"Override user input",MB_OK);
+			 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(FloatToStr(tshift).w_str(),L"Override input",MB_OK);
 			 ofstream outfile1("tempMerge.out",ios::nocreate | ios::app);ofstream outfile2("timeMerge.out",ios::nocreate | ios::app);
 m2ax1=1;
 //honk<<tstep<<" "<<nnd<<" First card of 2nd temp.out (not written) "<<m2ax1<<"\n";
@@ -19969,7 +19969,7 @@ m2ax1++;
 	  {vcount=0;viewfile2.getline(descript,76);
 	   if(strlen(descript))
 		 {vcheck=parse_cdmVc(descript,2,&nic,&nrc,larr,darr);
-		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number",L"Failure: possible MatProp.dat file?",MB_OK);}
+		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number (possible MatProp.dat file?)",L"Failure: ",MB_OK);}
 		  else
 			{nnd=larr[0];tstep=darr[0];vcount++;
 m2ax1=1;
@@ -20013,8 +20013,8 @@ m2ax1++;
 					 }
 ///////////
  if(isw==9 && icheck==11)     {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename tempMerge.out & timeMerge.out & VEDMerge.dat",L"Success",MB_OK);}
- else if(isw==9 && icheck==1) {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename tempMerge.out & timeMerge.out",L"Partial success with CTSP",MB_OK);}
- else if(isw==9 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDMerge.dat",L"Partial success with VED",MB_OK);}
+ else if(isw==9 && icheck==1) {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename tempMerge.out & timeMerge.out",L"Partial success CTSP",MB_OK);}
+ else if(isw==9 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDMerge.dat",L"Partial success VED",MB_OK);}
  else if(isw==7 && icheck==1) {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename tempMerge.out & timeMerge.out",L"Success",MB_OK);}
  else if(isw==8 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDMerge.dat",L"Success",MB_OK);}
 }
@@ -20025,56 +20025,56 @@ void __fastcall TForm1::BCsNclick0Execute(TObject *Sender)
 {if(base.nop1)
    {FD_LBrec=FD_LButtonstatus;FD_LButtonstatus=30;
    }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"124Get geometry file->File/Open.",L"Halt",MB_OK);}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::BCsNclick1Execute(TObject *Sender)
 {if(base.nop1)
    {FD_LBrec=FD_LButtonstatus;FD_LButtonstatus=31;
    }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"125Get geometry file->File/Open.",L"Halt",MB_OK);}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::BCsNclick2Execute(TObject *Sender)
 {if(base.nop1)
    {FD_LBrec=FD_LButtonstatus;FD_LButtonstatus=32;
    }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"126Get geometry file->File/Open.",L"Halt",MB_OK);}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::BCsNclick3Execute(TObject *Sender)
 {if(base.nop1)
    {FD_LBrec=FD_LButtonstatus;FD_LButtonstatus=33;
    }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"127Get geometry file->File/Open.",L"Halt",MB_OK);}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::BCsNclick4Execute(TObject *Sender)
 {if(base.nop1)
    {FD_LBrec=FD_LButtonstatus;FD_LButtonstatus=34;
    }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"128Get geometry file->File/Open.",L"Halt",MB_OK);}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::BCsNclick5Execute(TObject *Sender)
 {if(base.nop1)
    {FD_LBrec=FD_LButtonstatus;FD_LButtonstatus=35;
    }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"129Get geometry file->File/Open.",L"Halt",MB_OK);}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::BCsNclick6Execute(TObject *Sender)
 {if(base.nop1)
    {FD_LBrec=FD_LButtonstatus;FD_LButtonstatus=36;
    }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"130Get geometry file->File/Open.",L"Halt",MB_OK);}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::BCsNclick7Execute(TObject *Sender)
 {if(base.nop1)
    {FD_LBrec=FD_LButtonstatus;FD_LButtonstatus=37;
    }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"131Get geometry file->File/Open.",L"Halt",MB_OK);}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
 

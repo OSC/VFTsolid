@@ -81,6 +81,10 @@ object Form15: TForm15
     TabOrder = 5
     object TabSheet1: TTabSheet
       Caption = 'Weld Pass Location'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label7: TLabel
         Left = 143
         Top = 393
@@ -187,6 +191,10 @@ object Form15: TForm15
     object TabSheet2: TTabSheet
       Caption = 'Welding Parameters'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label9: TLabel
         Left = 3
         Top = 8
@@ -345,6 +353,10 @@ object Form15: TForm15
     object TabSheet3: TTabSheet
       Caption = 'CTSP Inputs'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox2: TGroupBox
         Left = 0
         Top = 8

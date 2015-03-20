@@ -40,7 +40,7 @@ void __fastcall TForm7::ListBox3Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm7::ListBox2Click(TObject *Sender)
-{extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"First click on Entity; then click Avaliable Material.",L"Can not click Chosen material",MB_OK);
+{extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"First click on Entity; then click Avaliable Material (Can not click Chosen material)",L"Repeat",MB_OK);
 }
 //---------------------------------------------------------------------------
 int TForm7::getNlist(){return nlist;}

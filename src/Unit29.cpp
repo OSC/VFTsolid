@@ -24,21 +24,21 @@ String TForm29::getEdit5(){return Edit5->Text;}
 int TForm29::getEdit4(){
 //						return StrToInt(Edit4->Text);
  try {StrToInt(Edit4->Text);
-	  if(Edit4->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Zero #multicores: Reenter a positive integer",MB_OK);return 0;}
+	  if(Edit4->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Reenter +multicores",MB_OK);return 0;}
 	  else if(StrToInt(Edit4->Text)>0)return StrToInt(Edit4->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Negative #multicores: Reenter a positive integer",MB_OK);return 0;}
+	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Reenter +multicores",MB_OK);return 0;}
 	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Inadmissable #multicores: Reenter a positive integer",MB_OK);return 0;}
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Reenter +multicores",MB_OK);return 0;}
 					   }
 //---------------------------------------------------------------------------
 float TForm29::getEdit6(){
 //						  return StrToFloat(Edit6->Text);
  try {StrToFloat(Edit6->Text);
-	  if(Edit6->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Zero suggested core-to-core overlap: Reenter a positive floating point",MB_OK);return 0.f;}
+	  if(Edit6->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	  else if(StrToFloat(Edit6->Text)>0.000001f)return StrToFloat(Edit6->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Negative/zero suggested core-to-core overlap: Reenter a positive floating point",MB_OK);return 0.f;}
+	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Inadmissable suggested core-to-core overlap: Reenter a positive floating point",MB_OK);return 0.f;}
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
 						 }
 //---------------------------------------------------------------------------
 //void TForm29::setEdit1(String s){Edit1->Text=s;}
@@ -58,16 +58,16 @@ void __fastcall TForm29::Button1Click(TObject *Sender)
 			  Close(); //Emergency Close() EFP 4/19/2010
 			 }
  else {try {StrToInt(Edit4->Text);
-			if(Edit4->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Zero #multicores: Reenter a positive integer",MB_OK);}
+			if(Edit4->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Reenter +multicores",MB_OK);}
 //			else if(StrToFloat(Edit4->Text)<=0){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Negative/zero #multicores: Reenter a positive floating point",MB_OK);}
-			else if(StrToInt(Edit4->Text)<=0){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Negative/zero #multicores: Reenter a positive integer",MB_OK);}
+			else if(StrToInt(Edit4->Text)<=0){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Reenter +multicores",MB_OK);}
 		   }
 	   catch (EConvertError &E){isw=0;extern PACKAGE void __fastcall Beep(void);
 								ShowMessage(Label4->Caption +L" "+ Edit4->Text + L" must be positive integer");
 							   }
 	   try {StrToFloat(Edit6->Text);
-			if(Edit6->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Zero suggested core-to-core overlap: Reenter a positive floating point",MB_OK);}
-			else if(StrToFloat(Edit6->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Negative/zero suggested core-to-core overlap: Reenter a positive floating point",MB_OK);}
+			if(Edit6->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);}
+			else if(StrToFloat(Edit6->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);}
 		   }
 	   catch (EConvertError &E){jsw=0;extern PACKAGE void __fastcall Beep(void);
 								ShowMessage(Label10->Caption +L" "+ Edit6->Text + L" must be positive float");

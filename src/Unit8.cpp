@@ -35,7 +35,7 @@ void __fastcall TForm8::Button1Click(TObject *Sender)
 	  else if(isw==7 || isw==8 || isw==9){Close();Form1->tshiftCTSP3_public();} //EFP 5/09/2013
 //	  else Form1->defshapehea_public();
 	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit1->Text.w_str(),L"Inadmissable: Reenter a floating-point number",MB_OK);}
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit1->Text.w_str(),L"Reenter float",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm8::Button2Click(TObject *Sender){
