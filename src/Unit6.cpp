@@ -8,7 +8,7 @@
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 TForm6 *Form6;
-long gForm6=0;
+//long gForm6=0;
 //---------------------------------------------------------------------------
 __fastcall TForm6::TForm6(long eprec,long sprec,long GIDprec,
      float X,float Y,float Z,float Nx,float Ny,float Nz,

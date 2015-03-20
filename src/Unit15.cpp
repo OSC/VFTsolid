@@ -11,7 +11,7 @@
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 TForm15 *Form15;
-int iflagForm15=0;
+//int iflagForm15=0;
 //TColor color_f15=clBlue;
 //TColor color_f15;
 //---------------------------------------------------------------------------

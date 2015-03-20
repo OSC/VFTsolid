@@ -38,6 +38,7 @@ __published:	// IDE-managed Components
 	    TLabel *Label13;
         void __fastcall Button1Click(TObject *Sender);
 private:	// User declarations
+        long gForm6;
 public:		// User declarations
 		void setElemQueryNum(long),
 		     setElemQuerySide(long),

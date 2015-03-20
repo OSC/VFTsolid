@@ -501,7 +501,7 @@ void __fastcall TForm21::Button1Click(TObject *Sender)
 		  }
 // Form5->ListBox1->AddItem(L"Other",this);
  Form5->ListBox1->AddItem(L"Browse...",this);
- Form5->ListBox1->ItemIndex=0;Form5->ShowModal();delete Form5;
+ Form5->ListBox1->ItemIndex=0;Form5->ShowModal();delete Form5;Form5=NULL;
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm21::RadioButton9Click(TObject *Sender)

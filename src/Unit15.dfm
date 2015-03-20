@@ -187,10 +187,6 @@ object Form15: TForm15
     object TabSheet2: TTabSheet
       Caption = 'Welding Parameters'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label9: TLabel
         Left = 3
         Top = 8
@@ -228,9 +224,9 @@ object Form15: TForm15
         object Label13: TLabel
           Left = 16
           Top = 80
-          Width = 112
+          Width = 94
           Height = 13
-          Caption = 'Torch Traveling Speed:'
+          Caption = 'Torch Speed mm/s:'
         end
         object Edit9: TEdit
           Left = 136

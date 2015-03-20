@@ -98,6 +98,7 @@ __published:	// IDE-managed Components
 	void __fastcall RadioGroup1Click(TObject *Sender);
 
 private:	// User declarations
+        int iflagForm15;
 		int F15_isel,kflagForm15,jflagForm15,nMatPS,nWeldPS,getRadioBstatus(),getCheckBstatus(),getEdit19(),
 			getISEL(),getFunc(),getType(),getShape(),getMatName(),getWeldParName();
 		long Pl1norm,Pl2norm,getEdit2(),getEdit23(),getEdit24();

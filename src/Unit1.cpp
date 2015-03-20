@@ -90,6 +90,21 @@
 //   (v) Unit29.cpp Button1Click() StrToFloat => StrToInt
 //   (vi) wpCreate_public() & wpEdit_public() Add missing CreateWeldColor....
 //   (vii) FormMouseDown() base.arrELSET[ie1]=wp.PRECORD+base.allGrp;  et al  EFP 2/28/2015 (2 occur)
+//   (viii) Forgot to delete some modal dialogs:
+//void __fastcall TForm1::WeldParamExecute(TObject *Sender) CreateWeldingParamSet
+//void __fastcall TForm1::EditWeldParamExecute(TObject *Sender) VFTlistbox
+//void __fastcall TForm1::DeleteWeldParamExecute(TObject *Sender) VFTlistbox
+//void __fastcall TForm1::MatPropertiesExecute(TObject *Sender) Form21
+//void __fastcall TForm1::EditMatPropExecute(TObject *Sender) VFTlistbox
+//void __fastcall TForm1::DeleteMatPropExecute(TObject *Sender) VFTlistbox
+//void __fastcall TForm1::EditWeldPassExecute(TObject *Sender) VFTlistbox
+//void __fastcall TForm1::DeleteWeldPassExecute(TObject *Sender) VFTlistbox
+//void __fastcall TForm1::exportCTSPExecute(TObject *Sender) CTSPnames
+//void __fastcall TForm1::exportWARP3DExecute(TObject *Sender) ABAQnames
+//void __fastcall TForm1::ChAllWParam_currExecute(TObject *Sender) et al. F28_Form
+//void __fastcall TForm1::AboutVFTExecute(TObject *Sender) About_VFT
+//void __fastcall TForm1::TimeshiftVED0Execute(TObject *Sender) et al. tshiftCTSP
+//void TForm1::tshiftCTSP2(int isw) tshiftCTSP
 
 #include <vcl.h>
 #pragma hdrstop
@@ -149,7 +164,7 @@ TForm29 *CTSPnames; // Modal
 TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
-ofstream honk("VFTsolidlog.out");
+//ofstream honk("VFTsolidlog.out");
 String VFTversion=L"VFTsolid version 3.2.57f_64 2015";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
@@ -1756,8 +1771,8 @@ for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
 						 {if(cht[i]==',' || cht[i]==' ' || cht[i]=='0' || cht[i]=='1' || cht[i]=='2' || cht[i]=='3' || cht[i]=='4' ||
 														   cht[i]=='5' || cht[i]=='6' || cht[i]=='7' || cht[i]=='8' || cht[i]=='9')continue;
 						  else {
-//						        extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Please remove unsupported *ELSET card with non-numeric data from *.abq/*.inp",L"Terminate",MB_OK);exit(0);
-honk<<"\n"<<cht<<" Warning: ELSET of ELSETs datacard found\n";break;
+						        extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Please remove unsupported *ELSET card with non-numeric data from *.abq/*.inp",L"Terminate",MB_OK);exit(0);
+//honk<<"\n"<<cht<<" Warning: ELSET of ELSETs datacard found\n";break;
 							   }
 						 }
 ///////////////// End
@@ -1769,9 +1784,10 @@ honk<<"\n"<<cht<<" Warning: ELSET of ELSETs datacard found\n";break;
 				   else continue;
 				  }
 				   // *end step CORRECTED EFP 10/22/2010
-		   else {if(iswtype)honk<<"WARNING: The following unsupported datacard found in *.abq\n";
-				 else       honk<<"WARNING: The following unsupported datacard found in *.inp\n";
-				 honk<<cht[0]<<" "<<cht[1]<<" "<<cht[2]<<" "<<cht[3]<<"\n";
+		   else {
+//		         if(iswtype)honk<<"WARNING: The following unsupported datacard found in *.abq\n";
+//				 else       honk<<"WARNING: The following unsupported datacard found in *.inp\n";
+//				 honk<<cht[0]<<" "<<cht[1]<<" "<<cht[2]<<" "<<cht[3]<<"\n";
 				 while (ntape.peek()!= '*')ntape.getline(cht,200-1);
 				}
 		  }
@@ -1781,13 +1797,13 @@ honk<<"\n"<<cht<<" Warning: ELSET of ELSETs datacard found\n";break;
 ///////////////////////////
 	   ntape.close();
 //	   base.matsteps=matstep;
-honk<<nodeuplim<<" "<<nodelolim<<" "<<totNnum<<" "<<eluplim<<" "<<ellolim<<" "<<totEnum<<" "<<MXNPEL<<" DDDDDDDD\n";
+//honk<<nodeuplim<<" "<<nodelolim<<" "<<totNnum<<" "<<eluplim<<" "<<ellolim<<" "<<totEnum<<" "<<MXNPEL<<" DDDDDDDD\n";
 //if(1==1)exit(0);
 
 	   if(wp.nWeldGroup==0){extern PACKAGE void __fastcall Beep(void);
 							Application->MessageBox(L"No weld groups (*ELSET, ELSET=...weld...) found in *.abq",L"Terminate: Looking for WD,WG,WP,WELD",MB_OK);exit(0);
 						   }
-honk<<base.allGrp<<" "<<wp.nWeldGroup<<" Early A & WG\n";
+//honk<<base.allGrp<<" "<<wp.nWeldGroup<<" Early A & WG\n";
 //if(1==1)exit(0);
 
 GeomFileName=OpenDialog1->FileName;
@@ -1798,8 +1814,8 @@ GeomFileName=OpenDialog1->FileName;
 //
 ////
 ////// Integrity test for WARP3D unitary-start consecutive numbering
-	   if(nodeuplim != totNnum){honk<<nodeuplim<<"TERMINATE: Nonconsecutive node numbers in file "<<totNnum<<"\n";}
-	   if(eluplim != totEnum){honk<<eluplim<<"TERMINATE: Nonconsecutive/duplicate element numbers in file "<<totEnum<<"\n";}
+//	   if(nodeuplim != totNnum){honk<<nodeuplim<<"TERMINATE: Nonconsecutive node numbers in file "<<totNnum<<"\n";}
+//	   if(eluplim != totEnum){honk<<eluplim<<"TERMINATE: Nonconsecutive/duplicate element numbers in file "<<totEnum<<"\n";}
 	   if(nodeuplim != totNnum && eluplim != totEnum)
 		 {extern PACKAGE void __fastcall Beep(void);
 		  Application->MessageBox(L"Nonconsecutive elements & nodes found. Please renumber.",L"Terminate: WARP3D-inadmissable",MB_OK);
@@ -1863,8 +1879,8 @@ revnode_map=new long[nodeuplim-nodelolim+1];
 			 for(in=0;in<base.nelt;in++)base.arrELSET[in]=0; //Correction EFP 1/14/2015
 ////////////
 
-honk<<base.allGrp<<" "<<wp.nWeldGroup<<" EEELate A & WG\n";
-honk<<base.npoin<<" "<<base.nelt<<" npoin/nelt\n";
+//honk<<base.allGrp<<" "<<wp.nWeldGroup<<" EEELate A & WG\n";
+//honk<<base.npoin<<" "<<base.nelt<<" npoin/nelt\n";
 //r(in=0;in<base.nelt;in++)honk<<(in+1)<<" zerothMATNO "<<base.matno[in]<<"\n";
 
 //if(1==1)exit(0);
@@ -2007,7 +2023,8 @@ for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
 																			  }
 																 }
 															   else if(nic-1==9){nic=9;eltype=8;}
-															   else {honk<<"Halt2: Unsupported element with #nodes "<<(nic-1)<<"\n";
+															   else {
+//															         honk<<"Halt2: Unsupported element with #nodes "<<(nic-1)<<"\n";
 																	 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(_ltow(nic-1,string0,10),L"Halt2: Unsupported element with #nodes in ImportAba_prog()",MB_OK);
 																	 exit(0);
 																	}
@@ -2112,7 +2129,8 @@ base.orig_matno[totEnum]=eltype*t7+n8*t3;
 																			  }
 																 }
 															   else if(nic-1==9){nic=9;eltype=8;}
-															   else {honk<<"Halt3: Unsupported element with #nodes "<<(nic-1)<<"\n";
+															   else {
+//															         honk<<"Halt3: Unsupported element with #nodes "<<(nic-1)<<"\n";
 																	 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(_ltow(nic-1,string0,10),L"Halt3: Unsupported element with #nodes in ImportAba_prog()",MB_OK);
 																	 exit(0);
 																	}
@@ -2346,7 +2364,10 @@ if(jsw){temp_cht=new char[kp+1];
 										  if(larr[1]-larr[0]+1<base.nelt){for(i=larr[0]-1;i<larr[1];i=i+larr[2])
 																		   {
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==i){j=kk;break;}
-if(j== -1){honk<<"TERMINATE: GENERATED WG el_map crash in *.abq/*.inp\n";exit(0);}
+if(j== -1){
+//		   honk<<"TERMINATE: GENERATED WG el_map crash in *.abq/*.inp\n";
+		   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"GENERATED WG el_map crash in *.abq/*.inp",L"Exit: Unsupp elem ImportAba_prog()",MB_OK);
+		   exit(0);}
 else {
 	  if(jsw){base.arrELSET[j]=totWG;sumWG++;}
 	  k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
@@ -2367,7 +2388,10 @@ else {
 						for(i=0;i<nic;i++){if(larr[i]) //This accommodates comma-end or no-comma EFOP 4/15/2011
 											 {
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
-if(j== -1){honk<<"TERMINATE: WG el_map crash in *.abq/*.inp\n";exit(0);}
+if(j== -1){
+//         honk<<"TERMINATE: WG el_map crash in *.abq/*.inp\n";
+		   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"GENERATED WG el_map crash in *.abq/*.inp",L"Exit: Unsupp elem ImportAba_prog()",MB_OK);
+		   exit(0);}
 else {
 	  if(jsw){base.arrELSET[j]=totWG;sumWG++;}
 	  k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
@@ -2390,7 +2414,8 @@ else {
 				  {
 ////				   if(ntape1.peek()!= '*')break; // multiple use for *End/*End Part/*End Assembly/*End Instance  EFP 4/22/2011
 ////				   else continue;
-honk<<" *END found\n";break;
+//honk<<" *END found\n";
+break;
 //honk<<" *END found\n";if(1==1)exit(0);
 				  }
 							// *end step CORRECTED EFP 10/22/2010
@@ -2415,12 +2440,12 @@ while (ntape1.peek()!= '*')ntape1.getline(cht,200-1);
 //			 delete [] revnode_map; //THIS CAUSES MEMORY CRASH BUT WHY??? NECESSARY!!! EFP 7/31/2014
 			 *revnode_map=NULL;
 
-honk<<iallGrp<<" "<<base.allGrp<<" Later A &WG "<<nGID<<"\n";
+//honk<<iallGrp<<" "<<base.allGrp<<" Later A &WG "<<nGID<<"\n";
 
 //base.allGrp=nGID; //Special restriction to 1 basemetal + WGs
 
-honk<<wp.nWeldGroup<<" Revised nWeldGroup "<<(base.nelt+sumELSETel)<<"\n";
-honk<<base.nelt<<" nelt/allGrp "<<base.allGrp<<"\n";
+//honk<<wp.nWeldGroup<<" Revised nWeldGroup "<<(base.nelt+sumELSETel)<<"\n";
+//honk<<base.nelt<<" nelt/allGrp "<<base.allGrp<<"\n";
 			 old_npoin=new_npoin=base.npoin;new_nelt=base.nelt;new_mat=base.mat;new_ncoorf=base.ncoorf;nGID=wp.nWeldGroup+1;
 			 ntape1.close();DeleteFile("record.tmp");
 
@@ -2493,7 +2518,7 @@ Screen->Cursor=crSizeAll;
 //////////
 			 wp.memWGa=sumlim;
 //			 wp.memWGa=base.nelt; //Temporary assignment EFP 3/26/2011
-honk<<sumlim<<" ImpAbq MEM\n";
+//honk<<sumlim<<" ImpAbq MEM\n";
 			 iplotflag=1;iCircleplot=1;
 //r(in=0;in<base.nelt;in++)honk<<(in+1)<<" next2MATNO "<<base.matno[in]<<"\n";
 			 Invalidate();
@@ -3311,20 +3336,20 @@ gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
 		  }
 	   while (!ntape.eof());
 	   ntape.close();
-honk<<nodeuplim<<" "<<nodelolim<<" "<<totNnum<<" "<<eluplim<<" "<<ellolim<<" "<<totEnum<<" "<<MXNPEL<<" DDDDDDDD\n";
-honk<<ELSETmobsize<<" "<<totEnum<<" "<<exALLEL<<" "<<base.allGrp<<" zoot suit\n";
+//honk<<nodeuplim<<" "<<nodelolim<<" "<<totNnum<<" "<<eluplim<<" "<<ellolim<<" "<<totEnum<<" "<<MXNPEL<<" DDDDDDDD\n";
+//honk<<ELSETmobsize<<" "<<totEnum<<" "<<exALLEL<<" "<<base.allGrp<<" zoot suit\n";
 	   if(wp.nWeldGroup==0){extern PACKAGE void __fastcall Beep(void);
 							Application->MessageBox(L"No weld groups (*ELSET, ELSET=...weld...) found in *.msh",L"Terminate: Looking for WD,WG,WP,WELD,GROUP",MB_OK);exit(0);
 						   }
-honk<<base.allGrp<<" "<<wp.nWeldGroup<<" Early A & WG\n";
+//honk<<base.allGrp<<" "<<wp.nWeldGroup<<" Early A & WG\n";
 GeomFileName=OpenDialog1->FileName;
 	   base.npoin=totNnum;
 	   base.nelt=totEnum; //Policy: Reserve storage for #elements read-in, even if there is duplication  EFP 4/19/2012
 //
 ////
 ////// Integrity test for WARP3D unitary-start consecutive numbering
-	   if(nodeuplim != totNnum){honk<<nodeuplim<<"TERMINATE: Nonconsecutive node numbers in file "<<totNnum<<"\n";}
-	   if(eluplim != totEnum){honk<<eluplim<<"TERMINATE: Nonconsecutive/duplicate element numbers in file "<<totEnum<<"\n";}
+//	   if(nodeuplim != totNnum){honk<<nodeuplim<<"TERMINATE: Nonconsecutive node numbers in file "<<totNnum<<"\n";}
+//	   if(eluplim != totEnum){honk<<eluplim<<"TERMINATE: Nonconsecutive/duplicate element numbers in file "<<totEnum<<"\n";}
 	   if(nodeuplim != totNnum && eluplim != totEnum)
 		 {extern PACKAGE void __fastcall Beep(void);
 		  Application->MessageBox(L"Nonconsecutive elements & nodes found. Please renumber.",L"Terminate: WARP3D-inadmissable",MB_OK);
@@ -3370,8 +3395,8 @@ revnode_map=new long[nodeuplim-nodelolim+1];
 //			 for(in=0;in<base.npoin;in++)base.arrELSET[in]=0;
 			 for(in=0;in<base.nelt;in++)base.arrELSET[in]=0; //Correction EFP 1/14/2015
 ////////////
-honk<<base.allGrp<<" "<<wp.nWeldGroup<<" EEELate A & WG\n";
-honk<<base.npoin<<" "<<base.nelt<<" npoin/nelt\n";
+//honk<<base.allGrp<<" "<<wp.nWeldGroup<<" EEELate A & WG\n";
+//honk<<base.npoin<<" "<<base.nelt<<" npoin/nelt\n";
 ////////////
 			 do {ntape1.getline(cht,200-1);
 				 if(cht[0]=='*' && cht[1]=='*' && (cht[2]=='E' || cht[2]=='e') && (cht[3]=='N' || cht[3]=='n') && (cht[4]=='D' || cht[4]=='d'))break;
@@ -3394,7 +3419,8 @@ honk<<base.npoin<<" "<<base.nelt<<" npoin/nelt\n";
 								for(i=0;i<10;i++)larr[i]=0;
 								parse_cdmQ(cht,&nic,&nrc,larr,darr); // *ELEMENT, stored in same file
 								if(nic-1==8)eltype=8;
-								else {honk<<"Halt3: Unsupported element with #nodes "<<(nic-1)<<"\n";
+								else {
+//								      honk<<"Halt3: Unsupported element with #nodes "<<(nic-1)<<"\n";
 									  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(_ltow(nic-1,string0,10),L"Halt3: Unsupported element with #nodes in MSHgeomOpen()",MB_OK);
 									  exit(0);
 									 }
@@ -3511,7 +3537,10 @@ temp_cht1[kp-1]='\0';
 						for(i=0;i<nic;i++){if(larr[i]) //This accommodates comma-end or no-comma EFOP 4/15/2011
 											 {
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
-if(j== -1){honk<<"TERMINATE: WG el_map crash in *.abq/*.inp\n";exit(0);}
+if(j== -1){
+//           honk<<"TERMINATE: WG el_map crash in *.abq/*.inp\n";
+		   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"WG el_map crash in *.abq/*.inp",L"Exit: Unsupp elem",MB_OK);
+		   exit(0);}
 else {base.arrELSET[j]=totWG;sumWG++;
 	  k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
 	 }
@@ -3527,7 +3556,7 @@ else {base.arrELSET[j]=totWG;sumWG++;
 						 kp=int(strlen(cht))-3;temp_cht=new char[kp+1];for(i=0;i<kp;i++)temp_cht[i]=cht[i+3];
 		temp_cht[kp]='\0';
 		if(iallGrp != exALLEL){temp_cht1=new char[kp];for(i=0;i<kp-1;i++){temp_cht1[i]=cht[i+3];
-honk<<i<<" "<<temp_cht1[i]<<" roxanne2\n";
+//honk<<i<<" "<<temp_cht1[i]<<" roxanne2\n";
 									   }
 temp_cht1[kp-1]='\0';
 ////							   base.ELSETinputnames[iallGrp]=L" ";
@@ -3545,7 +3574,10 @@ temp_cht1[kp-1]='\0';
 						for(i=0;i<nic;i++){if(larr[i]) //This accommodates comma-end or no-comma EFOP 4/15/2011
 											 {
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
-if(j== -1){honk<<"TERMINATE: ELSETinput el_map crash in *.abq/*.inp\n";exit(0);}
+if(j== -1){
+//		   honk<<"TERMINATE: ELSETinput el_map crash in *.abq/*.inp\n";
+		   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"WG el_map crash in *.abq/*.inp",L"Exit: Unsupp elem",MB_OK);
+		   exit(0);}
 else {k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
 	 }
 											 }
@@ -3581,8 +3613,8 @@ else {k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGr
 
 base.allGrp=nGID; //Special restriction to 1 basemetal + WGs (not needed)
 
-honk<<wp.nWeldGroup<<" Revised nWeldGroup "<<(base.nelt+sumELSETel)<<"\n";
-honk<<base.nelt<<" nelt/allGrp "<<base.allGrp<<" "<<nGID<<"\n";
+//honk<<wp.nWeldGroup<<" Revised nWeldGroup "<<(base.nelt+sumELSETel)<<"\n";
+//honk<<base.nelt<<" nelt/allGrp "<<base.allGrp<<" "<<nGID<<"\n";
 			 old_npoin=new_npoin=base.npoin;new_nelt=base.nelt;new_mat=base.mat;new_ncoorf=base.ncoorf;nGID=wp.nWeldGroup+1;
 			 ntape1.close();DeleteFile("record.tmp");
 			 FDbase_indat(1,shapecombo,iplotflag,nColRes);
@@ -3608,15 +3640,17 @@ Screen->Cursor=crSizeAll;
 //////////
 			 wp.memWGa=sumlim;
 ////honk<<sumlim<<" ImpAbq MEM\n";
-honk<<base.allGrp<<" allGrp/exALL "<<exALLEL<<"\n";
-			 for(j=0;j<base.allGrp;j++){
- int bufferSize1=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,NULL,0,NULL,NULL);
- char* m1=new char[bufferSize1];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,m1,bufferSize1,NULL,NULL);
- honk<<m1<<"\n";// EFP 12/10/2014
- delete[] m1;
-//								 honk<<base.ELSETinputnames[j].c_str()<<" ELSETinput "<<(j+1)<<"\n";
-									   }
-//			 for(j=0;j<base.nelt;j++)honk<<(j+1)<<" "<<base.matno[j]<<" kkkoooppp\n";
+//honk<<base.allGrp<<" allGrp/exALL "<<exALLEL<<"\n";
+
+
+//			 for(j=0;j<base.allGrp;j++){
+// int bufferSize1=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,NULL,0,NULL,NULL);
+// char* m1=new char[bufferSize1];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,m1,bufferSize1,NULL,NULL);
+// honk<<m1<<"\n";// EFP 12/10/2014
+// delete[] m1;
+////								 honk<<base.ELSETinputnames[j].c_str()<<" ELSETinput "<<(j+1)<<"\n";
+//									   }
+////			 for(j=0;j<base.nelt;j++)honk<<(j+1)<<" "<<base.matno[j]<<" kkkoooppp\n";
 
 			 iplotflag=1;iCircleplot=1;
 			 Invalidate();
@@ -3722,8 +3756,8 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //				 base.nelt=control[2]; //#elem
 				 base.npoin=larr[1]; //#nodes (Currently, highest node-NOT #active nodes)
 				 base.nelt=larr[2]; //#elem
-honk<<base.npoin<<" Total npoin/nelt "<<base.nelt<<"\n";
-honk<<base.npoin<<" "<<base.nelt<<" "<<MXNPEL<<" #nodes,#nelm,MXNPEL VFTgeomOpenExecute\n";
+//honk<<base.npoin<<" Total npoin/nelt "<<base.nelt<<"\n";
+//honk<<base.npoin<<" "<<base.nelt<<" "<<MXNPEL<<" #nodes,#nelm,MXNPEL VFTgeomOpenExecute\n";
 	   if(base.nelt> LONG_INT/t3){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Excessive #elements in *.VFT file",L"Terminate",MB_OK);exit(0);}
 	   nodeuplim=0;nodelolim=LONG_INT;
 	   for(i=0;i<base.npoin;i++)
@@ -3867,8 +3901,8 @@ Screen->Cursor=Save_Cursor;
 ///////////
 //	   base.matsteps=matstep;
 //honk<<nodeuplim<<" "<<nodelolim<<" "<<base.npoin<<" "<<eluplim<<" "<<base.nelt<<" "<<MXNPEL<<" DDDDDDDD\n";
-	   if(nodeuplim != base.npoin)honk<<nodeuplim<<" Nonconsecutive node numbers in file "<<base.npoin<<"\n";
-	   if(eluplim != base.nelt)honk<<eluplim<<" Nonconsecutive element numbers in file "<<base.nelt<<"\n";
+//	   if(nodeuplim != base.npoin)honk<<nodeuplim<<" Nonconsecutive node numbers in file "<<base.npoin<<"\n";
+//	   if(eluplim != base.nelt)honk<<eluplim<<" Nonconsecutive element numbers in file "<<base.nelt<<"\n";
 	   if(base.npoin>0 && base.nelt>0)
 //		 {FDdynmem_manage(1,base.npoin,base.nelt,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.ncoorf,dummy,MXNPEL);
 		 {FDdynmem_manage(1,base.npoin,base.nelt,dummy,dummy,dummy,base.npoin,dummy,dummy,dummy,dummy,base.ncoorf,dummy,MXNPEL);
@@ -3884,7 +3918,7 @@ Screen->Cursor=Save_Cursor;
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //			 base.allGrp=wpWG+1;
 			 base.allGrp=wpWG+wpWP+1;//Emergency Code to plot WP without WG
-honk<<base.allGrp<<" "<<wpWG<<" "<<wpWP<<" Zooey0 "<<wp.memWGa<<"\n";
+//honk<<base.allGrp<<" "<<wpWG<<" "<<wpWP<<" Zooey0 "<<wp.memWGa<<"\n";
 //if(1==1)exit(0);
 
 	   for(i=0;i<base.nelt;i++)base.arELEM[i]=1; //Correction EFP 12/03/2010
@@ -4019,9 +4053,9 @@ ntape.getline(chtm,199);// Omit JavaVFT groupname[]
 ntape.getline(chtm,199);// Omit JavaVFT groupsname[]
 
 //	   ntape>>base.npoin>>base.nelt;
-honk<<base.npoin<<" Highest npoin/nelt "<<base.nelt<<"\n";
-honk<<base.npoin<<" "<<base.nelt<<" "<<MXNPEL<<" #nodes,#nelm,MXNPEL VFTgeomOpenExecute\n";
-honk<<"\n";
+//honk<<base.npoin<<" Highest npoin/nelt "<<base.nelt<<"\n";
+//honk<<base.npoin<<" "<<base.nelt<<" "<<MXNPEL<<" #nodes,#nelm,MXNPEL VFTgeomOpenExecute\n";
+//honk<<"\n";
 	   for(i=0;i<9*base.ncoorf;i++)base.cangl[i]=0.f;for(i=0;i<base.ncoorf;i++){base.cangl[9*i]=base.cangl[9*i+4]=base.cangl[9*i+8]=1.f;}
 //				 ntape>>wp.nWeldGroup;
 
@@ -4030,7 +4064,7 @@ honk<<"\n";
 //FDdynmem_manage(13,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.ncoorf,dummy,dummy);//EFP 3/15/2011
 FDdynmem_manage(13,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.ncoorf,dummy,wp.nWeldGroup+1);//EFP 3/15/2011
 /////////////////////////////////
-honk<<wp.nWeldGroup<<" ImportVFTr wp.nWeldGroup\n";
+//honk<<wp.nWeldGroup<<" ImportVFTr wp.nWeldGroup\n";
 //if(1==1)exit(0);
 
 
@@ -4058,11 +4092,11 @@ ntape.getline(chtm,199);// Omit JavaVFT groupname[]
 //									ntape>>accum;
 				 ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
 //									ntape>>descript0;
-honk<<larr[0]<<" mmm1\n";
+//honk<<larr[0]<<" mmm1\n";
 
 ntape.getline(chtm,199);
 
-honk<<chtm<<" base.groupsname\n";//if(1==1)exit(0);
+//honk<<chtm<<" base.groupsname\n";//if(1==1)exit(0);
 
 //////////////////////////////
 //temp_cht=new _TCHAR[strlen(chtm)-1]; // This presumes the format  ** WeldGroupName\n
@@ -4109,7 +4143,7 @@ base.arrELSET[i-1]=j+1;//Add coding for basemetal&weldgroup
 								  }
 //				 else wp.memWGa=0;
 
-honk<<wp.nWeldGroup<<" ImportVFTr wp.nWeldGroup/wp.memWGa "<<wp.memWGa<<"\n";
+//honk<<wp.nWeldGroup<<" ImportVFTr wp.nWeldGroup/wp.memWGa "<<wp.memWGa<<"\n";
 
 //				 for(i=0;i<base.npoin;i++){
 ////				                           ntape>>ii>>j;
@@ -4125,7 +4159,7 @@ honk<<wp.nWeldGroup<<" ImportVFTr wp.nWeldGroup/wp.memWGa "<<wp.memWGa<<"\n";
 //
 //				 ntape>>wp.nWeldPass;
 ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);wp.nWeldPass=larr[0];
-honk<<wp.nWeldPass<<" wp.nWeldPass ImpVFTr\n";
+//honk<<wp.nWeldPass<<" wp.nWeldPass ImpVFTr\n";
 ////if(wp.nWeldPass> -1000000)exit(0);
 			   if(wp.nWeldPass){
 
@@ -4162,7 +4196,7 @@ ntape.getline(chtm,199);
 //delete efpChar; *efpChar=NULL; //Ignore input WP name
 //aaaaaaaaaaaaaaaaaa
 
-honk<<chtm<<" wp.name\n";//if(1==1)exit(0);
+//honk<<chtm<<" wp.name\n";//if(1==1)exit(0);
 wp.name[i]=chtm;
 
 wp.name[i].SetLength(wp.name[i].Length()-1);
@@ -4184,7 +4218,7 @@ ntape.getline(chtm,199);
 //delete efpChar; *efpChar=NULL;
 //aaaaaaaaaaaaaaaaaaa
 
-honk<<chtm<<" wp.matName\n";//if(1==1)exit(0);
+//honk<<chtm<<" wp.matName\n";//if(1==1)exit(0);
 wp.matName[i]=chtm;
 
 wp.matName[i].SetLength(wp.matName[i].Length()-1);
@@ -4368,7 +4402,7 @@ ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);wp.mcr[i]=larr[0];
 //		ntape>>ii;wp.WeldColor[i]=(TColor)ii;
 ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);
 ////////////////////////////////////
-honk<<i<<" VFTrImpColor "<<larr[0]<<"\n";
+//honk<<i<<" VFTrImpColor "<<larr[0]<<"\n";
 ////////////////////////////////////
 wp.WeldColor[i]=(TColor)larr[0];
 
@@ -4397,7 +4431,7 @@ ntape.getline(chtm,199);
 //				 ntape>>wps.nWeldParamSet;
 ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);wps.nWeldParamSet=larr[0];
 
-honk<<wps.nWeldParamSet<<" wps.nWeldParamSet\n";
+//honk<<wps.nWeldParamSet<<" wps.nWeldParamSet\n";
 
 				 if(wps.nWeldParamSet){
 									   FDdynmem_manage(11,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy);
@@ -4447,26 +4481,26 @@ wps.name[i].SetLength(wps.name[i].Length()-1);
 //		ntape>>wps.curr[i];
 ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);wps.curr[i]=darr[0];
 
-honk<<chtm<<" chtm\n";
-honk<<wps.curr[i]<<" wps.curr[i]\n";
+//honk<<chtm<<" chtm\n";
+//honk<<wps.curr[i]<<" wps.curr[i]\n";
 
 //		ntape>>wps.volt[i];
 ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);wps.volt[i]=darr[0];
 
-honk<<chtm<<" chtm\n";
-honk<<wps.volt[i]<<" wps.volt[i]\n";
+//honk<<chtm<<" chtm\n";
+//honk<<wps.volt[i]<<" wps.volt[i]\n";
 
 //		ntape>>wps.eff[i];
 ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);wps.eff[i]=darr[0];
 
-honk<<chtm<<" chtm\n";
-honk<<wps.eff[i]<<" wps.eff[i]\n";
+//honk<<chtm<<" chtm\n";
+//honk<<wps.eff[i]<<" wps.eff[i]\n";
 
 //		ntape>>wps.speed[i];
 ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);wps.speed[i]=darr[0];
 
-honk<<chtm<<" chtm\n";
-honk<<wps.speed[i]<<" wps.speed[i]\n";
+//honk<<chtm<<" chtm\n";
+//honk<<wps.speed[i]<<" wps.speed[i]\n";
 ntape.getline(chtm,199);
 
 																	  }
@@ -4643,7 +4677,7 @@ FDcomp_nGID(indat.nelt,&nGID,arGID);
 //			 stateVFT=0;FD_LButtonstatus=11;
 			 stateVFT=2;FD_LButtonstatus=11;
 
-honk<<base.npoin<<" exiting ImportVFTr "<<base.nelt<<"\n";
+//honk<<base.npoin<<" exiting ImportVFTr "<<base.nelt<<"\n";
 Form1->Caption=GeomFileName;
 ///////////// Cursor EFP 1/21/2011
 //Screen->Cursor=crSizeAll;
@@ -5710,7 +5744,9 @@ void TForm1::FDdynmem_manage(int isel,long bnpoin,long bnelt,long inpoin,long in
  else if(isel== -20){if(base.ELSETinputnames){delete [] base.ELSETinputnames;base.ELSETinputnames=NULL;}
 				  } //EFP 01/01/2015
 //**************** End from VFTgen
- else {honk<<isel<<" Unsupported dyn.memory option\n";extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unsupported dyn.memory option",L"Exit",MB_OK);exit(0);}
+ else {
+//       honk<<isel<<" Unsupported dyn.memory option\n";
+	   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unsupported dyn.memory option",L"Exit",MB_OK);exit(0);}
 }
 //---------------------------------------------------------------------------
 void TForm1::axis_plot_init()
@@ -7315,7 +7351,9 @@ void TForm1::FDsort_low1(long *indat_nop1,float *indat_c1,long nFace,long *arbFa
 //// float lolim=0.,upmax=0.,disTOL=0.01,*partition=NULL;
  float lolim=0.f,upmax=0.f,disTOL=0.1f,*partition=NULL;
 // float lolim=0.,upmax=0.,disTOL=0.5,*partition=NULL;
- if(nFace<2){honk<<nFace<<" nFacets\n";extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"FDsort_low insufficient nFacets",L"Terminate",MB_OK);exit(0);}
+ if(nFace<2){
+//             honk<<nFace<<" nFacets\n";
+			 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"FDsort_low insufficient nFacets",L"Terminate",MB_OK);exit(0);}
 //
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //try {
@@ -8100,7 +8138,7 @@ SL21*ind_c1[NDF*ind_nop1[6]+2]+SL24*ind_c1[NDF*ind_nop1[7]+2]);
 		else if(sqrt((T*T-1.f)*(T*T-1.f)) < PRMT){I=3;if(T<0.f)FPROD= -1.f;}
 		else{
 //  ::MessageBeep(-1);MessageBox("STFISO8 invalid surface pt.");
-honk<<G<<" "<<E<<" "<<T<<" STFISO8:Invalid SP\n";
+//honk<<G<<" "<<E<<" "<<T<<" STFISO8:Invalid SP\n";
 			  exit(0);
 			 }
 		IP= -2+I*(11-3*I)/2;IM=6-I-IP;
@@ -8117,7 +8155,7 @@ honk<<G<<" "<<E<<" "<<T<<" STFISO8:Invalid SP\n";
 ////////////////////////
 ////////////////////////// start trash
 if(fabs(GG11)<1.e-10f){//honk<<ISL<<" "<<GG11<<" GG11 "<<G<<" "<<E<<" "<<T<<"\n";
-					  for(J=0;J<8;J++)honk<<(ind_nop1[J]+1)<<" 8-n hex STFISOsurf fail "<<ind_c1[NDF*ind_nop1[J]  ]<<" "<<ind_c1[NDF*ind_nop1[J]+1]<<" "<<ind_c1[NDF*ind_nop1[J]+2]<<"\n";
+//					  for(J=0;J<8;J++)honk<<(ind_nop1[J]+1)<<" 8-n hex STFISOsurf fail "<<ind_c1[NDF*ind_nop1[J]  ]<<" "<<ind_c1[NDF*ind_nop1[J]+1]<<" "<<ind_c1[NDF*ind_nop1[J]+2]<<"\n";
 //					  exit(0);
 					  GG11=1.e-4f;
 					 }
@@ -8567,8 +8605,9 @@ if(eltype1==8){tBitmap->Canvas->MoveTo(int(indat.c1[NDF*indat.nop1[MXNPEL*ie1+0]
 tBitmap->Canvas->LineTo(int(indat.c1[NDF*indat.nop1[MXNPEL*ie1+vertplot[ip1]]  ]+0.5f),
 						ClientHeight-int(indat.c1[NDF*indat.nop1[MXNPEL*ie1+vertplot[ip1]]+1]+0.5f));
 			  }
-	else {honk<<(ie1+1)<<" persistVFT1a() miscreantNonHex "<<eltype1<<"\n"; //Modification
-//	  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex-element found in this weld pass.",L"Warning",MB_OK);
+	else {
+//	      honk<<(ie1+1)<<" persistVFT1a() miscreantNonHex "<<eltype1<<"\n"; //Modification
+	  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex-element found in this weld pass.",L"Warning",MB_OK);
 		 }
 														   }
 				 }
@@ -10252,7 +10291,9 @@ void TForm1::invdet(long n,long j[],float c[])
  for(l=0;l<n;l++){cc=0.f;m=l;for(k=l;k<n;k++){if(fabs(cc)-fabs(c[n*l+k])<0.f){m=k;cc=c[n*l+k];}}
 				  if(l!=m){k=j[m];j[m]=j[l];j[l]=k;for(k=0;k<n;k++){s=c[n*k+l];c[n*k+l]=c[n*k+m];c[n*k+m]=s;}}
 				  c[n*l+l]=1.f;
-if(fabs(cc)<1.e-15f){honk<<cc<<"  Noninvertible invdet: CC\n";exit(0);}
+if(fabs(cc)<1.e-15f){
+//                     honk<<cc<<"  Noninvertible invdet: CC\n";
+					 exit(0);}
 				  for(m=0;m<n;m++)c[n*l+m]=c[n*l+m]/cc;
 				  for(m=0;m<n;m++){if(l!=m){cc=c[n*m+l];if(fabs(cc)>TOL){c[n*m+l]=0.f;for(k=0;k<n;k++)c[n*m+k]=c[n*m+k]-cc*c[n*l+k];}}}
 				 }
@@ -10276,7 +10317,7 @@ void TForm1::FDrestore()
 // for(in=0;in<indat.nelt;in++)indat.arrELSET[in]=1;
 
 // FDcomp_nGID(base.nelt,&nGID,arGID);  //BUT THIS USES indat.arrELSET internally....
-honk<<iplotType<<" "<<iPaintyesno<<" "<<iplotflag<<" "<<shapecombo<<"\n";
+//honk<<iplotType<<" "<<iPaintyesno<<" "<<iplotflag<<" "<<shapecombo<<"\n";
 //	FDelemfacets3(indat.npoin,indat.nelt,indat.nop1,indat.matno,arGID);iPaintyesno=1;
   if(iplotType==2)FDelemfacets_arE3(indat.npoin,indat.nelt,indat.nop1,indat.matno,base.arELEM);
   else
@@ -11721,7 +11762,7 @@ if(eltype!=8){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(
 											   }
 					   dummap=new long[6*numdum];
 
-honk<<numdum<<" NUMDUMmmmmmmm\n";//if(1==1)exit(0);
+//honk<<numdum<<" NUMDUMmmmmmmm\n";//if(1==1)exit(0);
 /////////////// Test integrity of weld group mesh  EFP 3/23/2013
 if(CRBsection && numdum != wp.count_curr_sttEl*(numdum/wp.count_curr_sttEl)){extern PACKAGE void __fastcall Beep(void);
 	 Application->MessageBox(L"This full length/full section WG mesh does not have same #elements per slice",L"Fatal mesh defect",MB_OK);}
@@ -12091,8 +12132,8 @@ if(eltype1==8)for(is1=0;is1<6;is1++) //Correction EFP 1/20/2011
 													 ClientHeight-int(indat.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*is1+ip1]]+1]+0.5f));
 			   }
 else {wp.avis=10*(wp.avis/10)+1;
-	  honk<<(ie1+1)<<" miscreantNonHex "<<eltype1<<"\n"; // Modification EFP 5/04/2011
-//	  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex-element found in this weld pass.",L"Warning",MB_OK);
+//	  honk<<(ie1+1)<<" miscreantNonHex "<<eltype1<<"\n"; // Modification EFP 5/04/2011
+	  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex-element found in this weld pass.",L"Warning",MB_OK);
 	 }
 																											}
 															}
@@ -13058,7 +13099,7 @@ void __fastcall TForm1::WeldParamExecute(TObject *Sender)
 	   CreateWeldingParamSet->Label2->Caption=L"Welding Current (Amp):";
 	   CreateWeldingParamSet->Label3->Caption=L"Welding Voltage (Volt):";
 	   CreateWeldingParamSet->Label4->Caption=L"Arc Efficiency:";
-	   CreateWeldingParamSet->Label5->Caption=L"Torch Traveling Speed:";
+	   CreateWeldingParamSet->Label5->Caption=L"Torch Speed mm/s:";
 	   CreateWeldingParamSet->Button1->Caption=L"Create";
 	   CreateWeldingParamSet->Button2->Caption=L"Cancel";
 
@@ -13071,6 +13112,7 @@ void __fastcall TForm1::WeldParamExecute(TObject *Sender)
 	   CreateWeldingParamSet->CheckEdit4=wps.eff[wps.nWeldParamSet];
 	   CreateWeldingParamSet->CheckEdit5=wps.speed[wps.nWeldParamSet];
 	   CreateWeldingParamSet->ShowModal();
+	   delete CreateWeldingParamSet;CreateWeldingParamSet=NULL;
 	  }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Close existing Create/Edit box first",L"Halt",MB_OK);}
    }
@@ -13092,7 +13134,7 @@ Screen->Cursor=crSizeAll;
 //honk<<isel<<" WeldParam_public0\n";//if(1==1)exit(0);
 
 		  delete CreateWeldingParamSet; //Created with Show()
-//	CreateWeldingParamSet=NULL;// because it was created with Show()
+	CreateWeldingParamSet=NULL;// because it was created with Show()
 		 }
  else {if(CreateWeldingParamSet->CheckEdit1==L"****")
 		 {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Forgot to enter weld parameter name",L"Repeat",MB_OK);
@@ -13113,7 +13155,7 @@ Screen->Cursor=crSizeAll;
 // delete CreateWeldingParamSet;
 	   CreateWeldingParamSet->Close(); //Created with ShowModal()
 	  }
- CreateWeldingParamSet=NULL;
+// CreateWeldingParamSet=NULL;
 /////////// Cursor EFP 1/21/2011
 //Screen->Cursor=crSizeAll;
 //FDrestore();
@@ -13130,7 +13172,7 @@ void TForm1::EditWeldParamProg(int VFTitemindex)
  CreateWeldingParamSet->Label2->Caption=L"Welding Current (Amp):";
  CreateWeldingParamSet->Label3->Caption=L"Welding Voltage (Volt):";
  CreateWeldingParamSet->Label4->Caption=L"Arc Efficiency:";
- CreateWeldingParamSet->Label5->Caption=L"Torch Traveling Speed:";
+ CreateWeldingParamSet->Label5->Caption=L"Torch Speed mm/s:";
  CreateWeldingParamSet->Button1->Caption=L"Enter";
  CreateWeldingParamSet->Button2->Caption=L"Restore";
  wps.temp_name=wps.name[wp.PRECORD];
@@ -13625,6 +13667,7 @@ void TForm1::MatProperties_public()
 Screen->Cursor=crSizeAll;
 ///////////
 		  delete Form21; //Created with Show()
+ Form21=NULL;
 		 }
  else {
  wms.cond[wms.nMatPropSet]=Form21->CheckEdit2;
@@ -13697,7 +13740,7 @@ Screen->Cursor=crSizeAll;
 ///////////
 	   Form21->Close(); //Created with ShowModal()
 	  }
- Form21=NULL;
+// Form21=NULL;
 }
 //---------------------------------------------------------------------------
 void TForm1::EditMatPropProg(int VFTitemindex)
@@ -13869,10 +13912,10 @@ void TForm1::DelMatPropProg(int VFTitemindex)
 ////												 honk<<i<<" "<<VFTitemindex<<" "<<wms.name[VFTitemindex].t_str()<<" Inadmissible MatPropNames\n";
 //												 honk<<i<<" "<<VFTitemindex<<" "<<wms.name[VFTitemindex].c_str()<<" Inadmissible MatPropNames\n";
 //xxxxxxxxxx
- int bufferSize=WideCharToMultiByte(CP_UTF8,0,wms.name[VFTitemindex].w_str(), -1,NULL,0,NULL,NULL);
- char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,wms.name[VFTitemindex].w_str(), -1,m,bufferSize,NULL,NULL);
- honk<<i<<" "<<VFTitemindex<<" "<<m<<" Inadmissible MatPropNames\n";
- delete[] m;
+// int bufferSize=WideCharToMultiByte(CP_UTF8,0,wms.name[VFTitemindex].w_str(), -1,NULL,0,NULL,NULL);
+// char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,wms.name[VFTitemindex].w_str(), -1,m,bufferSize,NULL,NULL);
+// honk<<i<<" "<<VFTitemindex<<" "<<m<<" Inadmissible MatPropNames\n";
+// delete[] m;
 //xxxxxxxxxx
 												 isw=0;break;
 												}
@@ -14267,6 +14310,11 @@ if(CreateLinWeldPass->CheckWeldParName>=0)
    wp.volt[wp.nWeldPass]=wps.volt[CreateLinWeldPass->CheckWeldParName];
    wp.eff[wp.nWeldPass]=wps.eff[CreateLinWeldPass->CheckWeldParName];
    wp.speed[wp.nWeldPass]=wps.speed[CreateLinWeldPass->CheckWeldParName];
+//
+   CreateLinWeldPass->Edit9->ReadOnly=false;
+   CreateLinWeldPass->Edit10->ReadOnly=false;
+   CreateLinWeldPass->Edit11->ReadOnly=false;
+   CreateLinWeldPass->Edit12->ReadOnly=false;
   }
 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Forgot to select Weld Parameter Set Name",L"Repeat",MB_OK);
 	  missing++;
@@ -14290,6 +14338,11 @@ void TForm1::wpCreate1_public()
  CreateLinWeldPass->CheckEdit10=wps.volt[CreateLinWeldPass->CheckWeldParName];
  CreateLinWeldPass->CheckEdit11=wps.eff[CreateLinWeldPass->CheckWeldParName];
  CreateLinWeldPass->CheckEdit12=wps.speed[CreateLinWeldPass->CheckWeldParName];
+//
+ CreateLinWeldPass->Edit9->ReadOnly=true;
+ CreateLinWeldPass->Edit10->ReadOnly=true;
+ CreateLinWeldPass->Edit11->ReadOnly=true;
+ CreateLinWeldPass->Edit12->ReadOnly=true;
 }
 //---------------------------------------------------------------------------
 void TForm1::wpCreate2_public()
@@ -14499,6 +14552,7 @@ void __fastcall TForm1::EditWeldParamExecute(TObject *Sender)
 			for(ip=0;ip<wps.nWeldParamSet;ip++)VFTlistbox->ListBox1->Items->Add(wps.name[ip].w_str());
 			VFTlistbox->ListBox1->ItemIndex=wps.nWeldParamSet-1;
 			VFTlistbox->ShowModal();
+			delete VFTlistbox;VFTlistbox=NULL;
 		   }
 		 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"List box already exists",L"Halt",MB_OK);}
 		}
@@ -14520,6 +14574,7 @@ void __fastcall TForm1::DeleteWeldParamExecute(TObject *Sender)
 		 for(ip=0;ip<wps.nWeldParamSet;ip++)VFTlistbox->ListBox1->Items->Add(wps.name[ip].w_str());
 		 VFTlistbox->ListBox1->ItemIndex=wps.nWeldParamSet-1;
 		 VFTlistbox->ShowModal();
+		 delete VFTlistbox;VFTlistbox=NULL;
 		}
 	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"List box already exists",L"Halt",MB_OK);}
 	 }
@@ -14734,6 +14789,7 @@ void __fastcall TForm1::MatPropertiesExecute(TObject *Sender)
  Form21->RadioButton6->Visible=true;
 			}
 	   Form21->ShowModal();
+	   delete Form21;Form21=NULL;
 	  }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Must enter Weld Parameter Set first.",L"Halt",MB_OK);}
    }
@@ -14753,6 +14809,7 @@ void __fastcall TForm1::EditMatPropExecute(TObject *Sender)
 			for(ip=0;ip<wms.nMatPropSet;ip++)VFTlistbox->ListBox1->Items->Add(wms.name[ip].w_str());
 			VFTlistbox->ListBox1->ItemIndex=wms.nMatPropSet-1;
 			VFTlistbox->ShowModal();
+			delete VFTlistbox;VFTlistbox=NULL;
 		   }
 		 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"List box already exists",L"Halt",MB_OK);}
 		}
@@ -14776,6 +14833,7 @@ void __fastcall TForm1::DeleteMatPropExecute(TObject *Sender)
 		 for(ip=0;ip<wms.nMatPropSet;ip++)VFTlistbox->ListBox1->Items->Add(wms.name[ip].w_str());
 		 VFTlistbox->ListBox1->ItemIndex=wms.nMatPropSet-1;
 		 VFTlistbox->ShowModal();
+		 delete VFTlistbox;VFTlistbox=NULL;
 		}
 	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"List box already exists",L"Halt",MB_OK);}
 	 }
@@ -15005,6 +15063,7 @@ void __fastcall TForm1::EditWeldPassExecute(TObject *Sender)
 			   for(ip=0;ip<wp.nWeldPass;ip++)VFTlistbox->ListBox1->Items->Add(wp.name[ip].w_str());
 			   VFTlistbox->ListBox1->ItemIndex=wp.nWeldPass-1;
 			   VFTlistbox->ShowModal();
+			   delete VFTlistbox;VFTlistbox=NULL;
 			  }
 			else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"List box already exists",L"Halt",MB_OK);}
 		   }
@@ -15028,6 +15087,7 @@ void __fastcall TForm1::DeleteWeldPassExecute(TObject *Sender)
 		 for(ip=0;ip<wp.nWeldPass;ip++)VFTlistbox->ListBox1->Items->Add(wp.name[ip].w_str());
 		 VFTlistbox->ListBox1->ItemIndex=wp.nWeldPass-1;
 		 VFTlistbox->ShowModal();
+		 delete VFTlistbox;VFTlistbox=NULL;
 		}
 	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"List box already exists",L"Halt",MB_OK);}
 	 }
@@ -15256,6 +15316,7 @@ void __fastcall TForm1::exportCTSPExecute(TObject *Sender)
 						 }
 	   else CTSPnames->CheckEdit6=float(3600);
 	   CTSPnames->ShowModal();
+	   delete CTSPnames;CTSPnames=NULL;
 
 /*
 	   for(i=0;i<wp.nWeldPass;i++)
@@ -16519,6 +16580,7 @@ void __fastcall TForm1::exportWARP3DExecute(TObject *Sender)
 //	   ABAQnames->CheckEdit1=gWsiAlias.t_str();
 	   ABAQnames->CheckEdit1=gWsiAlias.w_str();
 	   ABAQnames->ShowModal();
+	   delete ABAQnames;ABAQnames=NULL;
 
 	  }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Must create weld passes->Weld",L"Halt",MB_OK);}
@@ -16642,7 +16704,7 @@ viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[
 									(base.nop1[MXNPEL*i+ 8]+1)<<" "<<(base.nop1[MXNPEL*i+ 9]+1)<<"\n";
 															}
 										  else {
-honk<<(i+1)<<" Unsupp in exportWARP3D1a_public() "<<eltype<<" "<<bscode<<" "<<node<<"\n";
+//honk<<(i+1)<<" Unsupp in exportWARP3D1a_public() "<<eltype<<" "<<bscode<<" "<<node<<"\n";
 												extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"exportWARP3D1a_public() unsupported element type",L"Terminate",MB_OK);
 												exit(0);}
 										 }
@@ -16665,7 +16727,7 @@ honk<<(i+1)<<" Unsupp in exportWARP3D1a_public() "<<eltype<<" "<<bscode<<" "<<no
 //		  WARP3DepBlock(gWsiAlias);
 		  Screen->Cursor=Save_Cursor;
 //		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"default_coordinates.COORDINATES & default_INCIDandBLOCK.INCIDandBLOCK\nwritten but user must use PATGO to create default_constraints.CONSTRAINTS\nBlocking info must be added to default_INCIDandBLOCK.INCIDandBLOCK",L"Successful first step",MB_OK);
-honk<<"\n"<<" Writing four WARP3D datafiles...\n";
+//honk<<"\n"<<" Writing four WARP3D datafiles...\n";
 		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing 4 WARP3D files",MB_OK);
 ///////////////////////////////////////////
 ///////////////////////////////////////////
@@ -18279,7 +18341,8 @@ char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_
 outfile<<"list \""<<m1<<"\" ";
 delete [] m1;
 								 }
-																	   else {honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
+																	   else {
+//																	         honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Too many nonWeld/Weld entities in exportCTSP4_public()",L"Terminate",MB_OK);exit(0);
 																			}
 															 }
@@ -18317,7 +18380,8 @@ char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_
 outfile<<"list \""<<m1<<"\" ";
 delete [] m1;
 								 }
-																	   else {honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
+																	   else {
+//																	         honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Too many nonWeld/Weld entities in exportCTSP4_public()",L"Terminate",MB_OK);exit(0);
 																			}
 															 }
@@ -18452,7 +18516,8 @@ outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<umat<<" order,\n"; //Correct
 outfile<<" 2x2x2 center_output short\n"; //Correction from BobD & allow for long line   EFP 1/27/2015
 delete [] m3;delete [] m2;delete [] m1;
 									 }
-	else {honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
+	else {
+//	      honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
 		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Too many nonWeld/Weld entities in exportCTSP4_public()",L"Terminate",MB_OK);exit(0);
 		 }
    }
@@ -19069,6 +19134,7 @@ void __fastcall TForm1::ChAllWParam_currExecute(TObject *Sender)
    {if(wps.nWeldParamSet){F28_Form=new TForm28(1,0,1,vl0,vlmin,vlmax,wps.curr[0],vfmin,vfmax,this);
 						  F28_Form->Caption="Change WeldParam current";F28_Form->Button3->Caption="Cancel";
 						  F28_Form->ShowModal();
+						  delete F28_Form;F28_Form=NULL;
 						 }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Parameters",L"Halt",MB_OK);}
    }
@@ -19081,6 +19147,7 @@ void __fastcall TForm1::ChAllWParam_voltExecute(TObject *Sender)
    {if(wps.nWeldParamSet){F28_Form=new TForm28(2,0,1,vl0,vlmin,vlmax,wps.volt[0],vfmin,vfmax,this);
 						  F28_Form->Caption="Change WeldParam voltage";F28_Form->Button3->Caption="Cancel";
 						  F28_Form->ShowModal();
+						  delete F28_Form;F28_Form=NULL;
 						 }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Parameters",L"Halt",MB_OK);}
    }
@@ -19093,6 +19160,7 @@ void __fastcall TForm1::ChAllWParam_effExecute(TObject *Sender)
    {if(wps.nWeldParamSet){F28_Form=new TForm28(3,0,1,vl0,vlmin,vlmax,wps.eff[0],vfmin,vfmax,this);
 						  F28_Form->Caption="Change WeldParam efficiency";F28_Form->Button3->Caption="Cancel";
 						  F28_Form->ShowModal();
+						  delete F28_Form;F28_Form=NULL;
 						 }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Parameters",L"Halt",MB_OK);}
    }
@@ -19105,6 +19173,7 @@ void __fastcall TForm1::ChAllWParam_speedExecute(TObject *Sender)
    {if(wps.nWeldParamSet){F28_Form=new TForm28(4,0,1,vl0,vlmin,vlmax,wps.speed[0],vfmin,vfmax,this);
 						  F28_Form->Caption="Change WeldParam speed";F28_Form->Button3->Caption="Cancel";
 						  F28_Form->ShowModal();
+						  delete F28_Form;F28_Form=NULL;
 						 }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Parameters",L"Halt",MB_OK);}
    }
@@ -19117,6 +19186,7 @@ void __fastcall TForm1::ChAllMatProp_ThCondExecute(TObject *Sender)
    {if(wms.nMatPropSet){F28_Form=new TForm28(5,0,1,vl0,vlmin,vlmax,wms.cond[0],vfmin,vfmax,this);
 						F28_Form->Caption="Change MatProp Th.conductivity";F28_Form->Button3->Caption="Cancel";
 						F28_Form->ShowModal();
+						delete F28_Form;F28_Form=NULL;
 					   }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Material Properties",L"Halt",MB_OK);}
    }
@@ -19129,6 +19199,7 @@ void __fastcall TForm1::ChAllMatProp_SpHeatExecute(TObject *Sender)
    {if(wms.nMatPropSet){F28_Form=new TForm28(6,0,1,vl0,vlmin,vlmax,wms.heat[0],vfmin,vfmax,this);
 						F28_Form->Caption="Change MatProp Specific Heat";F28_Form->Button3->Caption="Cancel";
 						F28_Form->ShowModal();
+						delete F28_Form;F28_Form=NULL;
 					   }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Material Properties",L"Halt",MB_OK);}
    }
@@ -19141,6 +19212,7 @@ void __fastcall TForm1::ChAllMatProp_DensExecute(TObject *Sender)
    {if(wms.nMatPropSet){F28_Form=new TForm28(7,0,1,vl0,vlmin,vlmax,wms.den[0],vfmin,vfmax,this);
 						F28_Form->Caption="Change MatProp Density";F28_Form->Button3->Caption="Cancel";
 						F28_Form->ShowModal();
+						delete F28_Form;F28_Form=NULL;
 					   }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Material Properties",L"Halt",MB_OK);}
    }
@@ -19157,6 +19229,7 @@ void __fastcall TForm1::ChAllMatProp_AnnealExecute(TObject *Sender)
 						F28_Form->Caption="MatProp anneal (yes -1/no 0)";
 						F28_Form->Button3->Caption="Cancel";
 						F28_Form->ShowModal();
+						delete F28_Form;F28_Form=NULL;
 					   }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Material Properties",L"Halt",MB_OK);}
    }
@@ -19169,6 +19242,7 @@ void __fastcall TForm1::ChAllMatProp_TiExecute(TObject *Sender)
    {if(wms.nMatPropSet){F28_Form=new TForm28(9,0,1,vl0,vlmin,vlmax,wms.Ti[0],vfmin,vfmax,this);
 						F28_Form->Caption="Change MatProp Initiation T";F28_Form->Button3->Caption="Cancel";
 						F28_Form->ShowModal();
+						delete F28_Form;F28_Form=NULL;
 					   }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Material Properties",L"Halt",MB_OK);}
    }
@@ -19181,6 +19255,7 @@ void __fastcall TForm1::ChAllMatProp_TaExecute(TObject *Sender)
    {if(wms.nMatPropSet){F28_Form=new TForm28(10,0,1,vl0,vlmin,vlmax,wms.Ta[0],vfmin,vfmax,this);
 						F28_Form->Caption="Change MatProp Anneal T";F28_Form->Button3->Caption="Cancel";
 						F28_Form->ShowModal();
+						delete F28_Form;F28_Form=NULL;
 					   }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Material Properties",L"Halt",MB_OK);}
    }
@@ -19193,6 +19268,7 @@ void __fastcall TForm1::ChAllMatProp_TmExecute(TObject *Sender)
    {if(wms.nMatPropSet){F28_Form=new TForm28(11,0,1,vl0,vlmin,vlmax,wms.Tm[0],vfmin,vfmax,this);
 						F28_Form->Caption="Change MatProp Melting T";F28_Form->Button3->Caption="Cancel";
 						F28_Form->ShowModal();
+						delete F28_Form;F28_Form=NULL;
 					   }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Material Properties",L"Halt",MB_OK);}
    }
@@ -19207,6 +19283,7 @@ void __fastcall TForm1::ChAllMatProp_VEDExecute(TObject *Sender)
 						F28_Form->Caption="Change MatProp VED (yes -1/no 0)";
 						F28_Form->Button3->Caption="Cancel";
 						F28_Form->ShowModal();
+						delete F28_Form;F28_Form=NULL;
 					   }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Material Properties",L"Halt",MB_OK);}
    }
@@ -19219,6 +19296,7 @@ void __fastcall TForm1::ChAllWPass_timeIntervExecute(TObject *Sender)
    {if(wp.nWeldPass){F28_Form=new TForm28(13,0,1,vl0,vlmin,vlmax,wp.timeInterval[0],vfmin,vfmax,this);
 					 F28_Form->Caption="InterPass Cooling Time";F28_Form->Button3->Caption="Cancel";
 					 F28_Form->ShowModal();
+					 delete F28_Form;F28_Form=NULL;
 					}
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Pass",L"Halt",MB_OK);}
    }
@@ -19231,6 +19309,7 @@ void __fastcall TForm1::ChAllWPass_stepIntervalExecute(TObject *Sender)
    {if(wp.nWeldPass){F28_Form=new TForm28(14,0,0,wp.stepInterval[0],vlmin,vlmax,vf0,vfmin,vfmax,this);
 					 F28_Form->Caption="Change InterPass Cooling Steps";F28_Form->Button3->Caption="Cancel";
 					 F28_Form->ShowModal();
+					 delete F28_Form;F28_Form=NULL;
 					}
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Pass",L"Halt",MB_OK);}
    }
@@ -19243,6 +19322,7 @@ void __fastcall TForm1::ChAllWPass_maxiHeatStepExecute(TObject *Sender)
    {if(wp.nWeldPass){F28_Form=new TForm28(15,0,1,vl0,vlmin,vlmax,wp.maxiHeatStep[0],vfmin,vfmax,this);
 					 F28_Form->Caption="Change Max Heating Time";F28_Form->Button3->Caption="Cancel";
 					 F28_Form->ShowModal();
+					 delete F28_Form;F28_Form=NULL;
 					}
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Pass",L"Halt",MB_OK);}
    }
@@ -19255,6 +19335,7 @@ void __fastcall TForm1::ChAllWPass_miniHeatStepExecute(TObject *Sender)
    {if(wp.nWeldPass){F28_Form=new TForm28(16,0,1,vl0,vlmin,vlmax,wp.miniHeatStep[0],vfmin,vfmax,this);
 					 F28_Form->Caption="Change Min Heating Time";F28_Form->Button3->Caption="Cancel";
 					 F28_Form->ShowModal();
+					 delete F28_Form;F28_Form=NULL;
 					}
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Pass",L"Halt",MB_OK);}
    }
@@ -19267,6 +19348,7 @@ void __fastcall TForm1::ChAllWPass_thk1Execute(TObject *Sender)
    {if(wp.nWeldPass){F28_Form=new TForm28(17,0,1,vl0,vlmin,vlmax,wp.thk1[0],vfmin,vfmax,this);
 					 F28_Form->Caption="Change Plate#1 thickness";F28_Form->Button3->Caption="Cancel";
 					 F28_Form->ShowModal();
+					 delete F28_Form;F28_Form=NULL;
 					}
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Pass",L"Halt",MB_OK);}
    }
@@ -19279,6 +19361,7 @@ void __fastcall TForm1::ChAllWPass_thk2Execute(TObject *Sender)
    {if(wp.nWeldPass){F28_Form=new TForm28(18,0,1,vl0,vlmin,vlmax,wp.thk2[0],vfmin,vfmax,this);
 					 F28_Form->Caption="Change Plate#2 thickness";F28_Form->Button3->Caption="Cancel";
 					 F28_Form->ShowModal();
+					 delete F28_Form;F28_Form=NULL;
 					}
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Pass",L"Halt",MB_OK);}
    }
@@ -19291,6 +19374,7 @@ void __fastcall TForm1::ChAllWPass_troomExecute(TObject *Sender)
    {if(wp.nWeldPass){F28_Form=new TForm28(20,0,1,vl0,vlmin,vlmax,wp.troom[0],vfmin,vfmax,this);
 					 F28_Form->Caption="Change room temperature";F28_Form->Button3->Caption="Cancel";
 					 F28_Form->ShowModal();
+					 delete F28_Form;F28_Form=NULL;
 					}
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Pass",L"Halt",MB_OK);}
    }
@@ -19303,6 +19387,7 @@ void __fastcall TForm1::ChAllWPass_tmeltExecute(TObject *Sender)
    {if(wp.nWeldPass){F28_Form=new TForm28(21,0,1,vl0,vlmin,vlmax,wp.tmelt[0],vfmin,vfmax,this);
 					 F28_Form->Caption="Change melting temperature";F28_Form->Button3->Caption="Cancel";
 					 F28_Form->ShowModal();
+					 delete F28_Form;F28_Form=NULL;
 					}
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Pass",L"Halt",MB_OK);}
    }
@@ -19315,6 +19400,7 @@ void __fastcall TForm1::ChAllWPass_tcutlExecute(TObject *Sender)
    {if(wp.nWeldPass){F28_Form=new TForm28(22,0,1,vl0,vlmin,vlmax,wp.tcutl[0],vfmin,vfmax,this);
 					 F28_Form->Caption="Change low-cut temperature";F28_Form->Button3->Caption="Cancel";
 					 F28_Form->ShowModal();
+					 delete F28_Form;F28_Form=NULL;
 					}
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Pass",L"Halt",MB_OK);}
    }
@@ -19327,6 +19413,7 @@ void __fastcall TForm1::ChAllWPass_tcuthExecute(TObject *Sender)
    {if(wp.nWeldPass){F28_Form=new TForm28(23,0,1,vl0,vlmin,vlmax,wp.tcuth[0],vfmin,vfmax,this);
 					 F28_Form->Caption="Change preheat temperature";F28_Form->Button3->Caption="Cancel";
 					 F28_Form->ShowModal();
+					 delete F28_Form;F28_Form=NULL;
 					}
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Create Weld Pass",L"Halt",MB_OK);}
    }
@@ -19337,7 +19424,8 @@ void TForm1::Form28_public()
 {int isel=F28_Form->CheckISEL,imode=F28_Form->CheckMODE,fORint=F28_Form->CheckForI;
  long i=0,ival=0;float fval=0.f;
  if(fORint)fval=F28_Form->CheckFVAL;else ival=F28_Form->CheckIVAL;
- if(!imode){F28_Form->Close();F28_Form=NULL;}
+// if(!imode){F28_Form->Close();F28_Form=NULL;}
+ if(!imode)F28_Form->Close();
  if(isel==1){for(i=0;i<wps.nWeldParamSet;i++)wps.curr[i]=fval;//WeldParam_curr
 			 if(wp.nWeldPass)for(i=0;i<wp.nWeldPass;i++)wp.curr[i]=fval;
 			}
@@ -19388,8 +19476,7 @@ void TForm1::Form28_public()
 }
 //---------------------------------------------------------------------------
 void TForm1::Form28Close_public(){F28_Form->Close();
-								  if(F28_Form->CheckMODE)delete F28_Form;
-								  F28_Form=NULL;
+								  if(F28_Form->CheckMODE){delete F28_Form;F28_Form=NULL;}
 								 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::AboutVFTExecute(TObject *Sender)
@@ -19408,22 +19495,26 @@ void __fastcall TForm1::AboutVFTExecute(TObject *Sender)
  About_VFT->Label6->Caption=L"    Engineering Mechanics Corporation of Columbus (www.emc-sq.com) and";
  About_VFT->Label7->Caption=L"    Ohio Supercomputer Center (www.osc.edu).";
  About_VFT->ShowModal();
+ delete About_VFT;About_VFT=NULL;
 }
 //---------------------------------------------------------------------------
 // Timeshift...Execute() et al. await a "timeshift" weld repair analysis methodology for WARP3D from BB & BobD
 void __fastcall TForm1::TimeshiftCTSP0Execute(TObject *Sender) //EFP 7/05/2012
 {float val=0.f;tshiftCTSP=new TForm8(2,val,this);tshiftCTSP->Caption="Timeshift CTSP";
  tshiftCTSP->Button2->Caption="Reset";tshiftCTSP->Button3->Caption="Inactive";tshiftCTSP->ShowModal();
+ delete tshiftCTSP;tshiftCTSP=NULL;
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::TimeshiftVED0Execute(TObject *Sender) //EFP 11/24/2012
 {float val=0.f;tshiftCTSP=new TForm8(4,val,this);tshiftCTSP->Caption="Timeshift VED";
  tshiftCTSP->Button2->Caption="Reset";tshiftCTSP->Button3->Caption="Inactive";tshiftCTSP->ShowModal();
+ delete tshiftCTSP;tshiftCTSP=NULL;
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::TimeshiftCTSPandVED0Execute(TObject *Sender) //EFP 11/24/2012
 {float val=0.f;tshiftCTSP=new TForm8(5,val,this);tshiftCTSP->Caption="Timeshift CTSP+VED";
  tshiftCTSP->Button2->Caption="Reset";tshiftCTSP->Button3->Caption="Inactive";tshiftCTSP->ShowModal();
+ delete tshiftCTSP;tshiftCTSP=NULL;
 }
 //---------------------------------------------------------------------------
 // Merge...Execute() et al. await a "timeshift" weld repair analysis methodology for WARP3D from BB & BobD
@@ -19739,6 +19830,7 @@ void TForm1::tshiftCTSP2(int isw)
  else if(isw==8)tshiftCTSP->Caption=L"Merge+Timeshift VED";
  else if(isw==9)tshiftCTSP->Caption=L"Merge+Timeshift CTSP+VED";
  tshiftCTSP->Button2->Caption=L"Reset";tshiftCTSP->Button3->Caption=L"Inactive";tshiftCTSP->ShowModal();
+ delete tshiftCTSP;tshiftCTSP=NULL;
 ///////////
 // if(isw==9 && icheck==11)     {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename tempShift.out & timeShift.out & VEDshift.dat",L"Success",MB_OK);}
 // else if(isw==9 && icheck==1) {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename tempShift.out & timeShift.out",L"Partial success with CTSP",MB_OK);}
@@ -19796,7 +19888,9 @@ if(vcheck>=0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(
 			 tshift=lastTime-tstep;
 			 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(FloatToStr(tshift).w_str(),L"Override user input",MB_OK);
 			 ofstream outfile1("tempMerge.out",ios::nocreate | ios::app);ofstream outfile2("timeMerge.out",ios::nocreate | ios::app);
-m2ax1=1;honk<<tstep<<" "<<nnd<<" First card of 2nd temp.out (not written) "<<m2ax1<<"\n";m2ax1++;
+m2ax1=1;
+//honk<<tstep<<" "<<nnd<<" First card of 2nd temp.out (not written) "<<m2ax1<<"\n";
+m2ax1++;
 //			 max1=1;
 //			 outfile1<<setw(15)<<scientific<<tstep+tshift<<setw(12)<<nnd<<"\n";
 //			 outfile2<<setw(12)<<max1<<setw(15)<<scientific<<tstep+tshift<<"\n";
@@ -19815,7 +19909,8 @@ m2ax1=1;honk<<tstep<<" "<<nnd<<" First card of 2nd temp.out (not written) "<<m2a
 			   {viewfile1.getline(descript,76);
 				if(strlen(descript))
 				  {parse_cdm(descript,2,&nic,&nrc,larr,darr);nnd=larr[0];tstep=darr[0];
-honk<<tstep<<" "<<nnd<<" Subseq card of 2nd temp.out "<<m2ax1<<"\n";m2ax1++;
+//honk<<tstep<<" "<<nnd<<" Subseq card of 2nd temp.out "<<m2ax1<<"\n";
+m2ax1++;
 				   outfile1<<setw(15)<<scientific<<(tstep+tshift)<<setw(12)<<nnd<<"\n";
 				   max1++;outfile2<<setw(12)<<max1<<setw(15)<<scientific<<(tstep+tshift)<<"\n";
 				   if(nnd){if(solidshellsw){for(in=0;in<nnd;in++){viewfile1>>id>>t11>>t12>>t13>>t14>>t15;
@@ -19877,7 +19972,9 @@ honk<<tstep<<" "<<nnd<<" Subseq card of 2nd temp.out "<<m2ax1<<"\n";m2ax1++;
 		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number",L"Failure: possible MatProp.dat file?",MB_OK);}
 		  else
 			{nnd=larr[0];tstep=darr[0];vcount++;
-m2ax1=1;honk<<tstep<<" "<<nnd<<" First card of 2nd VED.dat "<<m2ax1<<"\n";m2ax1++;
+m2ax1=1;
+//honk<<tstep<<" "<<nnd<<" First card of 2nd VED.dat "<<m2ax1<<"\n";
+m2ax1++;
 //TBD: Test for nonoverlapping VED only ==> DeleteFile(VEDmerge.dat)
 		  if(nnd)
 			{
