@@ -52,12 +52,13 @@ double TForm21::getEdit2(){
 ////								}
 ////						   return CheckEdit9;
 //						   return StrToFloat(Edit2->Text);
+ UnicodeString mess1=L"Zero thermal conductivity",mess2=L"Negative/zero thermal conductivity",mess3=L"Inadmissable thermal conductivity";
  try {StrToFloat(Edit2->Text);
-	  if(Edit2->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit2->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  if(Edit2->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit2->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	  else if(StrToFloat(Edit2->Text)>0.000001f)return StrToFloat(Edit2->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit2->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit2->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit2->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit2->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 						  }
 //---------------------------------------------------------------------------
 double TForm21::getEdit3(){
@@ -67,12 +68,13 @@ double TForm21::getEdit3(){
 ////								}
 ////						   return CheckEdit9;
 //						   return StrToFloat(Edit3->Text);
+ UnicodeString mess1=L"Zero specific heat",mess2=L"Negative/zero specific heat",mess3=L"Inadmissable specific heat";
  try {StrToFloat(Edit3->Text);
-	  if(Edit3->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit3->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  if(Edit3->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit3->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	  else if(StrToFloat(Edit3->Text)>0.000001f)return StrToFloat(Edit3->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit3->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit3->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit3->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit3->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 						  }
 //---------------------------------------------------------------------------
 double TForm21::getEdit4(){
@@ -82,12 +84,13 @@ double TForm21::getEdit4(){
 ////								}
 ////						   return CheckEdit9;
 //						   return StrToFloat(Edit4->Text);
+ UnicodeString mess1=L"Zero density",mess2=L"Negative/zero density",mess3=L"Inadmissable density";
  try {StrToFloat(Edit4->Text);
-	  if(Edit4->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  if(Edit4->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit4->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	  else if(StrToFloat(Edit4->Text)>0.000001f)return StrToFloat(Edit4->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit4->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit4->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 						  }
 //---------------------------------------------------------------------------
 double TForm21::getEdit5(){ //REMEMBER THAT getEdit & StrToFloat(Edit->Text) ARE OUT-OF-ORDER IN THE FOLLOWING
@@ -97,12 +100,13 @@ double TForm21::getEdit5(){ //REMEMBER THAT getEdit & StrToFloat(Edit->Text) ARE
 ////								}
 ////						   return CheckEdit9;
 //						   return StrToFloat(Edit6->Text);
+ UnicodeString mess1=L"Zero Annealing Initiation Temperature",mess2=L"Negative/zero Annealing Initiation Temperature",mess3=L"Inadmissable Annealing Initiation Temperature";
  try {StrToFloat(Edit6->Text);
-	  if(Edit6->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  if(Edit6->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit6->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	  else if(StrToFloat(Edit6->Text)>0.000001f)return StrToFloat(Edit6->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit6->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit6->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 						  }
 //---------------------------------------------------------------------------
 double TForm21::getEdit6(){
@@ -112,12 +116,13 @@ double TForm21::getEdit6(){
 ////								}
 ////						   return CheckEdit9;
 //						   return StrToFloat(Edit7->Text);
+ UnicodeString mess1=L"Zero Annealing Temperature",mess2=L"Negative/zero Annealing Temperature",mess3=L"Inadmissable Annealing Temperature";
  try {StrToFloat(Edit7->Text);
-	  if(Edit7->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit7->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  if(Edit7->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit7->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	  else if(StrToFloat(Edit7->Text)>0.000001f)return StrToFloat(Edit7->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit7->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit7->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit7->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit7->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 						  }
 //---------------------------------------------------------------------------
 double TForm21::getEdit7(){
@@ -127,12 +132,13 @@ double TForm21::getEdit7(){
 ////								}
 ////						   return CheckEdit9;
 //						   return StrToFloat(Edit8->Text);
+ UnicodeString mess1=L"Zero Material Melting Temperature",mess2=L"Negative/zero Material Melting Temperature",mess3=L"Inadmissable Material Melting Temperature";
  try {StrToFloat(Edit8->Text);
-	  if(Edit8->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit8->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  if(Edit8->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit8->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	  else if(StrToFloat(Edit8->Text)>0.000001f)return StrToFloat(Edit8->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit8->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit8->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit8->Text.w_str(),L"Reenter +float",MB_OK);return 0.f;}
+ catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit8->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
 						  }
 //---------------------------------------------------------------------------
 //int TForm16::getRadioGroup1(){return RadioGroup1->ItemIndex;}
@@ -352,44 +358,50 @@ void __fastcall TForm21::Button2Click(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TForm21::Button2Click(TObject *Sender)
 {int isw=1,j=0,icount=0,bufferSize=0,nrc=0;long larr[11];float TOL=0.000001f,darr[11];
+ UnicodeString mess01=L"Zero thermal conductivity ",mess02=L"Neg/zero thermal conductivity ",
+			   mess03=L"Zero specific heat ",mess04=L"Neg/zero specific heat ",
+			   mess05=L"Zero density ",mess06=L"Neg/zero density ",
+			   mess07=L"Anneal initiation T 0. ",mess08=L"Neg/zero Anneal initiation T ",
+			   mess09=L"Anneal T 0. ",mess10=L"Neg/zero Anneal T ",
+			   mess11=L"Material melting T 0. ",mess12=L"Neg/zero material melting T ";
  try {StrToFloat(Edit2->Text);
-	  if(Edit2->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit2->Text.w_str(),L"Reenter +float",MB_OK);}
-	  else if(StrToFloat(Edit2->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit2->Text.w_str(),L"Reenter +float",MB_OK);}
+	  if(Edit2->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess01+Edit2->Text).w_str(),L"Reenter +float",MB_OK);}
+	  else if(StrToFloat(Edit2->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess02+Edit2->Text).w_str(),L"Reenter +float",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
 						   ShowMessage(Label2->Caption +L" "+ Edit2->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit3->Text);
-	  if(Edit3->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit3->Text.w_str(),L"Reenter +float",MB_OK);}
-	  else if(StrToFloat(Edit3->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit3->Text.w_str(),L"Reenter +float",MB_OK);}
+	  if(Edit3->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess03+Edit3->Text).w_str(),L"Reenter +float",MB_OK);}
+	  else if(StrToFloat(Edit3->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess04+Edit3->Text).w_str(),L"Reenter +float",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
 						   ShowMessage(Label3->Caption +L" "+ Edit3->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit4->Text);
-	  if(Edit4->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Reenter +float",MB_OK);}
-	  else if(StrToFloat(Edit4->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Reenter +float",MB_OK);}
+	  if(Edit4->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess05+Edit4->Text).w_str(),L"Reenter +float",MB_OK);}
+	  else if(StrToFloat(Edit4->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess06+Edit4->Text).w_str(),L"Reenter +float",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
 						   ShowMessage(Label4->Caption +L" "+ Edit4->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit6->Text);
-	  if(Edit6->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);}
-	  else if(StrToFloat(Edit6->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);}
+	  if(Edit6->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess07+Edit6->Text).w_str(),L"Reenter +float",MB_OK);}
+	  else if(StrToFloat(Edit6->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess08+Edit6->Text).w_str(),L"Reenter +float",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
 						   ShowMessage(Label6->Caption +L" "+ Edit6->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit7->Text);
-	  if(Edit7->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit7->Text.w_str(),L"Reenter +float",MB_OK);}
-	  else if(StrToFloat(Edit7->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit7->Text.w_str(),L"Reenter +float",MB_OK);}
+	  if(Edit7->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess09+Edit7->Text).w_str(),L"Reenter +float",MB_OK);}
+	  else if(StrToFloat(Edit7->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess10+Edit7->Text).w_str(),L"Reenter +float",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
 						   ShowMessage(Label7->Caption +L" "+ Edit7->Text + L" must be positive floating-point");
 						  }
  try {StrToFloat(Edit8->Text);
-	  if(Edit8->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit8->Text.w_str(),L"Reenter +float",MB_OK);}
-	  else if(StrToFloat(Edit8->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit8->Text.w_str(),L"Reenter +float",MB_OK);}
+	  if(Edit8->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess11+Edit8->Text).w_str(),L"Reenter +float",MB_OK);}
+	  else if(StrToFloat(Edit8->Text)<=TOL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess12+Edit8->Text).w_str(),L"Reenter +float",MB_OK);}
 	 }
  catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
 						   ShowMessage(Label8->Caption +L" "+ Edit8->Text + L" must be positive floating-point");

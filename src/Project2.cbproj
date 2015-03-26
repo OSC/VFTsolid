@@ -7,7 +7,7 @@
         <MainSource>Project2.cpp</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Release</Config>
-        <Platform Condition="'$(Platform)'==''">Win64</Platform>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -154,7 +154,6 @@
         </CppCompile>
         <PCHCompile Include="Project2PCH1.h">
             <BuildOrder>1</BuildOrder>
-            <PCH>true</PCH>
         </PCHCompile>
         <CppCompile Include="Unit1.cpp">
             <Form>Form1</Form>
