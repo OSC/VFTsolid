@@ -22,6 +22,25 @@ object Form26: TForm26
     Height = 153
     ItemHeight = 13
     TabOrder = 0
-    OnClick = ListBox1Click
+  end
+  object Button1: TButton
+    Left = 8
+    Top = 176
+    Width = 58
+    Height = 25
+    Caption = 'OK'
+    ModalResult = 1
+    TabOrder = 1
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 72
+    Top = 176
+    Width = 57
+    Height = 25
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 2
+    OnClick = Button2Click
   end
 end

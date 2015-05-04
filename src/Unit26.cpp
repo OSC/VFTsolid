@@ -15,15 +15,18 @@ __fastcall TForm26::TForm26(int isel,TComponent* Owner) : TForm(Owner)
 {F26_sel=isel;
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm26::ListBox1Click(TObject *Sender)
-{
-// Form1->VFTlistbox_public();Close();
-// if(F26_isel==1)Form1->VFTlistbox_public();Close();
- Form1->VFTlistbox_public();
-// Close();
-}
-//---------------------------------------------------------------------------
 int TForm26::getItemIndex(){return ListBox1->ItemIndex;}
 //---------------------------------------------------------------------------
 int TForm26::getISEL(){return F26_sel;}
 //---------------------------------------------------------------------------
+void __fastcall TForm26::Button1Click(TObject *Sender)
+{
+	Form1->VFTlistbox_public();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm26::Button2Click(TObject *Sender)
+{
+	Close();
+}
+//---------------------------------------------------------------------------
+
