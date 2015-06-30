@@ -481,7 +481,7 @@ char *comboCWD;
 	   DelWeldParam(int),
 	   create_new_weld(int),
 	   RevProg0(long);
-	   int DelSubd0(int,String);
+	   int DelSubd0();
 	   void export_CTSP_NODE(), // Identical to ABAQUS-format ASCII nodal geometry file *.inp (or *.in), delimited by ","
 	        export_CTSP_ELEMENT8(), // Identical to ABAQUS format ASCII element (8n only, with element mapping) connectivity file *.inp (or *.in), delimited by ","
 			export_CTSP_INPUTp1(float),

@@ -15444,11 +15444,8 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 			extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing CTSP files",MB_OK);
 
 
-
-			for(ic=0;ic<maxCore;ic++){ //Empty & remove any preexisting subdirectories  EFP 11/06/2011
-// Allow for input.in, element.in, node.in, param.in, temp.out, time.out, etc but not *.exe
-									  if(!DelSubd0(ic,gWsiAlias))break;
-									 }
+			// Delete any old CTSPsubdXXXX sub-directories before we create new CTSP data
+			DelSubd0();
 
 
 
@@ -15545,14 +15542,6 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 ////////////////
 	   delete [] loadBal;
 ////////////////
-
-
-
-	   for(ic=mcm;ic<maxCore;ic++){ //Empty & remove any preexisting excess subdirectories  EFP 11/01/2011
-// Allow for input.in, element.in, node.in, param.in, temp.out, time.out, etc but not *.exe
-								   if(!DelSubd0(ic,gWsiAlias))break;
-								  }
-
 
 
 	  }
@@ -15745,91 +15734,41 @@ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Too many non
 }
 */
 //---------------------------------------------------------------------------
-int TForm1::DelSubd0(int ic,String gWsiAlias)
-//WARNING: This code does not delete any possible executable, or the directory in such case  EFP 6/27/2012
-{int flag=0;
- char buf[3+1];
-// char extensChar1a[]="CTSPsubd00",extensChar1b[]="CTSPsubd0",extensChar1c[]="CTSPsubd",
-//	  extensChar2[]="_CTSP_input.in",extensChar3[]="_CTSP_element.in",extensChar4[]="_CTSP_node.in",extensChar5[]="_CTSP_param.in",
-//	  *fnNeed=NULL,*fnNeed1=NULL,*fnNeed2=NULL,*fnNeed3=NULL,*fnNeed4=NULL,*fnNeed5=NULL;
- UnicodeString fnNeedS1,
-// fnNeedS2,fnNeedS3,fnNeedS4,fnNeedS5,
-	  extensCharS1a=UnicodeString(L"CTSPsubd00"),extensCharS1b=UnicodeString(L"CTSPsubd0"),extensCharS1c=UnicodeString(L"CTSPsubd")
-//	  ,extensCharS2=UnicodeString(L"_CTSP_input.in"),extensCharS3=UnicodeString(L"_CTSP_element.in"),extensCharS4=UnicodeString(L"_CTSP_node.in"),extensCharS5=UnicodeString(L"_CTSP_param.in")
-	  ;
- if(ic<10-1){
-//			 gcvt(double(ic+1),1,buf);
-////			 fnNeed1=new char[strlen(extensChar1a)+strlen(IntToStr(ic+1).c_str())+1];
-////			 StringCchCopy(fnNeed1,strlen(extensChar1a)+strlen(IntToStr(ic+1).c_str())+1,extensChar1a);
-////			 StringCchCat(fnNeed1,strlen(extensChar1a)+strlen(IntToStr(ic+1).c_str())+1,IntToStr(ic+1).c_str());
-//			 fnNeed1=new char[strlen(extensChar1a)+strlen(buf)+1];
-//			 StringCchCopy(fnNeed1,strlen(extensChar1a)+strlen(buf)+1,extensChar1a);
-//			 StringCchCat(fnNeed1,strlen(extensChar1a)+strlen(buf)+1,buf);
-			 fnNeedS1=extensCharS1a+IntToStr(ic+1);
-			}
- else if(ic<100-1){
-//				   gcvt(double(ic+1),2,buf);
-////				   fnNeed1=new char[strlen(extensChar1b)+strlen(IntToStr(ic+1).c_str())+1];
-////				   StringCchCopy(fnNeed1,strlen(extensChar1b)+strlen(IntToStr(ic+1).c_str())+1,extensChar1b);
-////				   StringCchCat(fnNeed1,strlen(extensChar1b)+strlen(IntToStr(ic+1).c_str())+1,IntToStr(ic+1).c_str());
-//				   fnNeed1=new char[strlen(extensChar1b)+strlen(buf)+1];
-//				   StringCchCopy(fnNeed1,strlen(extensChar1b)+strlen(buf)+1,extensChar1b);
-//				   StringCchCat(fnNeed1,strlen(extensChar1b)+strlen(buf)+1,buf);
-				   fnNeedS1=extensCharS1b+IntToStr(ic+1);
-				  }
- else {
-//	   gcvt(double(ic+1),3,buf);
-////	   fnNeed1=new char[strlen(extensChar1c)+strlen(IntToStr(ic+1).c_str())+1];
-////	   StringCchCopy(fnNeed1,strlen(extensChar1c)+strlen(IntToStr(ic+1).c_str())+1,extensChar1c);
-////	   StringCchCat(fnNeed1,strlen(extensChar1c)+strlen(IntToStr(ic+1).c_str())+1,IntToStr(ic+1).c_str());
-//	   fnNeed1=new char[strlen(extensChar1c)+strlen(buf)+1];
-//	   StringCchCopy(fnNeed1,strlen(extensChar1c)+strlen(buf)+1,extensChar1c);
-//	   StringCchCat(fnNeed1,strlen(extensChar1c)+strlen(buf)+1,buf);
-	   fnNeedS1=extensCharS1c+IntToStr(ic+1);
-	  }
- if(DirectoryExists(fnNeedS1,true)){
- SetCurrentDirectory(fnNeedS1.w_str());
-//// fnNeed2=new char[strlen(gWsiAlias.t_str())+strlen(extensChar2)+1];
-//// StringCchCopy(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,gWsiAlias.t_str());
-//// StringCchCat(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,extensChar2);
-//// DeleteFile(fnNeed2);
-// fnNeedS2=gWsiAlias+extensCharS2;DeleteFile(fnNeedS2);
- DeleteFile("input.in");
-//// delete [] fnNeed2;
+int TForm1::DelSubd0()
+{
+	WIN32_FIND_DATA FindDirData;
+	HANDLE hFind;
 
-//// fnNeed3=new char[strlen(gWsiAlias.t_str())+strlen(extensChar3)+1];
-//// StringCchCopy(fnNeed3,strlen(gWsiAlias.t_str())+strlen(extensChar3)+1,gWsiAlias.t_str());
-//// StringCchCat(fnNeed3,strlen(gWsiAlias.t_str())+strlen(extensChar3)+1,extensChar3);
-//// DeleteFile(fnNeed3);
-// fnNeedS3=gWsiAlias+extensCharS3;DeleteFile(fnNeedS3);
- DeleteFile("element.in");
-//// delete [] fnNeed3;
+	// Scan through CTSPsubdXXX sub-directories
+	std::wstring FilePath = L"C:\\Users\\jnicklas\\Desktop\\VFTsolid\\src\\Win32\\Release\\CTSPsubd*";
+	hFind = FindFirstFile(FilePath.c_str(), &FindDirData);
+	if (hFind == INVALID_HANDLE_VALUE) return 0;
 
-//// fnNeed4=new char[strlen(gWsiAlias.t_str())+strlen(extensChar4)+1];
-//// StringCchCopy(fnNeed4,strlen(gWsiAlias.t_str())+strlen(extensChar4)+1,gWsiAlias.t_str());
-//// StringCchCat(fnNeed4,strlen(gWsiAlias.t_str())+strlen(extensChar4)+1,extensChar4);
-//// DeleteFile(fnNeed4);
-// fnNeedS4=gWsiAlias+extensCharS4;DeleteFile(fnNeedS4);
- DeleteFile("node.in");
-//// delete [] fnNeed4;
+	do {
+		// Go into sub-directory
+		SetCurrentDirectory(FindDirData.cFileName);
 
-//// fnNeed5=new char[strlen(gWsiAlias.t_str())+strlen(extensChar5)+1];
-//// StringCchCopy(fnNeed5,strlen(gWsiAlias.t_str())+strlen(extensChar5)+1,gWsiAlias.t_str());
-//// StringCchCat(fnNeed5,strlen(gWsiAlias.t_str())+strlen(extensChar5)+1,extensChar5);
-//// DeleteFile(fnNeed5);
-// fnNeedS5=gWsiAlias+extensCharS5;DeleteFile(fnNeedS5);
- DeleteFile(L"param.in");
-//// delete [] fnNeed5;
+		WIN32_FIND_DATA FindFileData;
+		HANDLE hFindFile;
 
- DeleteFile(L"temp.out");DeleteFile(L"time.out");DeleteFile(L"*.exe"); //Which might or might not exist
- DeleteFile(L"tempRevise.out"); //EFP 6/27/2012
- SetCurrentDirectory(L"..");
- RemoveDirectory(fnNeedS1.w_str());
- flag=1;
-								  }
- else flag=0;
-// delete [] fnNeed1;
- return flag;
+		// Scan through all files in sub-directory and delete them
+		hFindFile = FindFirstFile(L"*.*", &FindFileData);
+		do {
+			if (hFindFile == INVALID_HANDLE_VALUE) break;
+			if (wcscmp(FindFileData.cFileName, L".") == 0 || wcscmp(FindFileData.cFileName, L"..") == 0) continue;
+			DeleteFile(FindFileData.cFileName);
+		} while (FindNextFile(hFindFile, &FindFileData));
+		FindClose(hFindFile);
+
+		// Drop back out of sub-directory
+		SetCurrentDirectory(L"..");
+
+		// Remove this empty sub-directory now
+		RemoveDirectory(FindDirData.cFileName);
+	} while (FindNextFile(hFind, &FindDirData));
+
+	FindClose(hFind);
+	return 1;
 }
 //---------------------------------------------------------------------------
 //void TForm1::export_CTSP_NODE(char gVFTnameStem[]) // Identical to ABAQUS-format ASCII nodal geometry file *.inp (or *.in), delimited by ","
