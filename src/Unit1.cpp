@@ -15740,8 +15740,7 @@ int TForm1::DelSubd0()
 	HANDLE hFind;
 
 	// Scan through CTSPsubdXXX sub-directories
-	std::wstring FilePath = L"C:\\Users\\jnicklas\\Desktop\\VFTsolid\\src\\Win32\\Release\\CTSPsubd*";
-	hFind = FindFirstFile(FilePath.c_str(), &FindDirData);
+	hFind = FindFirstFile(L"CTSPsubd*", &FindDirData);
 	if (hFind == INVALID_HANDLE_VALUE) return 0;
 
 	do {
