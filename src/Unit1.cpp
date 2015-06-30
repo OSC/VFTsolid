@@ -15749,13 +15749,14 @@ int TForm1::DelSubd0(int ic,String gWsiAlias)
 //WARNING: This code does not delete any possible executable, or the directory in such case  EFP 6/27/2012
 {int flag=0;
  char buf[3+1];
- char extensChar1a[]="CTSPsubd00",extensChar1b[]="CTSPsubd0",extensChar1c[]="CTSPsubd",
-	  extensChar2[]="_CTSP_input.in",extensChar3[]="_CTSP_element.in",extensChar4[]="_CTSP_node.in",extensChar5[]="_CTSP_param.in",
-//	  *fnNeed=NULL,
-	  *fnNeed1=NULL,*fnNeed2=NULL,*fnNeed3=NULL,*fnNeed4=NULL,*fnNeed5=NULL;
- UnicodeString fnNeedS1,fnNeedS2,fnNeedS3,fnNeedS4,fnNeedS5,
-	  extensCharS1a=UnicodeString(L"CTSPsubd00"),extensCharS1b=UnicodeString(L"CTSPsubd0"),extensCharS1c=UnicodeString(L"CTSPsubd"),
-	  extensCharS2=UnicodeString(L"_CTSP_input.in"),extensCharS3=UnicodeString(L"_CTSP_element.in"),extensCharS4=UnicodeString(L"_CTSP_node.in"),extensCharS5=UnicodeString(L"_CTSP_param.in");
+// char extensChar1a[]="CTSPsubd00",extensChar1b[]="CTSPsubd0",extensChar1c[]="CTSPsubd",
+//	  extensChar2[]="_CTSP_input.in",extensChar3[]="_CTSP_element.in",extensChar4[]="_CTSP_node.in",extensChar5[]="_CTSP_param.in",
+//	  *fnNeed=NULL,*fnNeed1=NULL,*fnNeed2=NULL,*fnNeed3=NULL,*fnNeed4=NULL,*fnNeed5=NULL;
+ UnicodeString fnNeedS1,
+// fnNeedS2,fnNeedS3,fnNeedS4,fnNeedS5,
+	  extensCharS1a=UnicodeString(L"CTSPsubd00"),extensCharS1b=UnicodeString(L"CTSPsubd0"),extensCharS1c=UnicodeString(L"CTSPsubd")
+//	  ,extensCharS2=UnicodeString(L"_CTSP_input.in"),extensCharS3=UnicodeString(L"_CTSP_element.in"),extensCharS4=UnicodeString(L"_CTSP_node.in"),extensCharS5=UnicodeString(L"_CTSP_param.in")
+	  ;
  if(ic<10-1){
 //			 gcvt(double(ic+1),1,buf);
 ////			 fnNeed1=new char[strlen(extensChar1a)+strlen(IntToStr(ic+1).c_str())+1];
@@ -15788,41 +15789,37 @@ int TForm1::DelSubd0(int ic,String gWsiAlias)
 	  }
  if(DirectoryExists(fnNeedS1,true)){
  SetCurrentDirectory(fnNeedS1.w_str());
-// fnNeed2=new char[strlen(gWsiAlias.t_str())+strlen(extensChar2)+1];
-// StringCchCopy(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,gWsiAlias.t_str());
-// StringCchCat(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,extensChar2);
-// DeleteFile(fnNeed2);
- fnNeedS2=gWsiAlias+extensCharS2;
- DeleteFile(fnNeedS2);
+//// fnNeed2=new char[strlen(gWsiAlias.t_str())+strlen(extensChar2)+1];
+//// StringCchCopy(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,gWsiAlias.t_str());
+//// StringCchCat(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,extensChar2);
+//// DeleteFile(fnNeed2);
+// fnNeedS2=gWsiAlias+extensCharS2;DeleteFile(fnNeedS2);
  DeleteFile("input.in");
-// delete [] fnNeed2;
+//// delete [] fnNeed2;
 
-// fnNeed3=new char[strlen(gWsiAlias.t_str())+strlen(extensChar3)+1];
-// StringCchCopy(fnNeed3,strlen(gWsiAlias.t_str())+strlen(extensChar3)+1,gWsiAlias.t_str());
-// StringCchCat(fnNeed3,strlen(gWsiAlias.t_str())+strlen(extensChar3)+1,extensChar3);
-// DeleteFile(fnNeed3);
- fnNeedS3=gWsiAlias+extensCharS3;
- DeleteFile(fnNeedS3);
+//// fnNeed3=new char[strlen(gWsiAlias.t_str())+strlen(extensChar3)+1];
+//// StringCchCopy(fnNeed3,strlen(gWsiAlias.t_str())+strlen(extensChar3)+1,gWsiAlias.t_str());
+//// StringCchCat(fnNeed3,strlen(gWsiAlias.t_str())+strlen(extensChar3)+1,extensChar3);
+//// DeleteFile(fnNeed3);
+// fnNeedS3=gWsiAlias+extensCharS3;DeleteFile(fnNeedS3);
  DeleteFile("element.in");
-// delete [] fnNeed3;
+//// delete [] fnNeed3;
 
-// fnNeed4=new char[strlen(gWsiAlias.t_str())+strlen(extensChar4)+1];
-// StringCchCopy(fnNeed4,strlen(gWsiAlias.t_str())+strlen(extensChar4)+1,gWsiAlias.t_str());
-// StringCchCat(fnNeed4,strlen(gWsiAlias.t_str())+strlen(extensChar4)+1,extensChar4);
-// DeleteFile(fnNeed4);
- fnNeedS4=gWsiAlias+extensCharS4;
- DeleteFile(fnNeedS4);
+//// fnNeed4=new char[strlen(gWsiAlias.t_str())+strlen(extensChar4)+1];
+//// StringCchCopy(fnNeed4,strlen(gWsiAlias.t_str())+strlen(extensChar4)+1,gWsiAlias.t_str());
+//// StringCchCat(fnNeed4,strlen(gWsiAlias.t_str())+strlen(extensChar4)+1,extensChar4);
+//// DeleteFile(fnNeed4);
+// fnNeedS4=gWsiAlias+extensCharS4;DeleteFile(fnNeedS4);
  DeleteFile("node.in");
-// delete [] fnNeed4;
+//// delete [] fnNeed4;
 
-// fnNeed5=new char[strlen(gWsiAlias.t_str())+strlen(extensChar5)+1];
-// StringCchCopy(fnNeed5,strlen(gWsiAlias.t_str())+strlen(extensChar5)+1,gWsiAlias.t_str());
-// StringCchCat(fnNeed5,strlen(gWsiAlias.t_str())+strlen(extensChar5)+1,extensChar5);
-// DeleteFile(fnNeed5);
- fnNeedS5=gWsiAlias+extensCharS5;
- DeleteFile(fnNeedS5);
+//// fnNeed5=new char[strlen(gWsiAlias.t_str())+strlen(extensChar5)+1];
+//// StringCchCopy(fnNeed5,strlen(gWsiAlias.t_str())+strlen(extensChar5)+1,gWsiAlias.t_str());
+//// StringCchCat(fnNeed5,strlen(gWsiAlias.t_str())+strlen(extensChar5)+1,extensChar5);
+//// DeleteFile(fnNeed5);
+// fnNeedS5=gWsiAlias+extensCharS5;DeleteFile(fnNeedS5);
  DeleteFile(L"param.in");
-// delete [] fnNeed5;
+//// delete [] fnNeed5;
 
  DeleteFile(L"temp.out");DeleteFile(L"time.out");DeleteFile(L"*.exe"); //Which might or might not exist
  DeleteFile(L"tempRevise.out"); //EFP 6/27/2012
