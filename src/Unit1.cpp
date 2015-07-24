@@ -11163,12 +11163,12 @@ if(nndv2){if(solidshellsw)for(in=0;in<nndv2;in++){viewfile2>>id>>t11>>t12>>t13>>
 // else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not create FileOpen selector",L"Failure",MB_OK);}
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::FormMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+void __fastcall TForm1::FormMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int Xraw, int Yraw)
 {//enum TMouseButton { mbLeft, mbRight, mbMiddle };
  int CRB=0,CRBsection=0,// Coding for FEMAP users EFP 12/20/2010
 iPers=iPersistVFT/100,jPers=(iPersistVFT-100*iPers)/10,
 // TB1H=0,P1W=0,
- CCB=0,CRB_sel=0,CRB_selx=0,CRB_ckShape=0,circFlag=0,girthFlag=0;
+ CCB=0,CRB_sel=0,CRB_selx=0,CRB_ckShape=0,circFlag=0,girthFlag=0,X=0,Y=0;
  long ip=0,ipp=0,ippp=0,signp=0,signm=0,isw=0,nipismin=0,nipismax=0,curiside=0,dumrec=0; // unsigned long prod=1,aflag=0;
  long ik=0,ic=0,iss=0,ies=0,isides=0;//Coding for FEMAP users EFP 12/20/2010
  long NodeNum=0,ie=0,numElInSlice=0,
@@ -11215,6 +11215,9 @@ iPers=iPersistVFT/100,jPers=(iPersistVFT-100*iPers)/10,
 // String extensCharS1[]={L"Weld Pass= "};
 // String extensCharS2[]={L"Sequence# "};
 // String extensCharS3[]={L" of "};
+
+if(Form1->WindowState==wsMaximized){X=Xraw;Y=Yraw;}
+else {X=Xraw+(Width-ClientWidth)/2;Y=Yraw+(Width-ClientWidth)/2;} //Non-maximized window needs allowance for margins EFP 7/24/2015
 
  //Convention: CRB_sel=CreateLinWeldPass->CheckISEL
 //  0-> Create full length
@@ -12534,9 +12537,14 @@ Screen->Cursor=crSizeAll;
 // delete sb;
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::FormMouseMove(TObject *Sender, TShiftState Shift, int X, int Y)
+void __fastcall TForm1::FormMouseMove(TObject *Sender, TShiftState Shift, int Xraw, int Yraw)
 // "Highlight" points/lines are plotted directly to Form1->Canvas, not buffer tBitmap->Canvas
-{panMouseM=1;
+{int X=0,Y=0;
+ panMouseM=1;
+
+if(Form1->WindowState==wsMaximized){X=Xraw;Y=Yraw;}
+else {X=Xraw+(Width-ClientWidth)/2;Y=Yraw+(Width-ClientWidth)/2;} //Non-maximized window needs allowance for margins EFP 7/24/2015
+
  if(FD_LButtonstatus==1)
 	 {if(zoomDrag){zoomRect.right=X;zoomRect.bottom=Y;
 				   Canvas->MoveTo(zoomRect.left,zoomRect.top);Canvas->LineTo(zoomRect.left,(zoomRect.bottom+3*zoomRect.top)/4);
@@ -12554,9 +12562,13 @@ void __fastcall TForm1::FormMouseMove(TObject *Sender, TShiftState Shift, int X,
 							  }
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::FormMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+void __fastcall TForm1::FormMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int Xraw, int Yraw)
 {//enum TMouseButton { mbLeft, mbRight, mbMiddle }; // Draw directly on Canvas
- float rad=0.f;int TB1H=0,P1W=0;
+ float rad=0.f;int TB1H=0,P1W=0,X=0,Y=0;
+
+if(Form1->WindowState==wsMaximized){X=Xraw;Y=Yraw;}
+else {X=Xraw+(Width-ClientWidth)/2;Y=Yraw+(Width-ClientWidth)/2;} //Non-maximized window needs allowance for margins EFP 7/24/2015
+
  if(Button==TMouseButton::mbLeft)
    {if(FD_LButtonstatus==1){if(zoomDrag){zoomDrag=false;zoomRect.right=X;zoomRect.bottom=Y;FD_LButtonstatus=0;
 										 CmZoomIn2(indat.npoin,indat.c1,trans_op,prod_op,trans_zoom,prod_zoom);
@@ -12609,14 +12621,17 @@ void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int W
 {FD_LBrec=FD_LButtonstatus;stateVFTrec=stateVFT;
  if(WheelDelta>0){zoomRect.left=int(float(ClientWidth)*0.05f);zoomRect.top=int(float(ClientHeight)*0.05f);
 				  zoomRect.right=int(float(ClientWidth)*0.95f);zoomRect.bottom=int(float(ClientHeight)*0.95f);
-				  zoomDrag=false;FD_LButtonstatus=0;
-				  CmZoomIn2(indat.npoin,indat.c1,trans_op,prod_op,trans_zoom,prod_zoom);
+//				  zoomDrag=false;FD_LButtonstatus=0;
+//				  CmZoomIn2(indat.npoin,indat.c1,trans_op,prod_op,trans_zoom,prod_zoom);
 				 }
  else if(WheelDelta<0){zoomRect.left= -int(float(ClientWidth)*0.05f);zoomRect.top= -int(float(ClientHeight)*0.05f);
 					   zoomRect.right=int(float(ClientWidth)*1.05f);zoomRect.bottom=int(float(ClientHeight)*1.05f);
-					   zoomDrag=false;FD_LButtonstatus=0;
-					   CmZoomIn2(indat.npoin,indat.c1,trans_op,prod_op,trans_zoom,prod_zoom);
+//					   zoomDrag=false;FD_LButtonstatus=0;
+//					   CmZoomIn2(indat.npoin,indat.c1,trans_op,prod_op,trans_zoom,prod_zoom);
 					  }
+ zoomDrag=false;FD_LButtonstatus=0;
+ CmZoomIn2(indat.npoin,indat.c1,trans_op,prod_op,trans_zoom,prod_zoom);
+ zoomRect.left=zoomRect.right=0;zoomRect.top=zoomRect.bottom=0; //Use this to subvert Timer1  EFP 7/24/2015
  FD_LButtonstatus=FD_LBrec;stateVFT=stateVFTrec;
 }
 //---------------------------------------------------------------------------
@@ -12648,9 +12663,9 @@ void __fastcall TForm1::Timer1Timer(TObject *Sender)
 	   rangle[0]=180.f*float(-zoomRect.top+zoomRect.bottom)/float(ClientHeight- TB1H);rangle0[0]=rangle0[0]+rangle[0];
 	   rangle[1]=180.f*float(zoomRect.right-zoomRect.left)/float(ClientWidth- P1W);rangle0[1]=rangle0[1]+rangle[1];
 	   rangle[2]=0.f;rangle0[2]=rangle0[2]+rangle[2];
-rangle[0]=rangle[0]/glGdiff;
-rangle[1]=rangle[1]/glGdiff;
-rangle[2]=rangle[2]/glGdiff;
+//rangle[0]=rangle[0]/glGdiff; //Disconnected  EFP 7/24/2015
+//rangle[1]=rangle[1]/glGdiff;
+//rangle[2]=rangle[2]/glGdiff;
 
 //honk<<rangle[0]<<" "<<rangle[1]<<" "<<rangle[2]<<" "<<glGdiff<<" Timer1Timer 11-2\n";
 	   FDrotate(0,indat.npoin,indat.c1,rangle);
