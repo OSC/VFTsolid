@@ -17,7 +17,6 @@ __published:	// IDE-managed Components
 	TLabel *Label2;
 	TLabel *Label3;
 	TButton *Button1;
-	TButton *Button2;
 	TButton *Button3;
 	TButton *Button4;
 	TButton *Button5;
@@ -26,11 +25,10 @@ __published:	// IDE-managed Components
 	TCheckListBox *CheckListBox1;
 	TCheckListBox *CheckListBox2;
 	TShape *Shape1;
-	TEdit *Edit1;
-	TLabel *Label4;
 	TButton *Button8;
+	TLabel *Label4;
 	void __fastcall Button1Click(TObject *Sender);
-	void __fastcall Button2Click(TObject *Sender);
+//	void __fastcall Button2Click(TObject *Sender);
 	void __fastcall Button3Click(TObject *Sender);
 	void __fastcall Button4Click(TObject *Sender);
 	void __fastcall Button5Click(TObject *Sender);
@@ -40,15 +38,17 @@ __published:	// IDE-managed Components
 	void __fastcall Button8Click(TObject *Sender);
 private:	// User declarations
 	int seqIndex,getSeq(),localseqInv[256],origseqInv[256];
-	long getEdit1();
+//	long getEdit1();
 	bool getDir();
-	void setSeqIndex(int),setEdit1(long),setWColor1(TColor);
+	void setSeqIndex(int),
+//	setEdit1(long),
+	setWColor1(TColor);
 	TColor getWColor1(),invColor[256],invorigColor[256];  //Cat's ass coding...
 public:		// User declarations
 	__property int CheckSeq={read=getSeq,write=setSeqIndex};
 	__property bool CheckDir={read=getDir};
 	__property TColor CheckWeldColor1={read=getWColor1,write=setWColor1};
-	__property long CheckEdit1={read=getEdit1,write=setEdit1};
+//	__property long CheckEdit1={read=getEdit1,write=setEdit1};
 	__fastcall TForm30(long,String [],TColor [],int [],long [],TComponent* Owner);
 };
 //---------------------------------------------------------------------------

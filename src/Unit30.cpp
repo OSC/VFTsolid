@@ -21,27 +21,27 @@ __fastcall TForm30::TForm30(long nWeldPass,String name[],TColor WeldColor[],int 
    }
  CheckListBox1->Enabled=false;CheckListBox2->ItemIndex=0;seqIndex=0;
 }
-//---------------------------------------------------------------------------
-long TForm30::getEdit1(){
-//                           if(input_checker(0,Edit23->Text))CheckEdit23=StrToInt(Edit23->Text);
-//						   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Must enter integer number",L"Halt",MB_OK);
-// 								 CheckEdit23=1;
-//								}
-//						   return CheckEdit23;
-						   return StrToInt(Edit1->Text);
-						  }
-//---------------------------------------------------------------------------
-void TForm30::setEdit1(long x){Edit1->Text=IntToStr(__int64(x));}
+////---------------------------------------------------------------------------
+//long TForm30::getEdit1(){
+////                           if(input_checker(0,Edit23->Text))CheckEdit23=StrToInt(Edit23->Text);
+////						   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Must enter integer number",L"Halt",MB_OK);
+//// 								 CheckEdit23=1;
+////								}
+////						   return CheckEdit23;
+//						   return StrToInt(Edit1->Text);
+//						  }
+////---------------------------------------------------------------------------
+//void TForm30::setEdit1(long x){Edit1->Text=IntToStr(__int64(x));}
 //---------------------------------------------------------------------------
 void __fastcall TForm30::Button1Click(TObject *Sender){Form1->WeldPassEditSeqn2_public();} //Enter
-//---------------------------------------------------------------------------
-void __fastcall TForm30::Button2Click(TObject *Sender)//Animate seq
-//{Form1->WeldPassEditSeqn2_public();
-{try {if(StrToInt(Edit1->Text)>0)Form1->WeldPassEditSeqn1_public();
-	  else {extern PACKAGE void __fastcall Beep(void);ShowMessage(Label4->Caption +L" "+ Edit1->Text + L" must be positive");}
-	 } //CAUTION: The user might have to click "Continue" after the following message.
- catch (EConvertError &E){extern PACKAGE void __fastcall Beep(void);ShowMessage(Label4->Caption +L" "+ Edit1->Text + L" must be positive integer");}
-}
+////---------------------------------------------------------------------------
+//void __fastcall TForm30::Button2Click(TObject *Sender)//Animate seq
+////{Form1->WeldPassEditSeqn2_public();
+//{try {if(StrToInt(Edit1->Text)>0)Form1->WeldPassEditSeqn1_public();
+//	  else {extern PACKAGE void __fastcall Beep(void);ShowMessage(Label4->Caption +L" "+ Edit1->Text + L" must be positive");}
+//	 } //CAUTION: The user might have to click "Continue" after the following message.
+// catch (EConvertError &E){extern PACKAGE void __fastcall Beep(void);ShowMessage(Label4->Caption +L" "+ Edit1->Text + L" must be positive integer");}
+//}
 //---------------------------------------------------------------------------
 void __fastcall TForm30::Button3Click(TObject *Sender)//Move up
 {int swp=0;TColor swpColor;

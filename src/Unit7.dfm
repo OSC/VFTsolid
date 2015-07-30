@@ -43,29 +43,43 @@ object Form7: TForm7
     Height = 13
     Caption = 'Label4'
   end
+  object Label5: TLabel
+    Left = 16
+    Top = 24
+    Width = 31
+    Height = 13
+    Caption = 'Label5'
+  end
+  object Label6: TLabel
+    Left = 256
+    Top = 24
+    Width = 31
+    Height = 13
+    Caption = 'Label6'
+  end
   object ListBox1: TListBox
     Left = 8
-    Top = 27
+    Top = 48
     Width = 106
-    Height = 185
+    Height = 164
     ItemHeight = 13
     TabOrder = 0
     OnClick = ListBox1Click
   end
   object ListBox2: TListBox
     Left = 120
-    Top = 27
+    Top = 48
     Width = 105
-    Height = 185
+    Height = 164
     ItemHeight = 13
     TabOrder = 1
     OnClick = ListBox2Click
   end
   object ListBox3: TListBox
     Left = 256
-    Top = 27
+    Top = 48
     Width = 105
-    Height = 137
+    Height = 116
     ItemHeight = 13
     TabOrder = 2
     OnClick = ListBox3Click

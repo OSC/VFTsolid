@@ -54,22 +54,13 @@ object Form15: TForm15
     TabOrder = 2
     OnClick = Button1Click
   end
-  object Button2: TButton
-    Left = 88
-    Top = 560
-    Width = 75
-    Height = 25
-    Caption = 'Inoperative'
-    TabOrder = 3
-    OnClick = Button2Click
-  end
   object Button3: TButton
     Left = 168
     Top = 560
     Width = 75
     Height = 25
     Caption = 'Cancel'
-    TabOrder = 4
+    TabOrder = 3
     OnClick = Button3Click
   end
   object PageControl1: TPageControl
@@ -77,14 +68,10 @@ object Form15: TForm15
     Top = 27
     Width = 401
     Height = 521
-    ActivePage = TabSheet3
-    TabOrder = 5
+    ActivePage = TabSheet1
+    TabOrder = 4
     object TabSheet1: TTabSheet
       Caption = 'Weld Pass Location'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label7: TLabel
         Left = 143
         Top = 393
@@ -147,21 +134,13 @@ object Form15: TForm15
           'Fourth')
         TabOrder = 0
       end
-      object CheckBox1: TCheckBox
-        Left = 8
-        Top = 8
-        Width = 297
-        Height = 17
-        Caption = 'Check if weld direction is start-to-stop; uncheck for reverse'
-        TabOrder = 1
-      end
       object Button4: TButton
         Left = 156
         Top = 115
         Width = 89
         Height = 25
         Caption = 'Change color...'
-        TabOrder = 2
+        TabOrder = 1
         OnClick = Button4Click
       end
       object ListBox1: TListBox
@@ -170,7 +149,7 @@ object Form15: TForm15
         Width = 183
         Height = 57
         ItemHeight = 13
-        TabOrder = 3
+        TabOrder = 2
         OnClick = ListBox1Click
       end
       object RadioGroup1: TRadioGroup
@@ -184,17 +163,13 @@ object Form15: TForm15
           'Partial Length/Part Section'
           'To End Run/Full Section'
           'Partial Length/Full Section')
-        TabOrder = 4
+        TabOrder = 3
         OnClick = RadioGroup1Click
       end
     end
     object TabSheet2: TTabSheet
       Caption = 'Welding Parameters'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label9: TLabel
         Left = 3
         Top = 8
@@ -353,10 +328,6 @@ object Form15: TForm15
     object TabSheet3: TTabSheet
       Caption = 'CTSP Inputs'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox2: TGroupBox
         Left = 0
         Top = 8

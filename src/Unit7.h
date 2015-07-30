@@ -19,6 +19,8 @@ __published:	// IDE-managed Components
 	TListBox *ListBox3;
 	TButton *Button1;
 	TLabel *Label4;
+	TLabel *Label5;
+	TLabel *Label6;
 	void __fastcall Button1Click(TObject *Sender);
 	void __fastcall ListBox1Click(TObject *Sender);
 	void __fastcall ListBox3Click(TObject *Sender);

@@ -165,7 +165,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid version 3.2.57f_64 2015";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.57h_64 2015";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -177,7 +177,7 @@ __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
  iplotflag=iCircleplot=iCullyesno=nGIDmax=nGID=0;
 // fl_feres=nMultFile=iplotType=GIFcount=CAPres_count=GIFsw=ANNOTcount=ANLINcount=iBackGroundColor=0;
  fl_feres=iplotType=0;
- base.npoin=base.nelt=wp.nWeldGroup=wp.nWeldPass=0;
+ base.npoin=base.nelt=0;
  shapecombo=0.f;
  iBackroundColor=0;BackroundColorF0->Checked= true;BackroundColorF1->Checked=false;BackroundColorF2->Checked=false;
 				   BackroundColorF3->Checked=false;BackroundColorF4->Checked=false;
@@ -270,7 +270,7 @@ void __fastcall TForm1::FileCloseExecute(TObject *Sender)
  iplotflag=iCircleplot=iCullyesno=nGIDmax=nGID=0;
 // fl_feres=nMultFile=iplotType=GIFcount=CAPres_count=GIFsw=ANNOTcount=ANLINcount=iBackGroundColor=0;
  fl_feres=iplotType=0;
- base.npoin=base.nelt=wp.nWeldGroup=wp.nWeldPass=0;
+ base.npoin=base.nelt=0;
  shapecombo=0.f;
  iBackroundColor=0;BackroundColorF0->Checked= true;BackroundColorF1->Checked=false;BackroundColorF2->Checked=false;
 				   BackroundColorF3->Checked=false;BackroundColorF4->Checked=false;
@@ -8446,8 +8446,10 @@ else                       {Canvas->Brush->Color=clBlack;Canvas->Pen->Color=clWh
 							tBitmap->Canvas->Brush->Color=clBlack;tBitmap->Canvas->Pen->Color=clWhite;
 						   }
 ///////////////////////////////////////
- Canvas->FillRect(Rect(0,0,Width,Height));
- tBitmap->Width = Width;tBitmap->Height = Height;
+// Canvas->FillRect(Rect(0,0,Width,Height));
+ Canvas->FillRect(Rect(0,0,ClientWidth,ClientHeight));
+// tBitmap->Width = Width;tBitmap->Height = Height;
+ tBitmap->Width = ClientWidth;tBitmap->Height = ClientHeight;
  tBitmap->Canvas->FillRect(Rect(0,0,tBitmap->Width,tBitmap->Height));
 
  if(iplotflag==1)
@@ -11171,7 +11173,7 @@ iPers=iPersistVFT/100,jPers=(iPersistVFT-100*iPers)/10,
  CCB=0,CRB_sel=0,CRB_selx=0,CRB_ckShape=0,circFlag=0,girthFlag=0,X=0,Y=0;
  long ip=0,ipp=0,ippp=0,signp=0,signm=0,isw=0,nipismin=0,nipismax=0,curiside=0,dumrec=0; // unsigned long prod=1,aflag=0;
  long ik=0,ic=0,iss=0,ies=0,isides=0;//Coding for FEMAP users EFP 12/20/2010
- long NodeNum=0,ie=0,numElInSlice=0,
+ long NodeNum=0,ie=0,numElInSlice=0,incognito=0,
 // iGID=0,
  iside=0,eltype=0,bscode=0,node=0,ieGID=0,t3=1000,t5=100000,t7=10000000,eltype5=0,bscode5=0,
    is=0,in=0,ir=0,numdum=0,eltype1=0,ieGID1=0,ip1=0,is1=0,iside1=0,
@@ -11564,13 +11566,19 @@ ieGID1=ieGID=indat.arrELSET[ie];isw=1;
 	   if(ie>=0){eltype=indat.matno[ie]/t7;bscode=(indat.matno[ie]-eltype*t7)/t5;node=(indat.matno[ie]-eltype*t7-bscode*t5)/t3;
 				 eltype3=base.orig_matno[ie]/t7;
 wp.pending=0;wp.elStart=ie;ieGID=ieGID3=indat.arrELSET[ie];
+ieGID2= base.arrELSET[ie];//EFP 7/25/2015
 				 if(eltype!=8 || eltype3!=8){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex element selected for weld pass processing",L"Terminate",MB_OK);exit(0);}
 //////////////////////////////////
 				}
 	   if(CreateLinWeldPass)
 				{
 				if(CreateLinWeldPass->PageControl1->TabIndex==0)
-				{CRB=CreateLinWeldPass->CheckRadioB;CCB=CreateLinWeldPass->CheckCheckB;
+				{
+///////////
+				 if(wp.CreateWPassMode)incognito=wp.PRECORD;else incognito=wp.nWeldPass;
+///////////
+				 CRB=CreateLinWeldPass->CheckRadioB;
+//				 CCB=CreateLinWeldPass->CheckCheckB;
 				 CRB_selx=CreateLinWeldPass->CheckISEL;
 				 if(CRB_selx==1)     {CRB_sel=1;CRBsection=0;}
 ////				 else if(CRB_selx==2){CRB_sel=0;CRBsection=0;} //CRB_selx=4/5/6/7 are Edit
@@ -11583,12 +11591,16 @@ wp.pending=0;wp.elStart=ie;ieGID=ieGID3=indat.arrELSET[ie];
 				 else if(CRB_selx==7){CRB_sel=1;CRBsection=1;}
 				 else                {CRB_sel=0;CRBsection=0;}
 				 CRB_ckShape=CreateLinWeldPass->CheckShape; // 0=noncircular,1=fullcircle,2=partialcircle,3=fullgirth,4=partialgirth
-				 circFlag=(wp.boolFlags[wp.PRECORD]-100*(wp.boolFlags[wp.PRECORD]/100))/10;
-				 girthFlag=(wp.boolFlags[wp.PRECORD]-10000*(wp.boolFlags[wp.PRECORD]/100000))/10000;
-				 if(CRB_ckShape==1 || CRB_ckShape==2){wp.boolFlags[wp.PRECORD]=wp.boolFlags[wp.PRECORD]+10*(1-circFlag);
+//				 circFlag=(wp.boolFlags[wp.PRECORD]-100*(wp.boolFlags[wp.PRECORD]/100))/10;
+//				 girthFlag=(wp.boolFlags[wp.PRECORD]-10000*(wp.boolFlags[wp.PRECORD]/100000))/10000;
+				 circFlag=(wp.boolFlags[incognito]-100*(wp.boolFlags[incognito]/100))/10;
+				 girthFlag=(wp.boolFlags[incognito]-10000*(wp.boolFlags[incognito]/100000))/10000;
+//				 if(CRB_ckShape==1 || CRB_ckShape==2){wp.boolFlags[wp.PRECORD]=wp.boolFlags[wp.PRECORD]+10*(1-circFlag);
+				 if(CRB_ckShape==1 || CRB_ckShape==2){wp.boolFlags[incognito]=wp.boolFlags[incognito]+10*(1-circFlag);
 													  circFlag=1;girthFlag=0;
 													 }
-				 else if(CRB_ckShape==3 || CRB_ckShape==4){wp.boolFlags[wp.PRECORD]=wp.boolFlags[wp.PRECORD]+10000*(1-girthFlag);
+//				 else if(CRB_ckShape==3 || CRB_ckShape==4){wp.boolFlags[wp.PRECORD]=wp.boolFlags[wp.PRECORD]+10000*(1-girthFlag);
+				 else if(CRB_ckShape==3 || CRB_ckShape==4){wp.boolFlags[incognito]=wp.boolFlags[incognito]+10000*(1-girthFlag);
 														   circFlag=0;girthFlag=1;
 														  }
 				 if(CRB==1) // All Start Elements
@@ -11597,13 +11609,15 @@ wp.pending=0;wp.elStart=ie;ieGID=ieGID3=indat.arrELSET[ie];
 					   if(wp.count_curr_sttEl==0)
 						 {wp.avis=10*(wp.avis/10); //EFP 6/26/2011 Set first col to zero
 						  if(wp.CreateWPassMode)wp.GIDwp=10*ieGID3+iside; // The GID/iside of the first facet to be clicked becomes the definitive GID.
-						  else wp.GIDwp=10*(1+wp.nWeldGroup+wp.PRECORD)+wp.temp_eles[wp.memWGa*wp.PRECORD+0]-10*(wp.temp_eles[wp.memWGa*wp.PRECORD+0]/10);
+//						  else wp.GIDwp=10*(1+wp.nWeldGroup+wp.PRECORD)+wp.temp_eles[wp.memWGa*wp.PRECORD+0]-10*(wp.temp_eles[wp.memWGa*wp.PRECORD+0]/10);
+						  else wp.GIDwp=10*(base.allGrp+wp.PRECORD);
 						 }
-					   else if(!wp.CreateWPassMode){wp.count_curr_sttEl=0; // EFP 3/30/2012
-													wp.GIDwp=10*(1+wp.nWeldGroup+wp.PRECORD)+wp.temp_eles[wp.memWGa*wp.PRECORD+0]-10*(wp.temp_eles[wp.memWGa*wp.PRECORD+0]/10);
-												   }
+//					   else if(!wp.CreateWPassMode){wp.count_curr_sttEl=0; // EFP 3/30/2012
+//													wp.GIDwp=10*(1+wp.nWeldGroup+wp.PRECORD)+wp.temp_eles[wp.memWGa*wp.PRECORD+0]-10*(wp.temp_eles[wp.memWGa*wp.PRECORD+0]/10);
+//												   }
 					   if((wp.CreateWPassMode && ieGID==wp.GIDwp/10) || //Remove iside check EFP 4/10/2011
-						  (!wp.CreateWPassMode && (ieGID==wp.GIDwp/10 || ieGID==wp.prevGID[wp.PRECORD]))) //Revision: Generalize iside EFP 5/02/2010
+//						  (!wp.CreateWPassMode && (ieGID==wp.GIDwp/10 || ieGID==wp.prevGID[wp.PRECORD]))) //Revision: Generalize iside EFP 5/02/2010
+						  (!wp.CreateWPassMode && ieGID==base.allGrp+wp.PRECORD)) //Revision: Generalize iside EFP 5/02/2010
 										  {
 		  ir=ieGID-9*(ieGID/9);
 		  if     (ir==0)Canvas->Brush->Color=clRed;
@@ -11627,7 +11641,8 @@ wp.pending=0;wp.elStart=ie;ieGID=ieGID3=indat.arrELSET[ie];
 		  Canvas->Pen->Width=4;
 Canvas->Brush->Color=CreateLinWeldPass->CheckWeldColor;
 Canvas->Pen->Color=clBlack;  //Source of our "All Black" problem ???
-wp.WeldColor[wp.PRECORD]=CreateLinWeldPass->CheckWeldColor;
+//wp.WeldColor[wp.PRECORD]=CreateLinWeldPass->CheckWeldColor;
+wp.WeldColor[incognito]=CreateLinWeldPass->CheckWeldColor;
 for(ip=0;ip<4;ip++){ptDraw[ip].x=int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*iside+ip]]]+0.5f);
 					ptDraw[ip].y=ClientHeight-int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*iside+ip]]+1]+0.5f);
 				   }
@@ -11649,20 +11664,34 @@ Canvas->Polygon(ptDraw,4-1);
 																	if(wp.sttEles[wp.memWGa*wp.nWeldPass+in]/10==ie)
 {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Duplicate element in weld pass",L"Ignore",MB_OK);isw=0;}
 																  }
-																 }
-										   else {                         //Editing
-										   isw=1;
-										   if(wp.count_curr_sttEl){for(in=0;in<wp.count_curr_sttEl;in++)if(wp.sttEles[wp.memWGa*wp.PRECORD+in]/10==ie)
-{extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Duplicate element in weld pass",L"Ignore",MB_OK);isw=0;}
-																  }
-												}
+/////////
 										   if(isw)
 											 {wp.sttEles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl]=10*ie+iside;
-
-//honk<<wp.count_curr_sttEl<<" STARTelDetailsURU "<<ie<<" "<<iside<<" "<<wp.memWGa<<" "<<wp.PRECORD<<"\n";
 											  for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*wp.PRECORD+4*wp.count_curr_sttEl+ip]=base.nop1[MXNPEL*ie+gdata8[4*iside+ip]];
 											  wp.count_curr_sttEl=wp.count_curr_sttEl+1;
 											 }
+/////////
+																 }
+										   else {                         //Editing
+										   isw=1;
+//										   if(wp.count_curr_sttEl){for(in=0;in<wp.count_curr_sttEl;in++)if(wp.sttEles[wp.memWGa*wp.PRECORD+in]/10==ie)
+//{extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Duplicate element in weld pass",L"Ignore",MB_OK);isw=0;}
+//																  }
+/////////
+										   if(isw)
+											 {wp.sttEles[wp.memWGa*incognito+wp.count_curr_sttEl]=10*ie+iside;
+											  for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*incognito+4*wp.count_curr_sttEl+ip]=base.nop1[MXNPEL*ie+gdata8[4*iside+ip]];
+											  wp.count_curr_sttEl=wp.count_curr_sttEl+1;
+											 }
+/////////
+												}
+//										   if(isw)
+//											 {wp.sttEles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl]=10*ie+iside;
+//
+////honk<<wp.count_curr_sttEl<<" STARTelDetailsURU "<<ie<<" "<<iside<<" "<<wp.memWGa<<" "<<wp.PRECORD<<"\n";
+//											  for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*wp.PRECORD+4*wp.count_curr_sttEl+ip]=base.nop1[MXNPEL*ie+gdata8[4*iside+ip]];
+//											  wp.count_curr_sttEl=wp.count_curr_sttEl+1;
+//											 }
 										  }
 					   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Not in current weld group or not current start face.",L"Ignore",MB_OK);}
 					  }
@@ -11687,7 +11716,8 @@ if(!wp.CreateWPassMode){
 				 else                {CRB_sel=0;CRBsection=0;}
 					   }
 					if((CRB_sel==0 || (CRB_sel==1 &&
-						 ((!wp.CreateWPassMode && ieGID3==wp.prevGID[wp.PRECORD]) ||
+//						 ((!wp.CreateWPassMode && ieGID3==wp.prevGID[wp.PRECORD]) ||
+						 ((!wp.CreateWPassMode && ieGID3==base.allGrp+wp.PRECORD) ||
 						  (wp.CreateWPassMode && ieGID3==wp.GIDwp/10)))) &&  //EFP 11/23/2010
 					   (node==8 || node==20) && wp.count_curr_sttEl) //EFP 1/30/2011   Remember to test for start-stop coincidence...
 
@@ -11726,7 +11756,8 @@ for(ip=0;ip<4;ip++){ptDraw[ip].x=int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*
 xnor=xnor/4.f;ynor=ynor/4.f;znor=znor/4.f;
 Canvas->Polygon(ptDraw,4-1);
 		  Canvas->Pen->Width=1;
-					   wp.stpEle[wp.PRECORD]=10*ie+iside;
+//					   wp.stpEle[wp.PRECORD]=10*ie+iside;
+					   wp.stpEle[incognito]=10*ie+iside;
 					   dumarr=new long[base.nelt];duminv=new long[base.nelt];dumgrp=new long[base.nelt];// Coding for FEMAP users EFP 12/20/2010
 					   for(ip=0;ip<base.nelt;ip++)duminv[ip]= -1;
 					   is=0;for(ip=0;ip<base.nelt;ip++){
@@ -11769,20 +11800,37 @@ Canvas->Polygon(ptDraw,4-1);
 //															 }
 //														  }
 
-ieGID=ieGID2= base.arrELSET[ip];//EFP 8/13/2011
+//ieGID=ieGID2= base.arrELSET[ip];//EFP 8/13/2011
+//if((wp.CreateWPassMode && ieGID==wp.GIDwp/10) ||
+//  (!wp.CreateWPassMode && wp.prevGID[wp.PRECORD]==ieGID2))dumgrp[ip]= -10;//EFP 8/11/2011
+//if((wp.CreateWPassMode && wp.GIDwp/10 ==ieGID) ||
+//  (!wp.CreateWPassMode && wp.prevGID[wp.PRECORD]==ieGID2))
+//   {dumarr[is]=ip;duminv[ip]=is;is++;
+////	break;
+//   }
+ieGID=base.arrELSET[ip];//EFP 8/13/2011
 if((wp.CreateWPassMode && ieGID==wp.GIDwp/10) ||
-  (!wp.CreateWPassMode && wp.prevGID[wp.PRECORD]==ieGID2))dumgrp[ip]= -10;//EFP 8/11/2011
+////  (!wp.CreateWPassMode && wp.prevGID[wp.PRECORD]==ieGID2))dumgrp[ip]= -10;//EFP 8/11/2011
+//  (!wp.CreateWPassMode && base.allGrp+wp.PRECORD==ieGID2))dumgrp[ip]= -10;//EFP 8/11/2011
+  (!wp.CreateWPassMode && ieGID==ieGID2))dumgrp[ip]= -10;//EFP 8/11/2011
 if((wp.CreateWPassMode && wp.GIDwp/10 ==ieGID) ||
-  (!wp.CreateWPassMode && wp.prevGID[wp.PRECORD]==ieGID2))
+////  (!wp.CreateWPassMode && wp.prevGID[wp.PRECORD]==ieGID2))
+//  (!wp.CreateWPassMode && base.allGrp+wp.PRECORD==ieGID2))
+  (!wp.CreateWPassMode && ieGID==ieGID2))
    {dumarr[is]=ip;duminv[ip]=is;is++;
 //	break;
    }
 
 													   } // dumarr Memory could be reduced here (nelt-->is)
 ///////////////// start EFP 5/08/2011
-if(CRBsection)dumgrp[wp.sttEles[wp.memWGa*wp.PRECORD+0]/10]=wp.sttEles[wp.memWGa*wp.PRECORD+0]-10*(wp.sttEles[wp.memWGa*wp.PRECORD+0]/10)+1;
+//if(CRBsection)dumgrp[wp.sttEles[wp.memWGa*wp.PRECORD+0]/10]=wp.sttEles[wp.memWGa*wp.PRECORD+0]-10*(wp.sttEles[wp.memWGa*wp.PRECORD+0]/10)+1;
+//else {for(ip=0;ip<wp.count_curr_sttEl;ip++) //TBD: Integrity test needed
+//dumgrp[wp.sttEles[wp.memWGa*wp.PRECORD+ip]/10]=wp.sttEles[wp.memWGa*wp.PRECORD+ip]-10*(wp.sttEles[wp.memWGa*wp.PRECORD+ip]/10)+1;
+//	 }
+
+if(CRBsection)dumgrp[wp.sttEles[wp.memWGa*incognito+0]/10]=wp.sttEles[wp.memWGa*incognito+0]-10*(wp.sttEles[wp.memWGa*incognito+0]/10)+1;
 else {for(ip=0;ip<wp.count_curr_sttEl;ip++) //TBD: Integrity test needed
-dumgrp[wp.sttEles[wp.memWGa*wp.PRECORD+ip]/10]=wp.sttEles[wp.memWGa*wp.PRECORD+ip]-10*(wp.sttEles[wp.memWGa*wp.PRECORD+ip]/10)+1;
+dumgrp[wp.sttEles[wp.memWGa*incognito+ip]/10]=wp.sttEles[wp.memWGa*incognito+ip]-10*(wp.sttEles[wp.memWGa*incognito+ip]/10)+1;
 	 }
 ///////////////// end
 					   numdum=is;
@@ -11874,8 +11922,10 @@ for(ip=numElInSlice;ip<base.nelt;ip++)dumgrp[ip]= -1;
 if(CRBsection){wp.count_curr_sttEl=numElInSlice;
 			   for(ir=0;ir<wp.count_curr_sttEl;ir++)
 				 {ik=dumgrp[ir]-10*(dumgrp[ir]/10);
-				  wp.sttEles[wp.memWGa*wp.PRECORD+ir]=dumgrp[ir];
-for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*wp.PRECORD+4*ir+ip]=base.nop1[MXNPEL*(dumgrp[ir]/10) +gdata8[4*ik+ip]];
+//				  wp.sttEles[wp.memWGa*wp.PRECORD+ir]=dumgrp[ir];
+//for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*wp.PRECORD+4*ir+ip]=base.nop1[MXNPEL*(dumgrp[ir]/10) +gdata8[4*ik+ip]];
+				  wp.sttEles[wp.memWGa*incognito+ir]=dumgrp[ir];
+for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*incognito+4*ir+ip]=base.nop1[MXNPEL*(dumgrp[ir]/10) +gdata8[4*ik+ip]];
 				 }
 			  }
 					   if(CRB_sel){  //Partial weld. Assumption: All elements in weld group have same orientation/side numbering (Partial length weld ONLY. Fix this...)					   isw=0;
@@ -11896,12 +11946,14 @@ for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*wp.PRECORD+4*ir+ip]=base.nop1[MXNP
 					   for(ipp=0;ipp<numElInSlice;ipp++) //Correction  EFP 1/28/2015
 						 {isw=0;icount=0;is1=ip1=dumgrp[ipp]/10; //ip1 correction EFP 1/05/2012
 						  curiside=dumgrp[ipp]-10*(dumgrp[ipp]/10);icount++;
-						  if(is1==wp.stpEle[wp.PRECORD]/10){isw=1;break;}
+//						  if(is1==wp.stpEle[wp.PRECORD]/10){isw=1;break;}
+						  if(is1==wp.stpEle[incognito]/10){isw=1;break;}
 						  else {while(dummap[6*duminv[is1]+opp_arr8[curiside]]> -1)
 									 {dumrec=dummap[6*duminv[is1]+opp_arr8[curiside]];
 									  if(ip1==dumrec/10)break;
 									  else {is1=dumrec/10;curiside=dumrec-10*(dumrec/10);icount++;
-											if(is1==wp.stpEle[wp.PRECORD]/10){isw=1;break;}
+//											if(is1==wp.stpEle[wp.PRECORD]/10){isw=1;break;}
+											if(is1==wp.stpEle[incognito]/10){isw=1;break;}
 										   }
 									 }
 							   }
@@ -11909,14 +11961,18 @@ for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*wp.PRECORD+4*ir+ip]=base.nop1[MXNP
 						 }
 					   ir=icount;icount=0;
 					   for(ipp=0;ipp<wp.count_curr_sttEl;ipp++)
-						 {wp.eles[wp.memWGa*wp.PRECORD+icount]=wp.sttEles[wp.memWGa*wp.PRECORD+ipp];icount++;
-						  is1=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]/10;
-						  curiside=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]-10*is1;
+//						 {wp.eles[wp.memWGa*wp.PRECORD+icount]=wp.sttEles[wp.memWGa*wp.PRECORD+ipp];icount++;
+						 {wp.eles[wp.memWGa*incognito+icount]=wp.sttEles[wp.memWGa*incognito+ipp];icount++;
+//						  is1=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]/10;
+//						  curiside=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]-10*is1;
+						  is1=wp.sttEles[wp.memWGa*incognito+ipp]/10;
+						  curiside=wp.sttEles[wp.memWGa*incognito+ipp]-10*is1;
 						  if(ir>1)
 							{for(in=1;in<ir;in++)
 							   {if(dummap[6*duminv[is1]+opp_arr8[curiside]]> -1)
 								  {dumrec=dummap[6*duminv[is1]+opp_arr8[curiside]];
-								   wp.eles[wp.memWGa*wp.PRECORD+icount]=dumrec;icount++;
+//								   wp.eles[wp.memWGa*wp.PRECORD+icount]=dumrec;icount++;
+								   wp.eles[wp.memWGa*incognito+icount]=dumrec;icount++;
 								   is1=dumrec/10;curiside=dumrec-10*(dumrec/10);
 								  }
 								else break;
@@ -11927,16 +11983,21 @@ for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*wp.PRECORD+4*ir+ip]=base.nop1[MXNP
 					   else { //Full length. Not necessary to have same element orientation here...
 					   icount=0;
 					   for(ipp=0;ipp<wp.count_curr_sttEl;ipp++)
-						 {wp.eles[wp.memWGa*wp.PRECORD+icount]=wp.sttEles[wp.memWGa*wp.PRECORD+ipp];icount++;
-						  is1=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]/10;
-						  curiside=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]-10*is1;ip1=is1;
+						 {
+//						  wp.eles[wp.memWGa*wp.PRECORD+icount]=wp.sttEles[wp.memWGa*wp.PRECORD+ipp];icount++;
+						  wp.eles[wp.memWGa*incognito+icount]=wp.sttEles[wp.memWGa*incognito+ipp];icount++;
+//						  is1=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]/10;
+//						  curiside=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]-10*is1;ip1=is1;
+						  is1=wp.sttEles[wp.memWGa*incognito+ipp]/10;
+						  curiside=wp.sttEles[wp.memWGa*incognito+ipp]-10*is1;ip1=is1;
 
 						  for(in=0;in<numdum;in++)
 							{
 							 if(dummap[6*duminv[is1]+opp_arr8[curiside]]> -1)
 							   {dumrec=dummap[6*duminv[is1]+opp_arr8[curiside]];
 								if(ip1==dumrec/10)break;
-								else {wp.eles[wp.memWGa*wp.PRECORD+icount]=dumrec;
+//								else {wp.eles[wp.memWGa*wp.PRECORD+icount]=dumrec;
+								else {wp.eles[wp.memWGa*incognito+icount]=dumrec;
 								   icount++;
 								   is1=dumrec/10;
 								   curiside=dumrec-10*(dumrec/10);
@@ -11947,24 +12008,28 @@ for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*wp.PRECORD+4*ir+ip]=base.nop1[MXNP
 						 }
 							}
 					   delete [] dumgrp;// Coding for FEMAP users    Moved EFP 5/05/2011
-					   for(in=0;in<icount;in++)dumarr[in]=wp.eles[wp.memWGa*wp.PRECORD+in];
+//					   for(in=0;in<icount;in++)dumarr[in]=wp.eles[wp.memWGa*wp.PRECORD+in];
+					   for(in=0;in<icount;in++)dumarr[in]=wp.eles[wp.memWGa*incognito+in];
 if(wp.CreateWPassMode){dist=0.f;
 					   for(in=0;in<wp.count_curr_sttEl;in++)
 						 {for(ipp=0;ipp<icount/wp.count_curr_sttEl;ipp++){
-wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*ipp+in]=dumarr[(icount/wp.count_curr_sttEl)*in+ipp];
+//wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*ipp+in]=dumarr[(icount/wp.count_curr_sttEl)*in+ipp];
+wp.eles[wp.memWGa*incognito+wp.count_curr_sttEl*ipp+in]=dumarr[(icount/wp.count_curr_sttEl)*in+ipp];
 ie1=dumarr[(icount/wp.count_curr_sttEl)*in+ipp]/10;eltype1=indat.matno[ie1]/t7;
 ieGID1=indat.arrELSET[ie1];
 
 //indat.matno[ie1]=indat.matno[ie1]-ieGID1+wp.PRECORD+wp.nWeldGroup+1; //Now obsolete
 //base.matno[ie1]=base.matno[ie1]-ieGID1+wp.PRECORD+wp.nWeldGroup+1; //Now obsolete
 
-if(ieGID1<=wp.nWeldGroup)wp.prevGID[wp.PRECORD]=ieGID1; // This might not allow for repeated edits..... FIX THIS
-//arGID[wp.PRECORD+wp.nWeldGroup+1]=1; //Corrected EFP 11/12/2010
-//base.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-//indat.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-arGID[wp.PRECORD+base.allGrp]=1; //Corrected EFP 2/28/2015 (3 lines)
-base.arrELSET[ie1]=wp.PRECORD+base.allGrp;
-indat.arrELSET[ie1]=wp.PRECORD+base.allGrp;
+//if(ieGID1<=wp.nWeldGroup)wp.prevGID[wp.PRECORD]=ieGID1; // This might not allow for repeated edits..... FIX THIS
+//arGID[wp.PRECORD+base.allGrp]=1; //Corrected EFP 2/28/2015 (3 lines)
+//base.arrELSET[ie1]=wp.PRECORD+base.allGrp;
+//indat.arrELSET[ie1]=wp.PRECORD+base.allGrp;
+
+if(ieGID1<=wp.nWeldGroup)wp.prevGID[incognito]=ieGID1; // PROBABLY WRONG..... FIX THIS
+arGID[incognito+base.allGrp]=1; //Corrected EFP 11/12/2010
+//base.arrELSET[ie1]=wp.PRECORD+base.allGrp; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
+indat.arrELSET[ie1]=wp.PRECORD+base.allGrp; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
 
 
 //cccccccccccccccc start [EFP does not approve of this non-element-area-based algorithm] EFP 5/18/2012
@@ -11985,30 +12050,35 @@ else {
 ///////////////////////// start EFP 4/17/2012
 					   for(in=0;in<wp.memWGa;in++){
 //if(wp.eles[wp.memWGa*wp.PRECORD+in]/10 >=0){
-if(wp.eles[wp.memWGa*wp.PRECORD+in] >=0){  //Correction  EFP 2/12/2015
-//base.arrELSET[base.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+2]= -1;
-//indat.arrELSET[indat.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+2]= -1;
-base.arrELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]= -1;
-indat.arrELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]= -1;
+//if(wp.eles[wp.memWGa*wp.PRECORD+in] >=0){  //Correction  EFP 2/12/2015
+if(wp.eles[wp.memWGa*incognito+in] >=0){
+////base.arrELSET[base.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+2]= -1;
+////indat.arrELSET[indat.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+2]= -1;
+//base.arrELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]= -1;
+//indat.arrELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]= -1;
+indat.arrELSET[wp.eles[wp.memWGa*incognito+in]/10]= -1;
 ////indat.matno[wp.eles[wp.memWGa*wp.PRECORD+in]/10]=
 ////   t3*(indat.matno[wp.eles[wp.memWGa*wp.PRECORD+in]/10]/t3)+wp.prevGID[wp.PRECORD]; //Now obsolete
 ////base.matno[wp.eles[wp.memWGa*wp.PRECORD+in]/10]=
 ////   t3*(base.matno[wp.eles[wp.memWGa*wp.PRECORD+in]/10]/t3)+wp.prevGID[wp.PRECORD]; //Now obsolete
 										   }
 
-////base.arrELSET[base.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+2]=wp.prevGID[wp.PRECORD];
-////indat.arrELSET[indat.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+2]=wp.prevGID[wp.PRECORD];
-//base.arrELSET[base.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+1]=wp.prevGID[wp.PRECORD];
-//indat.arrELSET[indat.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+1]=wp.prevGID[wp.PRECORD];
-base.arrELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]=wp.prevGID[wp.PRECORD];
-indat.arrELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]=wp.prevGID[wp.PRECORD];
-												   wp.eles[wp.memWGa*wp.PRECORD+in]= -1;
+//////base.arrELSET[base.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+2]=wp.prevGID[wp.PRECORD];
+//////indat.arrELSET[indat.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+2]=wp.prevGID[wp.PRECORD];
+////base.arrELSET[base.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+1]=wp.prevGID[wp.PRECORD];
+////indat.arrELSET[indat.trackELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]+1]=wp.prevGID[wp.PRECORD];
+//base.arrELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]=wp.prevGID[wp.PRECORD];
+//indat.arrELSET[wp.eles[wp.memWGa*wp.PRECORD+in]/10]=wp.prevGID[wp.PRECORD];
+//												   wp.eles[wp.memWGa*wp.PRECORD+in]= -1;
+indat.arrELSET[wp.eles[wp.memWGa*incognito+in]/10]=wp.prevGID[incognito];
+												   wp.eles[wp.memWGa*incognito+in]= -1;
 												  }
 ///////////////////////// end
 					   dist=0.f;
 					   for(in=0;in<wp.count_curr_sttEl;in++)
 						 {for(ipp=0;ipp<icount/wp.count_curr_sttEl;ipp++){
-wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*ipp+in]=dumarr[(icount/wp.count_curr_sttEl)*in+ipp];
+//wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*ipp+in]=dumarr[(icount/wp.count_curr_sttEl)*in+ipp];
+wp.eles[wp.memWGa*incognito+wp.count_curr_sttEl*ipp+in]=dumarr[(icount/wp.count_curr_sttEl)*in+ipp];
 ie1=dumarr[(icount/wp.count_curr_sttEl)*in+ipp]/10;eltype1=indat.matno[ie1]/t7;
 //bscode1=(indat.matno[ie1]-eltype1*t7)/t5;node1=(indat.matno[ie1]-eltype1*t7-bscode1*t5)/t3;
 //ieGID1=indat.matno[ie1]-eltype1*t7-bscode1*t5-node1*t3;
@@ -12069,10 +12139,11 @@ ie1=dumarr[(icount/wp.count_curr_sttEl)*in+ipp]/10;eltype1=indat.matno[ie1]/t7;
 //	 }
 //  }
 
-//base.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-//indat.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
-base.arrELSET[ie1]=wp.PRECORD+base.allGrp; //Corrected EFP 2/28/2015 (2 lines)
-indat.arrELSET[ie1]=wp.PRECORD+base.allGrp;
+////base.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
+////indat.arrELSET[ie1]=wp.PRECORD+wp.nWeldGroup+1; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
+//base.arrELSET[ie1]=wp.PRECORD+base.allGrp; //Corrected EFP 2/28/2015 (2 lines)
+//indat.arrELSET[ie1]=wp.PRECORD+base.allGrp;
+indat.arrELSET[ie1]=incognito+base.allGrp; //Presumes VFTsolid (only one GID per el) EFP 2/18/2012
 
 //cccccccccccccccc start [EFP does not approve of this non-element-area-based algorithm] EFP 5/18/2012
 xc=yc=zc=0.f;iside1=dumarr[(icount/wp.count_curr_sttEl)*in+ipp]-10*ie1;
@@ -12088,10 +12159,12 @@ xc=xc/4.f;yc=yc/4.f;zc=zc/4.f;dist=dist+sqrt(xc*xc+yc*yc+zc*zc);
 																		 }
 						 }
 //cccccccccccccccc start [EFP does not approve of this non-element-area-based algorithm] EFP 5/18/2012
-wp.lend[wp.PRECORD]=dist/float(wp.count_curr_sttEl);
+//wp.lend[wp.PRECORD]=dist/float(wp.count_curr_sttEl);
+wp.lend[incognito]=dist/float(wp.count_curr_sttEl);
 //cccccccccccccccc end
 	 }
-					   wp.n_curr_sttEl[wp.PRECORD]=wp.count_curr_sttEl;
+//					   wp.n_curr_sttEl[wp.PRECORD]=wp.count_curr_sttEl;
+					   wp.n_curr_sttEl[incognito]=wp.count_curr_sttEl;
 					   delete [] dummap;delete [] dumarr;delete [] duminv;
 
 //vvvvvvvvvvvvvvvvv start Coding for circEles NODES  EFP 10/14/2010
@@ -12099,7 +12172,8 @@ wp.lend[wp.PRECORD]=dist/float(wp.count_curr_sttEl);
 if(circFlag || girthFlag)
   {xave=yave=zave=0.f;
    for(in=0;in<wp.count_curr_sttEl;in++)
-	 {is1=wp.eles[wp.memWGa*wp.PRECORD+in]/10;curiside=wp.eles[wp.memWGa*wp.PRECORD+in]-10*is1; //Assume 8n hex only
+//	 {is1=wp.eles[wp.memWGa*wp.PRECORD+in]/10;curiside=wp.eles[wp.memWGa*wp.PRECORD+in]-10*is1; //Assume 8n hex only
+	 {is1=wp.eles[wp.memWGa*incognito+in]/10;curiside=wp.eles[wp.memWGa*incognito+in]-10*is1; //Assume 8n hex only
 	  node=4;xnor1=ynor1=znor1=0.f;
 	  for(ip=0;ip<node;ip++)
 		{xnor1=xnor1+base.c1[NDF*base.nop1[MXNPEL*is1+gdata8[4*curiside+ip]]  ];
@@ -12111,7 +12185,8 @@ if(circFlag || girthFlag)
    xave=xave/float(wp.count_curr_sttEl);yave=yave/float(wp.count_curr_sttEl);zave=zave/float(wp.count_curr_sttEl);
    node=4;rave=1.e20f;  //Assume 8n hex only
    for(in=0;in<wp.count_curr_sttEl;in++)
-	 {is1=wp.eles[wp.memWGa*wp.PRECORD+in]/10;curiside=wp.eles[wp.memWGa*wp.PRECORD+in]-10*is1; //Assume 8n hex only
+//	 {is1=wp.eles[wp.memWGa*wp.PRECORD+in]/10;curiside=wp.eles[wp.memWGa*wp.PRECORD+in]-10*is1; //Assume 8n hex only
+	 {is1=wp.eles[wp.memWGa*incognito+in]/10;curiside=wp.eles[wp.memWGa*incognito+in]-10*is1; //Assume 8n hex only
 	  for(ip=0;ip<node;ip++)
 		{rv=(xave-base.c1[NDF*base.nop1[MXNPEL*is1+gdata8[4*curiside+ip]]  ])*(xave-base.c1[NDF*base.nop1[MXNPEL*is1+gdata8[4*curiside+ip]]  ])+
 			(yave-base.c1[NDF*base.nop1[MXNPEL*is1+gdata8[4*curiside+ip]]+1])*(yave-base.c1[NDF*base.nop1[MXNPEL*is1+gdata8[4*curiside+ip]]+1])+
@@ -12119,25 +12194,36 @@ if(circFlag || girthFlag)
 		 if(rave>rv){rave=rv;ip1=in;ippp=ip;}
 		}
 	 }
-   is1=wp.eles[wp.memWGa*wp.PRECORD+ip1]/10;curiside=wp.eles[wp.memWGa*wp.PRECORD+ip1]-10*is1; //Assume 8n hex only
-   wp.circEles[3*wp.PRECORD+0]=base.nop1[MXNPEL*is1+gdata8[4*curiside+ippp]];
+//   is1=wp.eles[wp.memWGa*wp.PRECORD+ip1]/10;curiside=wp.eles[wp.memWGa*wp.PRECORD+ip1]-10*is1; //Assume 8n hex only
+   is1=wp.eles[wp.memWGa*incognito+ip1]/10;curiside=wp.eles[wp.memWGa*incognito+ip1]-10*is1; //Assume 8n hex only
+//   wp.circEles[3*wp.PRECORD+0]=base.nop1[MXNPEL*is1+gdata8[4*curiside+ippp]];
+   wp.circEles[3*incognito+0]=base.nop1[MXNPEL*is1+gdata8[4*curiside+ippp]];
    if(CRB_sel) //Partial
 	 {
-	  ip=wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)/2)+ip1]/10;
-	  wp.circEles[3*wp.PRECORD+1]=base.nop1[MXNPEL*ip +gdata8[4*curiside+ippp]];
-	  ip=wp.eles[wp.memWGa*wp.PRECORD+icount-wp.count_curr_sttEl +ip1]/10;
-	  wp.circEles[3*wp.PRECORD+2]=base.nop1[MXNPEL*ip +gdata8[4*opp_arr8[curiside]+ippp]]; //ippp not entirely accurate here
+//	  ip=wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)/2)+ip1]/10;
+//	  wp.circEles[3*wp.PRECORD+1]=base.nop1[MXNPEL*ip +gdata8[4*curiside+ippp]];
+//	  ip=wp.eles[wp.memWGa*wp.PRECORD+icount-wp.count_curr_sttEl +ip1]/10;
+//	  wp.circEles[3*wp.PRECORD+2]=base.nop1[MXNPEL*ip +gdata8[4*opp_arr8[curiside]+ippp]]; //ippp not entirely accurate here
+	  ip=wp.eles[wp.memWGa*incognito+wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)/2)+ip1]/10;
+	  wp.circEles[3*incognito+1]=base.nop1[MXNPEL*ip +gdata8[4*curiside+ippp]];
+	  ip=wp.eles[wp.memWGa*incognito+icount-wp.count_curr_sttEl +ip1]/10;
+	  wp.circEles[3*incognito+2]=base.nop1[MXNPEL*ip +gdata8[4*opp_arr8[curiside]+ippp]]; //ippp not entirely accurate here
 	 }
    else // Full
 	 {
-	  ip=wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)/3)+ip1]/10;
-	  wp.circEles[3*wp.PRECORD+1]=base.nop1[MXNPEL*ip +gdata8[4*curiside+ippp]];
-	  ip=wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*(2*(icount/wp.count_curr_sttEl)/3)+ip1]/10;
-	  wp.circEles[3*wp.PRECORD+2]=base.nop1[MXNPEL*ip +gdata8[4*curiside+ippp]];
+//	  ip=wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)/3)+ip1]/10;
+//	  wp.circEles[3*wp.PRECORD+1]=base.nop1[MXNPEL*ip +gdata8[4*curiside+ippp]];
+//	  ip=wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*(2*(icount/wp.count_curr_sttEl)/3)+ip1]/10;
+//	  wp.circEles[3*wp.PRECORD+2]=base.nop1[MXNPEL*ip +gdata8[4*curiside+ippp]];
+	  ip=wp.eles[wp.memWGa*incognito+wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)/3)+ip1]/10;
+	  wp.circEles[3*incognito+1]=base.nop1[MXNPEL*ip +gdata8[4*curiside+ippp]];
+	  ip=wp.eles[wp.memWGa*incognito+wp.count_curr_sttEl*(2*(icount/wp.count_curr_sttEl)/3)+ip1]/10;
+	  wp.circEles[3*incognito+2]=base.nop1[MXNPEL*ip +gdata8[4*curiside+ippp]];
 	 }
   }
 /////////////////////// Dotted outline of weld pass elements (always 8n hex in current version)
-		  in=wp.PRECORD%9;
+//		  in=wp.PRECORD%9;
+		  in=incognito%9;
 		  if     (in==0){Canvas->Brush->Color=clYellow;Canvas->Pen->Color=clYellow;}
 		  else if(in==1){Canvas->Brush->Color=clOlive;Canvas->Pen->Color=clOlive;} // Coding for quad color contrast
 		  else if(in==2){Canvas->Brush->Color=clMaroon;Canvas->Pen->Color=clMaroon;}
@@ -12147,11 +12233,13 @@ if(circFlag || girthFlag)
 		  else if(in==6){Canvas->Brush->Color=clBlue;Canvas->Pen->Color=clBlue;}
 		  else if(in==7){Canvas->Brush->Color=clLime;Canvas->Pen->Color=clLime;}
 		  else if(in==8){Canvas->Brush->Color=clNavy;Canvas->Pen->Color=clNavy;}
-Canvas->Brush->Color=wp.WeldColor[wp.PRECORD];Canvas->Pen->Color=wp.WeldColor[wp.PRECORD];
+//Canvas->Brush->Color=wp.WeldColor[wp.PRECORD];Canvas->Pen->Color=wp.WeldColor[wp.PRECORD];
+Canvas->Brush->Color=wp.WeldColor[incognito];Canvas->Pen->Color=wp.WeldColor[incognito];
 					   Canvas->Pen->Width=1;
 					   for(in=0;in<wp.count_curr_sttEl;in++){
 															 for(ipp=0;ipp<icount/wp.count_curr_sttEl;ipp++){
-ie1=wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*ipp+in]/10;
+//ie1=wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*ipp+in]/10;
+ie1=wp.eles[wp.memWGa*incognito+wp.count_curr_sttEl*ipp+in]/10;
 eltype1=indat.matno[ie1]/t7;
 is1=0;
 if(eltype1==8)for(is1=0;is1<6;is1++) //Correction EFP 1/20/2011
@@ -12170,59 +12258,69 @@ else {wp.avis=10*(wp.avis/10)+1;
 //if(wp.avis){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex-element found in this weld pass.",L"Warning",MB_OK);}
 if(wp.avis-10*(wp.avis/10)){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex-element found in this weld pass.",L"Warning",MB_OK);}
 ///////////////////////
-// Corrected version of above, allowing for curved WP  EFP 3/22/2012
-				 if(CCB!=1){  //Reverse directions
-////TBD: The following discriminant logic might just be for circular welds(Full length==Circular???)
-//// i.e. CRB_sel is the wrong parameter to use, since crack shape is the determinant???
-//   if(CRB_sel) //Partial length
-//	 {ippp=wp.circEles[3*wp.PRECORD+0];
-//	  wp.circEles[3*wp.PRECORD+0]=wp.circEles[3*wp.PRECORD+2];
-//	  wp.circEles[3*wp.PRECORD+2]=ippp;
-//	 }
-//   else // Full length
+
+
+//// Corrected version of above, allowing for curved WP  EFP 3/22/2012
+//				 if(CCB!=1){  //Reverse directions
+//////TBD: The following discriminant logic might just be for circular welds(Full length==Circular???)
+////// i.e. CRB_sel is the wrong parameter to use, since crack shape is the determinant???
+////   if(CRB_sel) //Partial length
+////	 {ippp=wp.circEles[3*wp.PRECORD+0];
+////	  wp.circEles[3*wp.PRECORD+0]=wp.circEles[3*wp.PRECORD+2];
+////	  wp.circEles[3*wp.PRECORD+2]=ippp;
+////	 }
+////   else // Full length
+////	 {ippp=wp.circEles[3*wp.PRECORD+1];
+////	  wp.circEles[3*wp.PRECORD+1]=wp.circEles[3*wp.PRECORD+2];
+////	  wp.circEles[3*wp.PRECORD+2]=ippp;
+////	 }
+//// EFP thinks that the coding should be as follows (3/22/2012) TEST THIS!!!
+//// CRB_ckShape=CreateLinWeldPass->CheckShape;
+//// 0=noncircular,1=fullcircle,2=partialcircle,3=fullgirth,4=partialgirth
+//   if(CRB_ckShape==1 || CRB_ckShape==3) //fullcircle or fullgirth
 //	 {ippp=wp.circEles[3*wp.PRECORD+1];
 //	  wp.circEles[3*wp.PRECORD+1]=wp.circEles[3*wp.PRECORD+2];
 //	  wp.circEles[3*wp.PRECORD+2]=ippp;
 //	 }
-// EFP thinks that the coding should be as follows (3/22/2012) TEST THIS!!!
-// CRB_ckShape=CreateLinWeldPass->CheckShape;
-// 0=noncircular,1=fullcircle,2=partialcircle,3=fullgirth,4=partialgirth
-   if(CRB_ckShape==1 || CRB_ckShape==3) //fullcircle or fullgirth
-	 {ippp=wp.circEles[3*wp.PRECORD+1];
-	  wp.circEles[3*wp.PRECORD+1]=wp.circEles[3*wp.PRECORD+2];
-	  wp.circEles[3*wp.PRECORD+2]=ippp;
-	 }
-   else
-	 {ippp=wp.circEles[3*wp.PRECORD+0];
-	  wp.circEles[3*wp.PRECORD+0]=wp.circEles[3*wp.PRECORD+2];
-	  wp.circEles[3*wp.PRECORD+2]=ippp;
-	 }
-for(in=0;in<wp.memWGa;in++)if(wp.eles[wp.memWGa*wp.PRECORD+in]<0)break;
-icount=in;dumarr=new long[base.nelt];
-for(in=0;in<icount;in++)dumarr[in]=wp.eles[wp.memWGa*wp.PRECORD+in];
-for(ipp=0;ipp<icount/wp.count_curr_sttEl;ipp++)
-  {for(in=0;in<wp.count_curr_sttEl;in++){ //Correction for missing pair of brackets  EFP 3/2012
-ip1=    dumarr[wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)-ipp-1)+in]-
-	10*(dumarr[wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)-ipp-1)+in]/10);
-wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*ipp+in]=
-dumarr[wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)-ipp-1)+in]-ip1+opp_arr8[ip1];  //Correction  EFP 3/22/2012
-										}
-  }
-delete [] dumarr;
-for(in=0;in<wp.count_curr_sttEl;in++)wp.sttEles[wp.memWGa*wp.PRECORD+in]=wp.eles[wp.memWGa*wp.PRECORD+in];
-						   }
+//   else
+//	 {ippp=wp.circEles[3*wp.PRECORD+0];
+//	  wp.circEles[3*wp.PRECORD+0]=wp.circEles[3*wp.PRECORD+2];
+//	  wp.circEles[3*wp.PRECORD+2]=ippp;
+//	 }
+//for(in=0;in<wp.memWGa;in++)if(wp.eles[wp.memWGa*wp.PRECORD+in]<0)break;
+//icount=in;dumarr=new long[base.nelt];
+//for(in=0;in<icount;in++)dumarr[in]=wp.eles[wp.memWGa*wp.PRECORD+in];
+//for(ipp=0;ipp<icount/wp.count_curr_sttEl;ipp++)
+//  {for(in=0;in<wp.count_curr_sttEl;in++){ //Correction for missing pair of brackets  EFP 3/2012
+//ip1=    dumarr[wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)-ipp-1)+in]-
+//	10*(dumarr[wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)-ipp-1)+in]/10);
+//wp.eles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl*ipp+in]=
+//dumarr[wp.count_curr_sttEl*((icount/wp.count_curr_sttEl)-ipp-1)+in]-ip1+opp_arr8[ip1];  //Correction  EFP 3/22/2012
+//										}
+//  }
+//delete [] dumarr;
+//for(in=0;in<wp.count_curr_sttEl;in++)wp.sttEles[wp.memWGa*wp.PRECORD+in]=wp.eles[wp.memWGa*wp.PRECORD+in];
+//						   }
+
+
 xave=yave=zave=0.f;
 for(ip=0;ip<wp.count_curr_sttEl;ip++)
-  {for(in=0;in<8;in++){xave=xave+indat.c1[NDF*indat.nop1[MXNPEL*(wp.sttEles[wp.memWGa*wp.PRECORD+ip]/10)+in]+0];
-					   yave=yave+indat.c1[NDF*indat.nop1[MXNPEL*(wp.sttEles[wp.memWGa*wp.PRECORD+ip]/10)+in]+1];
-					   zave=zave+indat.c1[NDF*indat.nop1[MXNPEL*(wp.sttEles[wp.memWGa*wp.PRECORD+ip]/10)+in]+2];
+//  {for(in=0;in<8;in++){xave=xave+indat.c1[NDF*indat.nop1[MXNPEL*(wp.sttEles[wp.memWGa*wp.PRECORD+ip]/10)+in]+0];
+//					   yave=yave+indat.c1[NDF*indat.nop1[MXNPEL*(wp.sttEles[wp.memWGa*wp.PRECORD+ip]/10)+in]+1];
+//					   zave=zave+indat.c1[NDF*indat.nop1[MXNPEL*(wp.sttEles[wp.memWGa*wp.PRECORD+ip]/10)+in]+2];
+  {for(in=0;in<8;in++){xave=xave+indat.c1[NDF*indat.nop1[MXNPEL*(wp.sttEles[wp.memWGa*incognito+ip]/10)+in]+0];
+					   yave=yave+indat.c1[NDF*indat.nop1[MXNPEL*(wp.sttEles[wp.memWGa*incognito+ip]/10)+in]+1];
+					   zave=zave+indat.c1[NDF*indat.nop1[MXNPEL*(wp.sttEles[wp.memWGa*incognito+ip]/10)+in]+2];
 					  }
   }
 xave=xave/float(8*wp.count_curr_sttEl);yave=yave/float(8*wp.count_curr_sttEl);zave=zave/float(8*wp.count_curr_sttEl);
-ie=wp.sttEles[wp.memWGa*wp.PRECORD+0]/10; // Use first start element face as normal
-iside=wp.sttEles[wp.memWGa*wp.PRECORD+0]-10*ie;
+//ie=wp.sttEles[wp.memWGa*wp.PRECORD+0]/10; // Use first start element face as normal
+//iside=wp.sttEles[wp.memWGa*wp.PRECORD+0]-10*ie;
+ie=wp.sttEles[wp.memWGa*incognito+0]/10; // Use first start element face as normal
+iside=wp.sttEles[wp.memWGa*incognito+0]-10*ie;
 STFISO8_ncalc(ie,iside,HN,base.nop1,base.c1); //First calc to establish global arrows EFP 3/23/2012
-wp.arrows[NDF*3*wp.PRECORD+NDF*0+0]= -HN[0];wp.arrows[NDF*3*wp.PRECORD+NDF*0+1]= -HN[1];wp.arrows[NDF*3*wp.PRECORD+NDF*0+2]= -HN[2];
+//wp.arrows[NDF*3*wp.PRECORD+NDF*0+0]= -HN[0];wp.arrows[NDF*3*wp.PRECORD+NDF*0+1]= -HN[1];wp.arrows[NDF*3*wp.PRECORD+NDF*0+2]= -HN[2];
+wp.arrows[NDF*3*incognito+NDF*0+0]= -HN[0];wp.arrows[NDF*3*incognito+NDF*0+1]= -HN[1];wp.arrows[NDF*3*incognito+NDF*0+2]= -HN[2];
 
 //honk<<wp.PRECORD<<" "<<ie<<" "<<iside<<" "<<wp.arrows[NDF*3*wp.PRECORD+NDF*0+0]<<" "<<wp.arrows[NDF*3*wp.PRECORD+NDF*0+1]<<" "<<wp.arrows[NDF*3*wp.PRECORD+NDF*0+2]<<" wpARROW_weldDir\n";
 STFISO8_ncalc(ie,iside,HN,indat.nop1,indat.c1); //second calc to establish screen frame directions EFP 3/23/2012
@@ -12283,38 +12381,55 @@ Canvas->MoveTo(int(xave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[0])+25
 Canvas->LineTo(int(xave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[0])+25.f*HN[1],ClientHeight-(int(yave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[1])-25.f*HN[0]));
 Canvas->LineTo(int(xave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[0])-25.f*HN[1],ClientHeight-(int(yave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[1])+25.f*HN[0]));
 Canvas->LineTo(int(xave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[0])+25.f*HN[0],ClientHeight-(int(yave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[1])+25.f*HN[1]));
-					for(ip=0;ip<4;ip++){wp.snorm1[4*wp.PRECORD+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip]];
+//					for(ip=0;ip<4;ip++){wp.snorm1[4*wp.PRECORD+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip]];
+					for(ip=0;ip<4;ip++){wp.snorm1[4*incognito+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip]];
 									   }
 ///////////
 dist=1.e+24f;
 for(ip=0;ip<4;ip++) //Enforce CTSP normals convention (1st node at fusion line at start elements)  EFP 10/30/2012
   {for(is=0;is<wp.count_curr_sttEl;is++)
-	 {ie1=wp.sttEles[wp.memWGa*wp.PRECORD+is]/10;iside1=wp.sttEles[wp.memWGa*wp.PRECORD+is]-10*ie1;
+//	 {ie1=wp.sttEles[wp.memWGa*wp.PRECORD+is]/10;iside1=wp.sttEles[wp.memWGa*wp.PRECORD+is]-10*ie1;
+	 {ie1=wp.sttEles[wp.memWGa*incognito+is]/10;iside1=wp.sttEles[wp.memWGa*incognito+is]-10*ie1;
 	  for(in=0;in<4;in++){
-if(dist >(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+0])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+0])+
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+1])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+1])+
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+2])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+2]))
-  {dist =(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+0])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+0])+
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+1])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+1])+
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+2])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+2]);
+//if(dist >(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+0])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+0])+
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+1])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+1])+
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+2])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+2]))
+//  {dist =(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+0])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+0])+
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+1])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+1])+
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+2])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*wp.PRECORD+ip]+2]);
+if(dist >(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*incognito+ip]+0])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*incognito+ip]+0])+
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*incognito+ip]+1])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*incognito+ip]+1])+
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*incognito+ip]+2])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*incognito+ip]+2]))
+  {dist =(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*incognito+ip]+0])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm1[4*incognito+ip]+0])+
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*incognito+ip]+1])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm1[4*incognito+ip]+1])+
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*incognito+ip]+2])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm1[4*incognito+ip]+2]);
    ip1=ip;
   }
 						 }
 	 }
   }
 ip1--;if(ip1<0)ip1=3;
-for(ip=0;ip<4;ip++){wp.snorm1[4*wp.PRECORD+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip1]];
+//for(ip=0;ip<4;ip++){wp.snorm1[4*wp.PRECORD+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip1]];
+for(ip=0;ip<4;ip++){wp.snorm1[4*incognito+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip1]];
 					ip1++;if(ip1>3)ip1=0;
 				   }
 STFISO8_ncalc(ie,iside,HN,base.nop1,base.c1); //second calc to establish global arrows EFP 3/23/2012
-					wp.arrows[NDF*3*wp.PRECORD+NDF*1+0]=HN[0];wp.arrows[NDF*3*wp.PRECORD+NDF*1+1]=HN[1];wp.arrows[NDF*3*wp.PRECORD+NDF*1+2]=HN[2];
-					CreateLinWeldPass->CheckNorm1=wp.snorm1[4*wp.PRECORD+0]; //EFP 5/31/2011
+//					wp.arrows[NDF*3*wp.PRECORD+NDF*1+0]=HN[0];wp.arrows[NDF*3*wp.PRECORD+NDF*1+1]=HN[1];wp.arrows[NDF*3*wp.PRECORD+NDF*1+2]=HN[2];
+//					CreateLinWeldPass->CheckNorm1=wp.snorm1[4*wp.PRECORD+0]; //EFP 5/31/2011
+					wp.arrows[NDF*3*incognito+NDF*1+0]=HN[0];wp.arrows[NDF*3*incognito+NDF*1+1]=HN[1];wp.arrows[NDF*3*incognito+NDF*1+2]=HN[2];
+					CreateLinWeldPass->CheckNorm1=wp.snorm1[4*incognito+0]; //EFP 5/31/2011
 								}
 					else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Normal must be on plate material",L"Failure",MB_OK);}
 				   }
@@ -12356,37 +12471,54 @@ Canvas->MoveTo(int(xave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[0])+25
 Canvas->LineTo(int(xave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[0])+25.f*HN[1],ClientHeight-(int(yave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[1])-25.f*HN[0]));
 Canvas->LineTo(int(xave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[0])-25.f*HN[1],ClientHeight-(int(yave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[1])+25.f*HN[0]));
 Canvas->LineTo(int(xave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[0])+25.f*HN[0],ClientHeight-(int(yave)+(min(ClientWidth,ClientHeight)/200)*int(100.f*HN[1])+25.f*HN[1]));
-					for(ip=0;ip<4;ip++){wp.snorm2[4*wp.PRECORD+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip]];
+//					for(ip=0;ip<4;ip++){wp.snorm2[4*wp.PRECORD+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip]];
+					for(ip=0;ip<4;ip++){wp.snorm2[4*incognito+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip]];
 									   }
 dist=1.e+24f;
 for(ip=0;ip<4;ip++) //Enforce CTSP normals convention (1st node at fusion line at start elements)  EFP 10/30/2012
   {for(is=0;is<wp.count_curr_sttEl;is++)
-	 {ie1=wp.sttEles[wp.memWGa*wp.PRECORD+is]/10;iside1=wp.sttEles[wp.memWGa*wp.PRECORD+is]-10*ie1;
+//	 {ie1=wp.sttEles[wp.memWGa*wp.PRECORD+is]/10;iside1=wp.sttEles[wp.memWGa*wp.PRECORD+is]-10*ie1;
+	 {ie1=wp.sttEles[wp.memWGa*incognito+is]/10;iside1=wp.sttEles[wp.memWGa*incognito+is]-10*ie1;
 	  for(in=0;in<4;in++){
-if(dist >(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+0])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+0])+
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+1])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+1])+
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+2])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+2]))
-  {dist =(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+0])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+0])+
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+1])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+1])+
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+2])*
-		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+2]);
+//if(dist >(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+0])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+0])+
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+1])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+1])+
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+2])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+2]))
+//  {dist =(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+0])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+0])+
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+1])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+1])+
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+2])*
+//		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*wp.PRECORD+ip]+2]);
+if(dist >(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*incognito+ip]+0])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*incognito+ip]+0])+
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*incognito+ip]+1])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*incognito+ip]+1])+
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*incognito+ip]+2])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*incognito+ip]+2]))
+  {dist =(base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*incognito+ip]+0])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+0]-base.c1[NDF*wp.snorm2[4*incognito+ip]+0])+
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*incognito+ip]+1])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+1]-base.c1[NDF*wp.snorm2[4*incognito+ip]+1])+
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*incognito+ip]+2])*
+		 (base.c1[NDF*indat.nop1[MXNPEL*ie1+gdata8[4*iside1+in]]+2]-base.c1[NDF*wp.snorm2[4*incognito+ip]+2]);
    ip1=ip;
   }
 						 }
 	 }
   }
 ip1--;if(ip1<0)ip1=3;
-for(ip=0;ip<4;ip++){wp.snorm2[4*wp.PRECORD+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip1]];
+//for(ip=0;ip<4;ip++){wp.snorm2[4*wp.PRECORD+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip1]];
+for(ip=0;ip<4;ip++){wp.snorm2[4*incognito+ip]=indat.nop1[MXNPEL*ie+gdata8[4*isides+ip1]];
 					ip1++;if(ip1>3)ip1=0;
 				   }
 STFISO8_ncalc(ie,iside,HN,base.nop1,base.c1); //second calc to establish global arrows EFP 3/23/2012
-					wp.arrows[NDF*3*wp.PRECORD+NDF*2+0]=HN[0];wp.arrows[NDF*3*wp.PRECORD+NDF*2+1]=HN[1];wp.arrows[NDF*3*wp.PRECORD+NDF*2+2]=HN[2];
-					CreateLinWeldPass->CheckNorm2=wp.snorm2[4*wp.PRECORD+0]; //EFP 5/31/2011
+//					wp.arrows[NDF*3*wp.PRECORD+NDF*2+0]=HN[0];wp.arrows[NDF*3*wp.PRECORD+NDF*2+1]=HN[1];wp.arrows[NDF*3*wp.PRECORD+NDF*2+2]=HN[2];
+//					CreateLinWeldPass->CheckNorm2=wp.snorm2[4*wp.PRECORD+0]; //EFP 5/31/2011
+					wp.arrows[NDF*3*incognito+NDF*2+0]=HN[0];wp.arrows[NDF*3*incognito+NDF*2+1]=HN[1];wp.arrows[NDF*3*incognito+NDF*2+2]=HN[2];
+					CreateLinWeldPass->CheckNorm2=wp.snorm2[4*incognito+0]; //EFP 5/31/2011
 								}
 					else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Normal must be on plate material",L"Failure",MB_OK);}
 				   }
@@ -13264,6 +13396,7 @@ void TForm1::VFTlistbox_public()
 //---------------------------------------------------------------------------
 void TForm1::DelWeldPass(int VFTitemindex,long bnelt)
 {
+if(Application->MessageBox(L"Sure you want to delete WP?",L"Delete this WP",MB_OKCANCEL)==1){
 //int i=0,j=0;
 // TBD: Adjust memory
  int i=0,*SWTseqNum=NULL,*SWTboolFlags=NULL,*SWTtype=NULL,*SWTshape=NULL,*SWTstepInterval=NULL,
@@ -13288,14 +13421,17 @@ for(in=0;in<base.nelt;in++)
   {
 ieGID1=indat.arrELSET[in];
 
-   if(ieGID1==VFTitemindex+wp.nWeldGroup+1)
+//   if(ieGID1==VFTitemindex+wp.nWeldGroup+1)
+   if(ieGID1==base.allGrp+VFTitemindex)
 	 {
-	  base.arrELSET[in]= -1;
-	  indat.arrELSET[in]= -1;
+//	  base.arrELSET[in]= -1;
+//	  indat.arrELSET[in]= -1;
+	  indat.arrELSET[in]=base.arrELSET[in];
 	 }
 ////////////////////
-   else if(ieGID1>VFTitemindex+wp.nWeldGroup+1){
-base.arrELSET[in]=base.arrELSET[in]-1;
+//   else if(ieGID1>VFTitemindex+wp.nWeldGroup+1){
+   else if(ieGID1>base.allGrp+VFTitemindex){
+//base.arrELSET[in]=base.arrELSET[in]-1;
 indat.arrELSET[in]=indat.arrELSET[in]-1;
 											   }
 ////////////////////
@@ -13592,6 +13728,7 @@ FDcomp_nGID(indat.nelt,&nGID,arGID);
 //honk<<iplotflag<<" "<<iCircleplot<<" "<<iPaintyesno<<" "<<iplotType<<" "<<iCullyesno<<" DELgraphValCHECK\n";
 
 							   Invalidate();//EFP 1/08/2011
+                                                                                            }
 }
 //---------------------------------------------------------------------------
 void TForm1::DelWeldParam(int VFTitemindex)
@@ -14082,7 +14219,7 @@ Screen->Cursor=crSizeAll;
 }
 //---------------------------------------------------------------------------
 void TForm1::EditWeldPassProg(int VFTitemindex)
-{long j=0,
+{long j=0,dum=0,
 //i=0,is=0,isw=0,
 ir=0
 //cur=0,prod=1,aflag=0,nwid=0,Sverige[MAX_GID],GIDspac=1+(wp.nWeldPass-1)/16,
@@ -14099,53 +14236,58 @@ ir=0
 		 wp.PRECORD=VFTitemindex;
 //		 isw=wp.EDIT_SEL; //Shameful but not used?????  EFP 11/06/2011
 
+wp.count_curr_sttEl=0; //Correction  EFP 7/25/2015
+//FDdynmem_manage(6,dum,wp.memWGa,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum,1);
+for(j=0;j<wp.memWGa;j++)wp.eles[wp.nWeldPass*wp.memWGa+j]= -1;
+for(j=0;j<wp.memWGa;j++)wp.sttEles[wp.nWeldPass*wp.memWGa+j]= -1;
+for(j=0;j<4*wp.memWGa;j++)wp.sttEleNodes[wp.nWeldPass*wp.memWGa*4+j]= -1;
 
 
 
-///////////
-wp.temp_name=wp.name[wp.PRECORD];
-wp.temp_matName=wp.matName[wp.PRECORD];
-wp.temp_seqNum=wp.seqNum[wp.PRECORD];
-wp.temp_boolFlags=wp.boolFlags[wp.PRECORD];
-wp.temp_type=wp.type[wp.PRECORD];
-wp.temp_shape=wp.shape[wp.PRECORD];
-wp.temp_stepInterval=wp.stepInterval[wp.PRECORD];
-wp.temp_hp=wp.hp[wp.PRECORD];
-wp.temp_nsegs=wp.nsegs[wp.PRECORD];
-wp.temp_iselect=wp.iselect[wp.PRECORD];
-wp.temp_stpEle=wp.stpEle[wp.PRECORD];
-wp.temp_curr=wp.curr[wp.PRECORD];
-wp.temp_volt=wp.volt[wp.PRECORD];
-wp.temp_eff=wp.eff[wp.PRECORD];
-wp.temp_speed=wp.speed[wp.PRECORD];
-wp.temp_troom=wp.troom[wp.PRECORD];
-wp.temp_tmelt=wp.tmelt[wp.PRECORD];
-wp.temp_tcutl=wp.tcutl[wp.PRECORD];
-wp.temp_tcuth=wp.tcuth[wp.PRECORD];
-wp.temp_timeInterval=wp.timeInterval[wp.PRECORD];
-wp.temp_maxiHeatStep=wp.maxiHeatStep[wp.PRECORD];
-wp.temp_miniHeatStep=wp.miniHeatStep[wp.PRECORD];
-wp.temp_thk1=wp.thk1[wp.PRECORD];
-wp.temp_thk2=wp.thk2[wp.PRECORD];
-wp.temp_lstart=wp.lstart[wp.PRECORD];
-wp.temp_lend=wp.lend[wp.PRECORD];
-wp.temp_n_curr_sttEl=wp.n_curr_sttEl[wp.PRECORD];
-wp.temp_reset=wp.reset[wp.PRECORD];
-wp.temp_wpTimes=wp.wpTimes[wp.PRECORD];
-wp.temp_source=wp.source[wp.PRECORD];
-wp.temp_mcr=wp.mcr[wp.PRECORD];
-wp.temp_WeldColor=wp.WeldColor[wp.PRECORD]; // Policy: Reserve one extra nWeldPass and copy "to-be-edited" data there.
-wp.temp_prevGID=wp.prevGID[wp.PRECORD];
-wp.temp_util_arr=wp.util_arr[wp.PRECORD];
-//  CAUTION: Not all variables are backed-up... TBD: Comprehensive coding  EFP 4/03/2011
-wp.temp_eles=new long[wp.nWeldPass*wp.memWGa];wp.temp_sttEles=new long[wp.nWeldPass*wp.memWGa];wp.temp_sttEleNodes=new long[wp.nWeldPass*wp.memWGa*4];
-for(j=0;j<wp.nWeldPass*wp.memWGa;j++)wp.temp_eles[j]=wp.eles[j];
-for(j=0;j<wp.nWeldPass*wp.memWGa;j++)wp.temp_sttEles[j]=wp.sttEles[j];
-for(j=0;j<wp.nWeldPass*wp.memWGa*4;j++)wp.temp_sttEleNodes[j]=wp.sttEleNodes[j];
+/////////////
+//wp.temp_name=wp.name[wp.PRECORD];
+//wp.temp_matName=wp.matName[wp.PRECORD];
+//wp.temp_seqNum=wp.seqNum[wp.PRECORD];
+//wp.temp_boolFlags=wp.boolFlags[wp.PRECORD];
+//wp.temp_type=wp.type[wp.PRECORD];
+//wp.temp_shape=wp.shape[wp.PRECORD];
+//wp.temp_stepInterval=wp.stepInterval[wp.PRECORD];
+//wp.temp_hp=wp.hp[wp.PRECORD];
+//wp.temp_nsegs=wp.nsegs[wp.PRECORD];
+//wp.temp_iselect=wp.iselect[wp.PRECORD];
+//wp.temp_stpEle=wp.stpEle[wp.PRECORD];
+//wp.temp_curr=wp.curr[wp.PRECORD];
+//wp.temp_volt=wp.volt[wp.PRECORD];
+//wp.temp_eff=wp.eff[wp.PRECORD];
+//wp.temp_speed=wp.speed[wp.PRECORD];
+//wp.temp_troom=wp.troom[wp.PRECORD];
+//wp.temp_tmelt=wp.tmelt[wp.PRECORD];
+//wp.temp_tcutl=wp.tcutl[wp.PRECORD];
+//wp.temp_tcuth=wp.tcuth[wp.PRECORD];
+//wp.temp_timeInterval=wp.timeInterval[wp.PRECORD];
+//wp.temp_maxiHeatStep=wp.maxiHeatStep[wp.PRECORD];
+//wp.temp_miniHeatStep=wp.miniHeatStep[wp.PRECORD];
+//wp.temp_thk1=wp.thk1[wp.PRECORD];
+//wp.temp_thk2=wp.thk2[wp.PRECORD];
+//wp.temp_lstart=wp.lstart[wp.PRECORD];
+//wp.temp_lend=wp.lend[wp.PRECORD];
+//wp.temp_n_curr_sttEl=wp.n_curr_sttEl[wp.PRECORD];
+//wp.temp_reset=wp.reset[wp.PRECORD];
+//wp.temp_wpTimes=wp.wpTimes[wp.PRECORD];
+//wp.temp_source=wp.source[wp.PRECORD];
+//wp.temp_mcr=wp.mcr[wp.PRECORD];
+//wp.temp_WeldColor=wp.WeldColor[wp.PRECORD]; // Policy: Reserve one extra nWeldPass and copy "to-be-edited" data there.
+//wp.temp_prevGID=wp.prevGID[wp.PRECORD];
+//wp.temp_util_arr=wp.util_arr[wp.PRECORD];
+////  CAUTION: Not all variables are backed-up... TBD: Comprehensive coding  EFP 4/03/2011
+//wp.temp_eles=new long[wp.nWeldPass*wp.memWGa];wp.temp_sttEles=new long[wp.nWeldPass*wp.memWGa];wp.temp_sttEleNodes=new long[wp.nWeldPass*wp.memWGa*4];
+//for(j=0;j<wp.nWeldPass*wp.memWGa;j++)wp.temp_eles[j]=wp.eles[j];
+//for(j=0;j<wp.nWeldPass*wp.memWGa;j++)wp.temp_sttEles[j]=wp.sttEles[j];
+//for(j=0;j<wp.nWeldPass*wp.memWGa*4;j++)wp.temp_sttEleNodes[j]=wp.sttEleNodes[j];
 //
-// The following 2 lines are no longer necessary
-for(j=0;j<wp.memWGa;j++)wp.eles[wp.nWeldPass*wp.memWGa+j]=wp.eles[wp.PRECORD*wp.memWGa+j];
-for(j=0;j<wp.memWGa;j++)wp.sttEles[wp.nWeldPass*wp.memWGa+j]=wp.sttEles[wp.PRECORD*wp.memWGa+j];
+//// The following 2 lines are no longer necessary
+//for(j=0;j<wp.memWGa;j++)wp.eles[wp.nWeldPass*wp.memWGa+j]=wp.eles[wp.PRECORD*wp.memWGa+j];
+//for(j=0;j<wp.memWGa;j++)wp.sttEles[wp.nWeldPass*wp.memWGa+j]=wp.sttEles[wp.PRECORD*wp.memWGa+j];
 
 for(j=0;j<wp.memWGa;j++)wp.firstEle[wp.nWeldPass*wp.memWGa+j]=wp.firstEle[wp.PRECORD*wp.memWGa+j];
 for(j=0;j<wp.memWGa;j++)wp.nextEle[wp.nWeldPass*wp.memWGa+j]=wp.nextEle[wp.PRECORD*wp.memWGa+j];
@@ -14155,7 +14297,7 @@ for(j=0;j<3;j++)wp.circEles[wp.nWeldPass*3+j]=wp.circEles[wp.PRECORD*3+j]; //Pol
 for(j=0;j<wp.memWGa;j++)wp.edgeEles[wp.nWeldPass*wp.memWGa+j]=wp.edgeEles[wp.PRECORD*wp.memWGa+j];
 for(j=0;j<4;j++)wp.edgeNodes[wp.nWeldPass*4+j]=wp.edgeNodes[wp.PRECORD*4+j]; // correct???
 // The following line is no longer necessary
-for(j=0;j<4*wp.memWGa;j++)wp.sttEleNodes[wp.nWeldPass*wp.memWGa*4+j]=wp.sttEleNodes[wp.PRECORD*wp.memWGa*4+j];
+//for(j=0;j<4*wp.memWGa;j++)wp.sttEleNodes[wp.nWeldPass*wp.memWGa*4+j]=wp.sttEleNodes[wp.PRECORD*wp.memWGa*4+j];
 
 for(j=0;j<wp.memWGa;j++)wp.hlightel[wp.nWeldPass*wp.memWGa+j]=wp.hlightel[wp.PRECORD*wp.memWGa+j];
 for(j=0;j<3*NDF;j++)wp.arrows[3*NDF*wp.nWeldPass+j]=wp.arrows[3*NDF*wp.PRECORD+j];
@@ -14166,7 +14308,7 @@ for(j=0;j<3*NDF;j++)wp.arrows[3*NDF*wp.nWeldPass+j]=wp.arrows[3*NDF*wp.PRECORD+j
 
 // Policy: Do erase any data at this point (NEW POLICY: DO NOT ERASE  EFP 3/30/2012)
 												  VFTon=1;
-												  wp.count_curr_sttEl=wp.n_curr_sttEl[wp.PRECORD];//Correction EFP 3/30/2012
+//												  wp.count_curr_sttEl=wp.n_curr_sttEl[wp.PRECORD];//Correction EFP 3/30/2012
 ///////////////////////////////////////////////////////////////////////
 												  FD_LButtonstatus=17;
 //												  iPersistVFT=1;
@@ -14183,7 +14325,7 @@ Screen->Cursor=crDefault;
 																				wps.nWeldParamSet,wps.name,
 																				this); // (weldpass#,weldseq#,...)
 
-CreateLinWeldPass->CheckBox1->Enabled=false;//Disconnect weld direction CheckBox1 EFP 4/03/2011
+//CreateLinWeldPass->CheckBox1->Enabled=false;//Disconnect weld direction CheckBox1 EFP 4/03/2011
 
 //CreateLinWeldPass->CheckEdit1=wp.name[wp.PRECORD];
 //CreateLinWeldPass->CheckEdit1=wp.name[wp.PRECORD].c_str();
@@ -14199,7 +14341,7 @@ CreateLinWeldPass->Label4->Caption=L"One stop element";
 CreateLinWeldPass->Label7->Caption=L"Plate1 normal";
 CreateLinWeldPass->Label8->Caption=L"Plate2 normal";
 CreateLinWeldPass->Button1->Caption=L"Enter";
-CreateLinWeldPass->Button2->Caption=L"Restore";
+//CreateLinWeldPass->Button2->Caption=L"Restore";
 CreateLinWeldPass->Button3->Caption=L"Cancel";
 // _ltow(wp.nWeldPass+1,string1,10);StringCchCatW(curMess0,11,string1);
 // CreateLinWeldPass->CheckEdit1=curMess0;
@@ -14395,14 +14537,15 @@ Screen->Cursor=crSizeAll;
 }
 //---------------------------------------------------------------------------
 void TForm1::wpEdit_public(){
-int missing=0;long j=0,i=wp.PRECORD; //Shameful
+int missing=0,flg=0;long j=0,sum=0,i=wp.PRECORD; //Shameful
 
 if(CreateLinWeldPass->CheckEdit1==L"****")
   {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Forgot to enter weld pass name",L"Repeat",MB_OK);
    missing++;
   }
 else wp.name[i]=CreateLinWeldPass->CheckEdit1;
-delete [] wp.temp_eles;delete [] wp.temp_sttEles;delete [] wp.temp_sttEleNodes;
+if(Application->MessageBox(L"Sure you want to apply edit?",L"Apply this edit",MB_OKCANCEL)==1){
+//delete [] wp.temp_eles;delete [] wp.temp_sttEles;delete [] wp.temp_sttEleNodes;
 wp.seqNum[i]=CreateLinWeldPass->CheckEdit2;
 wp.troom[i]=CreateLinWeldPass->CheckEdit13;
 wp.tmelt[i]=CreateLinWeldPass->CheckEdit14;
@@ -14436,18 +14579,18 @@ if(CreateLinWeldPass->CheckMatName>=0){wp.matName[i]=wms.name[CreateLinWeldPass-
 									   wp.tmelt[i]=wms.Tm[CreateLinWeldPass->CheckMatName];
 //xxxxxxxxxxxxx
 									  }
-else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Forgot to select Material Property Set Name",L"Repeat",MB_OK);
-	  missing++;
-	 }
+//else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Forgot to select Material Property Set Name",L"Repeat",MB_OK);
+//	  missing++;
+//	 }
 if(CreateLinWeldPass->CheckWeldParName>=0)
   {wp.curr[i]=wps.curr[CreateLinWeldPass->CheckWeldParName]; // Need to test this
    wp.volt[i]=wps.volt[CreateLinWeldPass->CheckWeldParName];
    wp.eff[i]=wps.eff[CreateLinWeldPass->CheckWeldParName];
    wp.speed[i]=wps.speed[CreateLinWeldPass->CheckWeldParName];
   }
-else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Forgot to select Weld Parameter Set Name",L"Repeat",MB_OK);
-	  missing++;
-	 }
+//else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Forgot to select Weld Parameter Set Name",L"Repeat",MB_OK);
+//	  missing++;
+//	 }
 
 
 
@@ -14470,11 +14613,29 @@ else if(wp.snorm2[4*i+0]<0)
 
 //honk<<wp.matName[i].c_str()<<" edited WeldPassMatFileName\n";
 /////////////////////////////////////////////
-							   if(!missing){
-//WeldPassEditingandSequencing1->Enabled=true;  //RETURN TO THIS
- for(j=0;j<wp.nWeldPass;j++)if(!wp.n_curr_sttEl[j])DelWeldPass(j,wp.memWGa);
-										   }
-//honk<<wp.nWeldPass<<" WeldPassEdited\n";
+//							   if(!missing){
+////WeldPassEditingandSequencing1->Enabled=true;  //RETURN TO THIS
+// for(j=0;j<wp.nWeldPass;j++)if(!wp.n_curr_sttEl[j])DelWeldPass(j,wp.memWGa);
+//										   }
+////honk<<wp.nWeldPass<<" WeldPassEdited\n";
+
+flg=0;for(j=0;j<wp.memWGa;j++)if(wp.eles[wp.nWeldPass*wp.memWGa+j]>=0){flg++;break;}
+if(flg){for(j=0;j<wp.memWGa;j++){if(wp.eles[wp.PRECORD*wp.memWGa+j]>=0)indat.arrELSET[wp.eles[wp.PRECORD*wp.memWGa+j]/10]=base.arrELSET[wp.eles[wp.PRECORD*wp.memWGa+j]/10];}
+		for(j=0;j<wp.memWGa;j++){if(wp.eles[wp.nWeldPass*wp.memWGa+j]>=0)indat.arrELSET[wp.eles[wp.nWeldPass*wp.memWGa+j]/10]=base.allGrp+wp.PRECORD;}
+		for(j=0;j<wp.memWGa;j++)wp.eles[wp.PRECORD*wp.memWGa+j]=wp.eles[wp.nWeldPass*wp.memWGa+j];
+		for(j=0;j<wp.memWGa;j++)wp.eles[wp.nWeldPass*wp.memWGa+j]= -1;
+	   }
+sum=0;for(j=0;j<wp.memWGa;j++){if(wp.sttEles[wp.nWeldPass*wp.memWGa+j]>=0)sum++;
+							   else break;
+							  }
+if(sum){for(j=0;j<wp.memWGa;j++)wp.sttEles[wp.PRECORD*wp.memWGa+j]=wp.sttEles[wp.nWeldPass*wp.memWGa+j];
+		for(j=0;j<wp.memWGa;j++)wp.sttEles[wp.nWeldPass*wp.memWGa+j]= -1;
+		wp.n_curr_sttEl[wp.PRECORD]=sum;
+	   }
+flg=0;for(j=0;j<4*wp.memWGa;j++)if(wp.sttEleNodes[wp.nWeldPass*wp.memWGa*4+j]>=0){flg++;break;}
+if(flg){for(j=0;j<4*wp.memWGa;j++)wp.sttEleNodes[wp.PRECORD*wp.memWGa*4+j]=wp.sttEleNodes[wp.nWeldPass*wp.memWGa*4+j];
+		for(j=0;j<4*wp.memWGa;j++)wp.sttEleNodes[wp.nWeldPass*wp.memWGa*4+j]= -1;
+	   }
 
 FD_LButtonstatus=11;stateVFT=2;
 /////////// Cursor EFP 1/21/2011
@@ -14505,82 +14666,82 @@ FDcomp_nGID(indat.nelt,&nGID,arGID);
 //if(1==1)exit(0);
 							   Invalidate();
 //honk<<" Arachis\n";
+                                                                                              }
 							  }
 //---------------------------------------------------------------------------
 void TForm1::wpEdit2_public()
-{long j=0,ie=0//,eltype=0,bscode=0,node=0,ieGID=0,t3=1000,t5=100000,t7=10000000
-;
- wp.name[wp.PRECORD]=wp.temp_name;
- wp.matName[wp.PRECORD]=wp.temp_matName;
- wp.seqNum[wp.PRECORD]=wp.temp_seqNum;
- wp.boolFlags[wp.PRECORD]=wp.temp_boolFlags;
- wp.type[wp.PRECORD]=wp.temp_type;
- wp.shape[wp.PRECORD]=wp.temp_shape;
- wp.stepInterval[wp.PRECORD]=wp.temp_stepInterval;
- wp.hp[wp.PRECORD]=wp.temp_hp;
- wp.nsegs[wp.PRECORD]=wp.temp_nsegs;
- wp.iselect[wp.PRECORD]=wp.temp_iselect;
- wp.stpEle[wp.PRECORD]=wp.temp_stpEle;
- wp.curr[wp.PRECORD]=wp.temp_curr;
- wp.volt[wp.PRECORD]=wp.temp_volt;
- wp.eff[wp.PRECORD]=wp.temp_eff;
- wp.speed[wp.PRECORD]=wp.temp_speed;
- wp.troom[wp.PRECORD]=wp.temp_troom;
- wp.tmelt[wp.PRECORD]=wp.temp_tmelt;
- wp.tcutl[wp.PRECORD]=wp.temp_tcutl;
- wp.tcuth[wp.PRECORD]=wp.temp_tcuth;
- wp.timeInterval[wp.PRECORD]=wp.temp_timeInterval;
- wp.maxiHeatStep[wp.PRECORD]=wp.temp_maxiHeatStep;
- wp.miniHeatStep[wp.PRECORD]=wp.temp_miniHeatStep;
- wp.thk1[wp.PRECORD]=wp.temp_thk1;
- wp.thk2[wp.PRECORD]=wp.temp_thk2;
- wp.lstart[wp.PRECORD]=wp.temp_lstart;
- wp.lend[wp.PRECORD]=wp.temp_lend;
- wp.n_curr_sttEl[wp.PRECORD]=wp.temp_n_curr_sttEl;
- wp.reset[wp.PRECORD]=wp.temp_reset;
- wp.wpTimes[wp.PRECORD]=wp.temp_wpTimes;
- wp.source[wp.PRECORD]=wp.temp_source;
- wp.mcr[wp.PRECORD]=wp.temp_mcr;
- wp.WeldColor[wp.PRECORD]=wp.temp_WeldColor; // Policy: Reserve one extra nWeldPass and copy "to-be-edited" data there.
- wp.prevGID[wp.PRECORD]=wp.temp_prevGID;
- wp.util_arr[wp.PRECORD]=wp.temp_util_arr;
-// for(j=0;j<base.nelt;j++)wp.eles[wp.PRECORD*base.nelt+j]=wp.eles[wp.nWeldPass*base.nelt+j];
-// for(j=0;j<base.nelt;j++)wp.sttEles[wp.PRECORD*base.nelt+j]=wp.sttEles[wp.nWeldPass*base.nelt+j]; for(j=0;j<base.nelt;j++)wp.firstEle[wp.PRECORD*base.nelt+j]=wp.firstEle[wp.nWeldPass*base.nelt+j];
-for(j=0;j<wp.nWeldPass*wp.memWGa;j++)wp.eles[j]=wp.temp_eles[j];
-for(j=0;j<wp.nWeldPass*wp.memWGa;j++)wp.sttEles[j]=wp.temp_sttEles[j];
+{//long j=0,ie=0//,eltype=0,bscode=0,node=0,ieGID=0,t3=1000,t5=100000,t7=10000000
+//;
+// wp.name[wp.PRECORD]=wp.temp_name;
+// wp.matName[wp.PRECORD]=wp.temp_matName;
+// wp.seqNum[wp.PRECORD]=wp.temp_seqNum;
+// wp.boolFlags[wp.PRECORD]=wp.temp_boolFlags;
+// wp.type[wp.PRECORD]=wp.temp_type;
+// wp.shape[wp.PRECORD]=wp.temp_shape;
+// wp.stepInterval[wp.PRECORD]=wp.temp_stepInterval;
+// wp.hp[wp.PRECORD]=wp.temp_hp;
+// wp.nsegs[wp.PRECORD]=wp.temp_nsegs;
+// wp.iselect[wp.PRECORD]=wp.temp_iselect;
+// wp.stpEle[wp.PRECORD]=wp.temp_stpEle;
+// wp.curr[wp.PRECORD]=wp.temp_curr;
+// wp.volt[wp.PRECORD]=wp.temp_volt;
+// wp.eff[wp.PRECORD]=wp.temp_eff;
+// wp.speed[wp.PRECORD]=wp.temp_speed;
+// wp.troom[wp.PRECORD]=wp.temp_troom;
+// wp.tmelt[wp.PRECORD]=wp.temp_tmelt;
+// wp.tcutl[wp.PRECORD]=wp.temp_tcutl;
+// wp.tcuth[wp.PRECORD]=wp.temp_tcuth;
+// wp.timeInterval[wp.PRECORD]=wp.temp_timeInterval;
+// wp.maxiHeatStep[wp.PRECORD]=wp.temp_maxiHeatStep;
+// wp.miniHeatStep[wp.PRECORD]=wp.temp_miniHeatStep;
+// wp.thk1[wp.PRECORD]=wp.temp_thk1;
+// wp.thk2[wp.PRECORD]=wp.temp_thk2;
+// wp.lstart[wp.PRECORD]=wp.temp_lstart;
+// wp.lend[wp.PRECORD]=wp.temp_lend;
+// wp.n_curr_sttEl[wp.PRECORD]=wp.temp_n_curr_sttEl;
+// wp.reset[wp.PRECORD]=wp.temp_reset;
+// wp.wpTimes[wp.PRECORD]=wp.temp_wpTimes;
+// wp.source[wp.PRECORD]=wp.temp_source;
+// wp.mcr[wp.PRECORD]=wp.temp_mcr;
+// wp.WeldColor[wp.PRECORD]=wp.temp_WeldColor; // Policy: Reserve one extra nWeldPass and copy "to-be-edited" data there.
+// wp.prevGID[wp.PRECORD]=wp.temp_prevGID;
+// wp.util_arr[wp.PRECORD]=wp.temp_util_arr;
+//// for(j=0;j<base.nelt;j++)wp.eles[wp.PRECORD*base.nelt+j]=wp.eles[wp.nWeldPass*base.nelt+j];
+//// for(j=0;j<base.nelt;j++)wp.sttEles[wp.PRECORD*base.nelt+j]=wp.sttEles[wp.nWeldPass*base.nelt+j]; for(j=0;j<base.nelt;j++)wp.firstEle[wp.PRECORD*base.nelt+j]=wp.firstEle[wp.nWeldPass*base.nelt+j];
+//for(j=0;j<wp.nWeldPass*wp.memWGa;j++)wp.eles[j]=wp.temp_eles[j];
+//for(j=0;j<wp.nWeldPass*wp.memWGa;j++)wp.sttEles[j]=wp.temp_sttEles[j];
 
- for(j=0;j<wp.memWGa;j++)wp.nextEle[wp.PRECORD*wp.memWGa+j]=wp.nextEle[wp.nWeldPass*wp.memWGa+j];
- for(j=0;j<4;j++)wp.snorm1[wp.PRECORD*4+j]=wp.snorm1[wp.nWeldPass*4+j];
- for(j=0;j<4;j++)wp.snorm2[wp.PRECORD*4+j]=wp.snorm2[wp.nWeldPass*4+j];
- for(j=0;j<3;j++)wp.circEles[wp.PRECORD*3+j]=wp.circEles[wp.nWeldPass*3+j];
- for(j=0;j<wp.memWGa;j++)wp.edgeEles[wp.PRECORD*wp.memWGa+j]=wp.edgeEles[wp.nWeldPass*wp.memWGa+j];
- for(j=0;j<4;j++)wp.edgeNodes[wp.PRECORD*4+j]=wp.edgeNodes[wp.nWeldPass*4+j]; // correct???
-// for(j=0;j<4*base.nelt;j++)wp.sttEleNodes[wp.PRECORD*base.nelt*4+j]=wp.sttEleNodes[wp.nWeldPass*base.nelt*4+j];
-for(j=0;j<wp.nWeldPass*wp.memWGa*4;j++)wp.sttEleNodes[j]=wp.temp_sttEleNodes[j];
+// for(j=0;j<wp.memWGa;j++)wp.nextEle[wp.PRECORD*wp.memWGa+j]=wp.nextEle[wp.nWeldPass*wp.memWGa+j];
+// for(j=0;j<4;j++)wp.snorm1[wp.PRECORD*4+j]=wp.snorm1[wp.nWeldPass*4+j];
+// for(j=0;j<4;j++)wp.snorm2[wp.PRECORD*4+j]=wp.snorm2[wp.nWeldPass*4+j];
+// for(j=0;j<3;j++)wp.circEles[wp.PRECORD*3+j]=wp.circEles[wp.nWeldPass*3+j];
+// for(j=0;j<wp.memWGa;j++)wp.edgeEles[wp.PRECORD*wp.memWGa+j]=wp.edgeEles[wp.nWeldPass*wp.memWGa+j];
+// for(j=0;j<4;j++)wp.edgeNodes[wp.PRECORD*4+j]=wp.edgeNodes[wp.nWeldPass*4+j]; // correct???
+//// for(j=0;j<4*base.nelt;j++)wp.sttEleNodes[wp.PRECORD*base.nelt*4+j]=wp.sttEleNodes[wp.nWeldPass*base.nelt*4+j];
+//for(j=0;j<wp.nWeldPass*wp.memWGa*4;j++)wp.sttEleNodes[j]=wp.temp_sttEleNodes[j];
 
- for(j=0;j<wp.memWGa;j++)wp.hlightel[wp.PRECORD*wp.memWGa+j]=wp.hlightel[wp.nWeldPass*wp.memWGa+j];
- for(j=0;j<3*NDF;j++)wp.arrows[3*NDF*wp.PRECORD+j]=wp.arrows[3*NDF*wp.nWeldPass+j];
-//
-for(j=0;j<wp.memWGa;j++)
-  {if(wp.eles[wp.nWeldPass*wp.memWGa+j]>=0){ie=wp.eles[wp.nWeldPass*wp.memWGa+j]/10;
-											base.arrELSET[ie]=wp.nWeldGroup+wp.PRECORD+1;
-											indat.arrELSET[ie]=wp.nWeldGroup+wp.PRECORD+1;
-										   }
-   else break;
-  }
+// for(j=0;j<wp.memWGa;j++)wp.hlightel[wp.PRECORD*wp.memWGa+j]=wp.hlightel[wp.nWeldPass*wp.memWGa+j];
+// for(j=0;j<3*NDF;j++)wp.arrows[3*NDF*wp.PRECORD+j]=wp.arrows[3*NDF*wp.nWeldPass+j];
+////
+//for(j=0;j<wp.memWGa;j++)
+//  {if(wp.eles[wp.nWeldPass*wp.memWGa+j]>=0){ie=wp.eles[wp.nWeldPass*wp.memWGa+j]/10;
+//											base.arrELSET[ie]=wp.nWeldGroup+wp.PRECORD+1;
+//											indat.arrELSET[ie]=wp.nWeldGroup+wp.PRECORD+1;
+//										   }
+//   else break;
+//  }
 
 
  FD_LButtonstatus=11;stateVFT=2;
 /////////// Cursor EFP 1/21/2011
 Screen->Cursor=crSizeAll;
 ///////////
- delete [] wp.temp_eles;delete [] wp.temp_sttEles;delete [] wp.temp_sttEleNodes;
+// delete [] wp.temp_eles;delete [] wp.temp_sttEles;delete [] wp.temp_sttEleNodes;
  delete CreateLinWeldPass;CreateLinWeldPass=NULL;// because it was created with Show()?
 //iplotflag=1;iCircleplot=1;
 							   iCullyesno=0;Invalidate();// EFP 1/08/2011
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TForm1::EditWeldParamExecute(TObject *Sender)
 {long ip=0;
  if(base.nop1)
@@ -14995,7 +15156,7 @@ for(ir=0;ir<4;ir++)wp.snorm2[4*wp.nWeldPass+ir]= -1;
 																				wps.nWeldParamSet,wps.name,
 																				this); // (weldpass#,weldseq#,...)
 
-CreateLinWeldPass->CheckBox1->Enabled=false;//Disconnect weld direction CheckBox1 EFP 4/03/2011
+//CreateLinWeldPass->CheckBox1->Enabled=false;//Disconnect weld direction CheckBox1 EFP 4/03/2011
 
 if(isw==1)
   {
@@ -15146,18 +15307,19 @@ void __fastcall TForm1::WeldPassEditingandSequencing1Execute(TObject *Sender)
 	   WeldPassEditSeqn->Caption=L"Weld Pass Sequencing";
 	   WeldPassEditSeqn->Label1->Caption=L"Current direction/seq.";
 	   WeldPassEditSeqn->Label2->Caption=L"Proposed direction/seq.";
-	   WeldPassEditSeqn->Label3->Caption=L"Check to reverse direction";
-	   WeldPassEditSeqn->Label4->Caption=L"Animation time";
+	   WeldPassEditSeqn->Label3->Caption=L"Check box to reverse";
+	   WeldPassEditSeqn->Label4->Caption=L"weldpass direction";
+//	   WeldPassEditSeqn->Label4->Caption=L"Animation time";
 	   WeldPassEditSeqn->Button1->Caption=L"Enter";
-	   WeldPassEditSeqn->Button2->Caption=L"Animate seq.";
+//	   WeldPassEditSeqn->Button2->Caption=L"Animate seq.";
 	   WeldPassEditSeqn->Button3->Caption=L"Move up";
 	   WeldPassEditSeqn->Button4->Caption=L"Move down";
 	   WeldPassEditSeqn->Button5->Caption=L"Restore current dir.";
 	   WeldPassEditSeqn->Button6->Caption=L"Restore curr.seq+dir"; //EFP 3/29/2012
 	   WeldPassEditSeqn->Button7->Caption=L"Reverse direct. all";
 	   WeldPassEditSeqn->Button8->Caption=L"Cancel";
-	   WeldPassEditSeqn->CheckEdit1=1000;
-	   WeldPassEditSeqn->Button2->Enabled=false; //Temporary EFP 3/29/2012
+// 	   WeldPassEditSeqn->CheckEdit1=1000;
+//	   WeldPassEditSeqn->Button2->Enabled=false; //Temporary EFP 3/29/2012
 	   WeldPassEditSeqn->Show();
 	  }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Must create weld pass first.",L"Halt",MB_OK);}
@@ -15310,16 +15472,25 @@ void __fastcall TForm1::exportCTSPExecute(TObject *Sender)
 	  {
 
 	   CTSPnames=new TForm29(0,wp.nWeldPass,this);
-	   CTSPnames->Caption="Enter file name for CTSP(TM) input deck.";
-	   CTSPnames->Label1->Caption="CTSP main file";
-	   CTSPnames->Label2->Caption="CTSP node file";
-	   CTSPnames->Label3->Caption="CTSP element file";
-	   CTSPnames->Label8->Caption="CTSP param file";
+//	   CTSPnames->Caption="Enter file name for CTSP(TM) input deck.";
+	   CTSPnames->Caption="CTSP(TM) input deck.";
+//	   CTSPnames->Label1->Caption="CTSP main file";
+//	   CTSPnames->Label2->Caption="CTSP node file";
+//	   CTSPnames->Label3->Caption="CTSP element file";
+//	   CTSPnames->Label8->Caption="CTSP param file";
+	   CTSPnames->Label1->Caption="CTSP main file=";
+	   CTSPnames->Label2->Caption="CTSP node file=";
+	   CTSPnames->Label3->Caption="CTSP element file=";
+	   CTSPnames->Label8->Caption="CTSP param file=";
 	   CTSPnames->Label4->Caption="Subdivide CTSP into # multicores:";
-	   CTSPnames->Label5->Caption="_CTSP_input.in";
-	   CTSPnames->Label6->Caption="_CTSP_node.in";
-	   CTSPnames->Label7->Caption="_CTSP_element.in";
-	   CTSPnames->Label9->Caption="_CTSP_param.in";
+//	   CTSPnames->Label5->Caption="_CTSP_input.in";
+//	   CTSPnames->Label6->Caption="_CTSP_node.in";
+//	   CTSPnames->Label7->Caption="_CTSP_element.in";
+//	   CTSPnames->Label9->Caption="_CTSP_param.in";
+	   CTSPnames->Label5->Caption="input.in";
+	   CTSPnames->Label6->Caption="node.in";
+	   CTSPnames->Label7->Caption="element.in";
+	   CTSPnames->Label9->Caption="param.in";
 	   CTSPnames->Label10->Caption="Suggested core-to-core overlap time";
 	   CTSPnames->Button1->Caption="OK";
 	   CTSPnames->Button2->Caption="Cancel";
@@ -15338,13 +15509,15 @@ void __fastcall TForm1::exportCTSPExecute(TObject *Sender)
 	   CTSPnames->Label9->Visible=false;
 	   CTSPnames->Label10->Visible=false;
 
-	   CTSPnames->Edit1->Enabled=true;
+//	   CTSPnames->Edit1->Enabled=true;
+	   CTSPnames->Edit1->Enabled=false;
 	   CTSPnames->Edit2->Enabled=false;
 	   CTSPnames->Edit3->Enabled=false;
 	   CTSPnames->Edit5->Enabled=false;
 	   CTSPnames->Edit4->Enabled=true;
 	   CTSPnames->Edit6->Enabled=false;
-	   CTSPnames->Edit1->Visible=true;
+//	   CTSPnames->Edit1->Visible=true;
+	   CTSPnames->Edit1->Visible=false;
 	   CTSPnames->Edit2->Visible=false;
 	   CTSPnames->Edit3->Visible=false;
 	   CTSPnames->Edit5->Visible=false;
@@ -15444,16 +15617,21 @@ void TForm1::exportCTSP2_public() //Version with load balancing  EFP 11/24/2012
 ;
  UnicodeString fnNeedS,extensCharS1a=UnicodeString(L"CTSPsubd00"),extensCharS1b=UnicodeString(L"CTSPsubd0"),extensCharS1c=UnicodeString(L"CTSPsubd");
  char buf[3+1];
- wchar_t curMess0[]=L"_CTSP_input.in\n",curMess1[]=L"_CTSP_node.in\n",curMess2[]=L"_CTSP_element.in\n",curMess3[]=L"_CTSP_param.in",string0[160];
+// wchar_t curMess0[]=L"_CTSP_input.in\n",curMess1[]=L"_CTSP_node.in\n",curMess2[]=L"_CTSP_element.in\n",curMess3[]=L"_CTSP_param.in",string0[160];
+ wchar_t curMess0[]=L"input.in\n",curMess1[]=L"node.in\n",curMess2[]=L"element.in\n",curMess3[]=L"param.in",string0[160];
 //{wchar_t curMess0[]=L"_CTSP_input.txt\n",curMess1[]=L"_CTSP_node.txt\n",curMess2[]=L"_CTSP_element.txt",string0[90];
 ////		  Application->MessageBox(PtrToStringChars(gWsiAlias),L"Warning",MB_OK); // Visual C++ function
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 
- gWsiAlias=CTSPnames->CheckEdit1;
- StringCchCopyW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess0);
- StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess1);
- StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess2);
- StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess3);
+// gWsiAlias=CTSPnames->CheckEdit1;
+// StringCchCopyW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess0);
+// StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess1);
+// StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess2);
+// StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess3);
+ StringCchCopyW(string0,160,curMess0);
+ StringCchCatW(string0,160,curMess1);
+ StringCchCatW(string0,160,curMess2);
+ StringCchCatW(string0,160,curMess3);
  if(mcm==1){
 //honk<<"\n"<<" Writing CTSP(TM) files...\n";
 			extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing CTSP files",MB_OK);
@@ -15576,9 +15754,14 @@ Screen->Cursor=crSizeAll;
 void TForm1::exportCTSP3_public()
 {gWsiAlias=CTSPnames->CheckEdit1;
 	   CTSPnames->CheckIsel=1;
-	   CTSPnames->Edit2->Enabled=true;CTSPnames->Edit3->Enabled=true;CTSPnames->Edit5->Enabled=true;CTSPnames->Edit6->Enabled=true;
-	   CTSPnames->Edit2->Visible=true;CTSPnames->Edit3->Visible=true;CTSPnames->Edit5->Visible=true;CTSPnames->Edit6->Visible=true;
-	   CTSPnames->Label1->Enabled=false;
+//	   CTSPnames->Edit2->Enabled=true;CTSPnames->Edit3->Enabled=true;CTSPnames->Edit5->Enabled=true;
+	   CTSPnames->Edit2->Enabled=false;CTSPnames->Edit3->Enabled=false;CTSPnames->Edit5->Enabled=false;
+	   CTSPnames->Edit6->Enabled=true;
+//	   CTSPnames->Edit2->Visible=true;CTSPnames->Edit3->Visible=true;CTSPnames->Edit5->Visible=true;
+	   CTSPnames->Edit2->Visible=false;CTSPnames->Edit3->Visible=false;CTSPnames->Edit5->Visible=false;
+	   CTSPnames->Edit6->Visible=true;
+//	   CTSPnames->Label1->Enabled=false;
+	   CTSPnames->Label1->Enabled=true;
 	   CTSPnames->Label2->Enabled=true;
 	   CTSPnames->Label3->Enabled=true;
 	   CTSPnames->Label8->Enabled=true;
@@ -15595,14 +15778,18 @@ void TForm1::exportCTSP3_public()
 	   CTSPnames->Label8->Visible=true;
 	   CTSPnames->Label9->Visible=true;
 	   CTSPnames->Label10->Visible=true;
-	   CTSPnames->CheckEdit1=gWsiAlias;CTSPnames->CheckEdit2=gWsiAlias;CTSPnames->CheckEdit3=gWsiAlias;CTSPnames->CheckEdit5=gWsiAlias;
+//	   CTSPnames->CheckEdit1=gWsiAlias;CTSPnames->CheckEdit2=gWsiAlias;CTSPnames->CheckEdit3=gWsiAlias;CTSPnames->CheckEdit5=gWsiAlias;
 	   CTSPnames->Edit1->Enabled=false;
 
 	   if(CTSPnames->CheckEdit4==1)CTSPnames->Button1->Caption=L"Write files";
-	   else {CTSPnames->Label5->Caption=L"/CTSPsubdN/..._CTSP_input.in";
-			 CTSPnames->Label6->Caption=L"/CTSPsubdN/..._CTSP_node.in";
-			 CTSPnames->Label7->Caption=L"/CTSPsubdN/..._CTSP_element.in";
-			 CTSPnames->Label9->Caption=L"/CTSPsubdN/..._CTSP_param.in";
+//	   else {CTSPnames->Label5->Caption=L"/CTSPsubdN/..._CTSP_input.in";
+//			 CTSPnames->Label6->Caption=L"/CTSPsubdN/..._CTSP_node.in";
+//			 CTSPnames->Label7->Caption=L"/CTSPsubdN/..._CTSP_element.in";
+//			 CTSPnames->Label9->Caption=L"/CTSPsubdN/..._CTSP_param.in";
+	   else {CTSPnames->Label5->Caption=L"/CTSPsubdN/input.in";
+			 CTSPnames->Label6->Caption=L"/CTSPsubdN/node.in";
+			 CTSPnames->Label7->Caption=L"/CTSPsubdN/element.in";
+			 CTSPnames->Label9->Caption=L"/CTSPsubdN/param.in";
 			 CTSPnames->Button1->Caption=L"Write multi_core directories";
 			}
 }
@@ -16769,9 +16956,13 @@ viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[
 //	   Form7=new TForm7(base.allGrp,this);
 	   Form7=new TForm7(ies,this);
 	   Form7->Caption=L"Assign material files to non-WPs";
-	   Form7->Label1->Caption=L"Entity";
+//	   Form7->Label1->Caption=L"Entity";
+	   Form7->Label1->Caption=L"First, click";
+	   Form7->Label5->Caption=L"Entity";
 	   Form7->Label2->Caption=L"Chosen material";
-	   Form7->Label3->Caption=L"Available material";
+//	   Form7->Label3->Caption=L"Available material";
+	   Form7->Label3->Caption=L"Second, click";
+	   Form7->Label6->Caption=L"Available material";
 	   Form7->Label4->Caption=L"Usage: First click on Entity; then click Available material";
 	   Form7->Button1->Caption=L"OK";
 	   for(ir=0;ir<ies;ir++)Form7->ListBox1->AddItem(base.ELSETinputnames[iELSETarr[ir]],this);
@@ -18711,6 +18902,8 @@ delete[] m1;
 	   Form9->CheckListBox1->Checked[i]=false;
 	   i=i+1;Form9->CheckListBox1->AddItem(L"Max temp.occurring",this);
 	   Form9->CheckListBox1->Checked[i]=false;
+	   i=i+1;Form9->CheckListBox1->AddItem(L"Element states",this);
+	   Form9->CheckListBox1->Checked[i]=false;
 	   Form9->CheckListBox1->ItemIndex=0;
 	   Form9->ShowModal();
 	   delete Form9;// *Form9=NULL; (not in Unit1, remember, but perhaps we should not "delete"?)
@@ -18757,6 +18950,7 @@ void TForm1::exportWARP3D5_public()
 //
  if(Form9->CheckListBox1->Checked[ 9]){icount++;outfile5<<"!  output flat text nodal temp.end.incr\n";}  //BB 1/15/2015
  if(Form9->CheckListBox1->Checked[10]){icount++;outfile5<<"!  output flat text nodal max.temp.occurring\n";}  //BB 1/15/2015
+ if(Form9->CheckListBox1->Checked[11]){icount++;outfile5<<"!  output flat text element states\n";}  //BB 1/15/2015
  outfile5.close();
 ///////////////////////////////////////////////////////////
  if(icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"*.wrp & compute_commands_all_profiles.inp written",L"Success",MB_OK);}

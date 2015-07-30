@@ -20,7 +20,6 @@ __published:	// IDE-managed Components
         TLabel *Label2;
         TEdit *Edit2;
         TButton *Button1;
-        TButton *Button2;
         TButton *Button3;
         TPageControl *PageControl1;
         TTabSheet *TabSheet2;
@@ -85,7 +84,6 @@ __published:	// IDE-managed Components
 	TShape *Shape1;
 	TLabel *Label6;
 	TRadioGroup *RadioGroup2;
-	TCheckBox *CheckBox1;
 	TButton *Button4;
 	TListBox *ListBox1;
 	TRadioGroup *RadioGroup1;
@@ -94,12 +92,14 @@ __published:	// IDE-managed Components
 	void __fastcall ListBox1Click(TObject *Sender);
 	void __fastcall ListBox2Click(TObject *Sender);
 	void __fastcall Button3Click(TObject *Sender);
-	void __fastcall Button2Click(TObject *Sender);
+//	void __fastcall Button2Click(TObject *Sender);
 	void __fastcall RadioGroup1Click(TObject *Sender);
 
 private:	// User declarations
         int iflagForm15;
-		int F15_isel,kflagForm15,jflagForm15,nMatPS,nWeldPS,getRadioBstatus(),getCheckBstatus(),getEdit19(),
+		int F15_isel,kflagForm15,jflagForm15,nMatPS,nWeldPS,getRadioBstatus(),
+//			getCheckBstatus(),
+			getEdit19(),
 			getISEL(),getFunc(),getType(),getShape(),getMatName(),getWeldParName();
 		long Pl1norm,Pl2norm,getEdit2(),getEdit23(),getEdit24();
 		double getEdit9(),getEdit10(),getEdit11(),getEdit12(),getEdit13(),getEdit14(),getEdit15(),getEdit16(),
@@ -114,7 +114,7 @@ public:		// User declarations
 		__property int CheckRadioB={read=getRadioBstatus};
 		__property String CheckEdit1={read=getEdit1,write=setEdit1};
 		__property long CheckEdit2={read=getEdit2,write=setEdit2};
-		__property int CheckCheckB={read=getCheckBstatus};
+//		__property int CheckCheckB={read=getCheckBstatus};
 //		__property double CheckEdit9={read=getEdit9,write=setEdit9};
 //		__property double CheckEdit10={read=getEdit10,write=setEdit10};
 //		__property double CheckEdit11={read=getEdit11,write=setEdit11};

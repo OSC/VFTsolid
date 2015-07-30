@@ -31,7 +31,7 @@ __fastcall TForm15::TForm15(int isel,long currWeldPass,long currSeq,long nStartE
 // if(Pl1normEl-10*(Pl1normEl/10))Edit7->Text=IntToStr(Pl1normEl-10*(Pl1normEl/10));else Edit7->Text="***";
 // if(Pl2normEl-10*(Pl2normEl/10))Edit8->Text=IntToStr(Pl2normEl-10*(Pl2normEl/10));else Edit8->Text="***";
  RadioGroup2->ItemIndex=0;
- CheckBox1->Checked=true;
+// CheckBox1->Checked=true;
  RadioButton5->Checked=true;RadioButton6->Checked=false;//MovingArc is default
 //// TListBox *ListBox1= new TListBox(this);
 // for(i=0;i<nMatPS;i++)ListBox1->Items->Add(gMatPropName[i].c_str());
@@ -49,7 +49,7 @@ int TForm15::getRadioBstatus(){
 							   return iflagForm15;
 							  }
 //---------------------------------------------------------------------------
-int TForm15::getCheckBstatus(){if(CheckBox1->Checked==true)return 1;else return 0;}
+//int TForm15::getCheckBstatus(){if(CheckBox1->Checked==true)return 1;else return 0;}
 //---------------------------------------------------------------------------
 long TForm15::getEdit2(){
  UnicodeString mess1=L"Zero pass seq. ",mess2=L"Negative pass seq. ",mess3=L"Inadmissable pass seq. ";
@@ -403,8 +403,10 @@ void __fastcall TForm15::Button1Click(TObject *Sender)
 								   ShowMessage(L"Inadmissable: preheat temperature exceeds melting temperature");
 								  }
 			  }
- if(kflagForm15<0){isw=0;extern PACKAGE void __fastcall Beep(void);ShowMessage(Label6->Caption);}
- if(jflagForm15<0){isw=0;extern PACKAGE void __fastcall Beep(void);ShowMessage(Label9->Caption);}
+if(F15_isel>3 && F15_isel<=7);
+else {if(kflagForm15<0){isw=0;extern PACKAGE void __fastcall Beep(void);ShowMessage(Label6->Caption);}
+	  if(jflagForm15<0){isw=0;extern PACKAGE void __fastcall Beep(void);ShowMessage(Label9->Caption);}
+	 }
 
  if(StrToFloat(Edit17->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
 								  ShowMessage(Label20->Caption +L" "+ Edit17->Text + L" must be positive");
@@ -471,14 +473,14 @@ void __fastcall TForm15::Button3Click(TObject *Sender)
  if(F15_isel>3 && F15_isel<=7){Form1->wpEdit2_public();Close();}
  else Form1->wpCreate2_public();
 }
-//---------------------------------------------------------------------------
-void __fastcall TForm15::Button2Click(TObject *Sender)
-{
-////Form1->wpCreate2_public();
-// if(F15_isel==2 || F15_isel==3){Form1->wpEdit2_public();Close();}
- if(F15_isel>3 && F15_isel<=7){Form1->wpEdit2_public();Close();}
- else Form1->wpCreate2_public();
-}
+////---------------------------------------------------------------------------
+//void __fastcall TForm15::Button2Click(TObject *Sender)
+//{
+//////Form1->wpCreate2_public();
+//// if(F15_isel==2 || F15_isel==3){Form1->wpEdit2_public();Close();}
+// if(F15_isel>3 && F15_isel<=7){Form1->wpEdit2_public();Close();}
+// else Form1->wpCreate2_public();
+//}
 //---------------------------------------------------------------------------
 void __fastcall TForm15::RadioGroup1Click(TObject *Sender)
 {if(RadioGroup1->ItemIndex==1){F15_isel=5;
