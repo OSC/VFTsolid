@@ -105,6 +105,9 @@
 //void __fastcall TForm1::AboutVFTExecute(TObject *Sender) About_VFT
 //void __fastcall TForm1::TimeshiftVED0Execute(TObject *Sender) et al. tshiftCTSP
 //void TForm1::tshiftCTSP2(int isw) tshiftCTSP
+//   (ix) Huge bugfix: FDelem_interrog1() occasionally spurious ZP from homsubm() ignored. EFP 9/04/2015
+//   (x) Huge bugfix: Design tab/Paintbox1 Align=alClient (fixes imprecise mouse). EFP 9/04/2015
+//       Remember to undo (Xraw,Yraw) change to FormMouseDown()/Up/Move
 
 #include <vcl.h>
 #pragma hdrstop
@@ -165,7 +168,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.57h_64 2015";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.57j_64 2015";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -1488,7 +1491,7 @@ gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
 //
 	  {  //OPEN06
 //////////////////////////////////////////////////////////////
-//TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //////////////////////////////////////////////////////////////
 	   nodeuplim=totNnum=eluplim=totEnum=0;nodelolim=ellolim=LONG_INT;
 	   do {ntape.getline(cht,200-1);  //START_DO01
@@ -1779,7 +1782,7 @@ for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
 						 {if(cht[i]==',' || cht[i]==' ' || cht[i]=='0' || cht[i]=='1' || cht[i]=='2' || cht[i]=='3' || cht[i]=='4' ||
 														   cht[i]=='5' || cht[i]=='6' || cht[i]=='7' || cht[i]=='8' || cht[i]=='9')continue;
 						  else {
-						        extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Please remove unsupported *ELSET card with non-numeric data from *.abq/*.inp",L"Terminate",MB_OK);exit(0);
+								extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Please remove unsupported *ELSET card with non-numeric data from *.abq/*.inp",L"Terminate",MB_OK);exit(0);
 //honk<<"\n"<<cht<<" Warning: ELSET of ELSETs datacard found\n";break;
 							   }
 						 }
@@ -1800,10 +1803,10 @@ for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
 				}
 		  }
 	   while (!ntape.eof()); //END_DO01
-///////////////////////////
-//Screen->Cursor=Save_Cursor;
-///////////////////////////
 	   ntape.close();
+///////////////////////////
+Screen->Cursor=Save_Cursor;
+///////////////////////////
 //	   base.matsteps=matstep;
 //honk<<nodeuplim<<" "<<nodelolim<<" "<<totNnum<<" "<<eluplim<<" "<<ellolim<<" "<<totEnum<<" "<<MXNPEL<<" DDDDDDDD\n";
 //if(1==1)exit(0);
@@ -1857,7 +1860,7 @@ GeomFileName=OpenDialog1->FileName;
 		  if(ntape1) //seek() can be used with binary-opened files (NOT ascii) so close & reopen file  EFP 12/18/2011
 			{  //StartReopen02
 //////////////////////////////////////////////////////////////
-//TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //////////////////////////////////////////////////////////////
 //			 ipid=nGID=1;  //Assumption: All elements start with GID=1
 			 nGID=iallGrp=1;
@@ -2506,6 +2509,9 @@ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could 
 ////
 
 //if(1==1)exit(0);
+//////////////////////////////////////////////////////////////
+Screen->Cursor=Save_Cursor;
+//////////////////////////////////////////////////////////////
 //////////////////////////////////////
 	if(nGID<1){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No geometry IDs found",L"Halt",MB_OK);return;}
 	else {if(iPaintyesno/10==0){
@@ -2522,7 +2528,7 @@ FDcomp_nGID(indat.nelt,&nGID,arGID);
 Form1->Caption=GeomFileName;
 
 ////////// Cursor EFP 1/21/2011
-Screen->Cursor=crSizeAll;
+//Screen->Cursor=crSizeAll;
 //////////
 			 wp.memWGa=sumlim;
 //			 wp.memWGa=base.nelt; //Temporary assignment EFP 3/26/2011
@@ -3228,6 +3234,9 @@ gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
 		  if(ntape)
 //
 	  {
+//////////////////////////////////////////////////////////////
+TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+//////////////////////////////////////////////////////////////
 	   nodeuplim=totNnum=eluplim=totEnum=ELSETmobsize=j=0;nodelolim=ellolim=LONG_INT;exALLEL=exALLWD= -1;
 	   do {ntape.getline(cht,200-1);
 		   if     (cht[0]=='*' && cht[1]=='*' &&                 (cht[2]=='E' || cht[2]=='e') && (cht[3]=='N' || cht[3]=='n') && (cht[4]=='D' || cht[4]=='d'))break;
@@ -3353,6 +3362,9 @@ gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
 		  }
 	   while (!ntape.eof());
 	   ntape.close();
+//////////////////////////////////////////////////////////////
+Screen->Cursor=Save_Cursor;
+//////////////////////////////////////////////////////////////
 //honk<<nodeuplim<<" "<<nodelolim<<" "<<totNnum<<" "<<eluplim<<" "<<ellolim<<" "<<totEnum<<" "<<MXNPEL<<" DDDDDDDD\n";
 //honk<<ELSETmobsize<<" "<<totEnum<<" "<<exALLEL<<" "<<base.allGrp<<" zoot suit\n";
 	   if(wp.nWeldGroup==0){extern PACKAGE void __fastcall Beep(void);
@@ -3396,6 +3408,9 @@ GeomFileName=OpenDialog1->FileName;
 		  ifstream ntape1("record.tmp",ios::nocreate|ios::binary,0);
 		  if(ntape1) //seek() can be used with binary-opened files (NOT ascii) so close & reopen file  EFP 12/18/2011
 			{
+//////////////////////////////////////////////////////////////
+TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+//////////////////////////////////////////////////////////////
 //			 ipid=nGID=1;  //Assumption: All elements start with GID=1
 			 nGID=iallGrp=1;
 			 totNnum=totEnum=sumELSETel=sumlim=0;
@@ -3653,8 +3668,11 @@ base.allGrp=nGID; //Special restriction to 1 basemetal + WGs (not needed)
 Form1->Caption=GeomFileName;
 
 ////////// Cursor EFP 1/21/2011
-Screen->Cursor=crSizeAll;
+//Screen->Cursor=crSizeAll;
 //////////
+//////////////////////////////////////////////////////////////
+Screen->Cursor=Save_Cursor;
+//////////////////////////////////////////////////////////////
 			 wp.memWGa=sumlim;
 ////honk<<sumlim<<" ImpAbq MEM\n";
 //honk<<base.allGrp<<" allGrp/exALL "<<exALLEL<<"\n";
@@ -4660,6 +4678,9 @@ for(i=0;i<wp.nWeldPass;i++){for(j=0;j<wp.memWGa;j++)
 ///////////////////////
 //////////////////////
 /////////////////////
+/////////// Cursor EFP 8/08/2015
+Screen->Cursor=Save_Cursor;
+///////////
 
 for(ii=0;ii<base.nelt;ii++)base.orig_matno[ii]=base.matno[ii]; //TBD: Revise foregoing coding to allow for this new line  EFP 1/23/2012
 /////////////////////////////////////
@@ -9904,6 +9925,7 @@ long TForm1::FDnode_interrog1(int X,int Y,long indat_nop1[],long indat_matno[],f
    }
  if(iprez>=0)return iprez;else return iprec;
 }
+/*
 //---------------------------------------------------------------------------
 void TForm1::FDelem_interrog1(int X,int Y,long *eprec,long *sprec,float *RN1,float *RN2,float *RN3,
   long indat_nop1[],long indat_matno[],float indat_c1[],long nFace,long arbFace[])
@@ -10005,6 +10027,118 @@ void TForm1::FDelem_interrog1(int X,int Y,long *eprec,long *sprec,float *RN1,flo
 			}
 		 }
 	  }
+   }
+}
+*/
+//---------------------------------------------------------------------------
+void TForm1::FDelem_interrog1(int X,int Y,long *eprec,long *sprec,float *RN1,float *RN2,float *RN3,
+  long indat_nop1[],long indat_matno[],float indat_c1[],long nFace,long arbFace[])
+// Global NDF,MXNPEI
+//{int gdata8[24]={0,1,5,4,
+//				 1,2,6,5,
+//				 3,2,6,7,
+//				 0,3,7,4,
+//				 0,1,2,3,
+//				 4,5,6,7};
+{int gdata8[24]={0,1,5,4, //Revised to get counterclock faces
+				 1,2,6,5,
+				 2,3,7,6,
+				 3,0,4,7,
+				 3,2,1,0,
+				 4,5,6,7};
+ int gdata6[20]={0,1,4,3,
+				 1,2,5,4,
+				 2,0,3,5,
+				 0,2,1,0,
+				 3,4,5,0};
+ int gdata4[12]={0,2,1,
+				 1,2,3,
+				 2,0,3,
+				 3,0,1};
+ int is=0,isp=0,npts=0,icount=0;long ic=0,ie=0,fType=0,iside=0,eltype=0,bscode=0,node=0,t3=1000,t5=100000,t7=10000000;
+ float xave=0.f,yave=0.f,zave=0.f,zmax=0.f,cave=0.f,cs=0.f,cpt=0.f,ZP=0.f,RN1s=0.f,RN2s=0.f,RN3s=0.f,
+   dx=0.f,dy=0.f,TOLSUB=0.0001f,zextrmin=0.f,zextrmax=0.f;
+ zmax= -1.E28f; *eprec= -1;zextrmin=1.e20f;zextrmax= -1.e20f;
+ for(ic=0;ic<nFace;ic++) //Establish Z max/min to check for homsubm() spuriousness
+   {ie=arbFace[ic]/t3;fType=(arbFace[ic]-ie*t3)/10;iside=arbFace[ic]-ie*t3-fType*10;eltype=indat_matno[ie]/t7;
+	if(eltype==5){npts=3;for(is=0;is<npts;is++){
+if(zextrmin>indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]+2])zextrmin=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]+2];
+if(zextrmax<indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]+2])zextrmax=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]+2];
+											   }
+				 }
+	else if(eltype==7){if(iside>2)npts=3;else npts=4;
+					   for(is=0;is<npts;is++){
+if(zextrmin>indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]+2])zextrmin=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]+2];
+if(zextrmax<indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]+2])zextrmax=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]+2];
+											 }
+					  }
+	else {npts=4;for(is=0;is<npts;is++){
+if(zextrmin>indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]+2])zextrmin=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]+2];
+if(zextrmax<indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]+2])zextrmax=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]+2];
+									   }
+		 }
+   }
+//honk<<zextrmin<<" ExtremeFDelem_interrog1 "<<zextrmax<<"\n";
+ for(ic=0;ic<nFace;ic++)
+   {ie=arbFace[ic]/t3;fType=(arbFace[ic]-ie*t3)/10;iside=arbFace[ic]-ie*t3-fType*10;
+	eltype=indat_matno[ie]/t7;bscode=(indat_matno[ie]-eltype*t7)/t5;node=(indat_matno[ie]-eltype*t7-bscode*t5)/t3;
+	xave=yave=zave=0.f;
+	if(eltype==5){npts=3;for(is=0;is<npts;is++){xave=xave+indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]  ];
+												yave=yave+indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]+1];
+												zave=zave+indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]+2];
+											   }
+				 }
+	else if(eltype==7){if(iside>2)npts=3;else npts=4;
+					   for(is=0;is<npts;is++){xave=xave+indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]  ];
+											  yave=yave+indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]+1];
+											  zave=zave+indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]+2];
+											 }
+					  }
+	else {npts=4;for(is=0;is<npts;is++){xave=xave+indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]  ];
+										yave=yave+indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]+1];
+										zave=zave+indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]+2];
+									   }
+		 }
+	xave=xave/float(npts);yave=yave/float(npts);zave=zave/float(npts);
+	icount=0;
+	for(is=0;is<npts;is++)
+	  {isp=is+1;if(isp>=npts)isp=0;
+	   if(eltype==5){dx=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+isp]]  ]-indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]  ];
+					 dy=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+isp]]+1]-indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]+1];
+					 if(fabs(dx)>1.e-10f){cs=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]+1]-indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]  ]*dy/dx;
+										  cave=yave-xave*dy/dx;cpt=float(ClientHeight-Y)-float(X)*dy/dx;
+										 }
+					 else {cs=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata4[3*iside+is]]  ];cave=xave;cpt=float(X);}
+					}
+	   else if(eltype==7){dx=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+isp]]  ]-indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]  ];
+						  dy=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+isp]]+1]-indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]+1];
+						  if(fabs(dx)>1.e-10f){cs=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]+1]-indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]  ]*dy/dx;
+											   cave=yave-xave*dy/dx;cpt=float(ClientHeight-Y)-float(X)*dy/dx;
+											  }
+						  else {cs=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata6[4*iside+is]]  ];cave=xave;cpt=float(X);}
+						 }
+	   else {
+			 dx=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+isp]]  ]-indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]  ];
+			 dy=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+isp]]+1]-indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]+1];
+			 if(fabs(dx)>1.e-10f){cs=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]+1]-indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]  ]*dy/dx;
+								  cave=yave-xave*dy/dx;cpt=float(ClientHeight-Y)-float(X)*dy/dx;
+								 }
+			 else {
+				   cs=indat_c1[NDF*indat_nop1[MXNPEI*ie+gdata8[4*iside+is]]  ];cave=xave;cpt=float(X);
+				  }
+			}
+	   if((cave-cs)*(cpt-cs)>0.f)icount++;else break;
+	  }
+////////////////
+//honk<<(ic+1)<<" "<<(ie+1)<<" "<<(iside+1)<<" inFDelem "<<icount<<"\n";
+////////////////
+	if(icount==npts){homsubm(ie,iside,float(X),float(ClientHeight-Y),&ZP,&RN1s,&RN2s,&RN3s,xave,yave,zave,node,eltype,indat_nop1+MXNPEI*ie,indat_c1,TOLSUB);
+//honk<<(ic+1)<<" "<<(ie+1)<<" "<<(iside+1)<<" inFDelem "<<icount<<" "<<zmax<<" < "<<ZP<<"\n";
+					 if(ZP>zextrmin-1.e-3f && ZP<zextrmax+1.e-3f)
+					   {if(zmax<ZP){zmax=ZP; *eprec=ie; *sprec=iside; *RN1=RN1s; *RN2=RN2s; *RN3=RN3s;
+								   }
+					   }
+					}
    }
 }
 //---------------------------------------------------------------------------
@@ -11165,12 +11299,12 @@ if(nndv2){if(solidshellsw)for(in=0;in<nndv2;in++){viewfile2>>id>>t11>>t12>>t13>>
 // else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not create FileOpen selector",L"Failure",MB_OK);}
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::FormMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int Xraw, int Yraw)
+void __fastcall TForm1::FormMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {//enum TMouseButton { mbLeft, mbRight, mbMiddle };
  int CRB=0,CRBsection=0,// Coding for FEMAP users EFP 12/20/2010
 iPers=iPersistVFT/100,jPers=(iPersistVFT-100*iPers)/10,
 // TB1H=0,P1W=0,
- CCB=0,CRB_sel=0,CRB_selx=0,CRB_ckShape=0,circFlag=0,girthFlag=0,X=0,Y=0;
+ CCB=0,CRB_sel=0,CRB_selx=0,CRB_ckShape=0,circFlag=0,girthFlag=0;
  long ip=0,ipp=0,ippp=0,signp=0,signm=0,isw=0,nipismin=0,nipismax=0,curiside=0,dumrec=0; // unsigned long prod=1,aflag=0;
  long ik=0,ic=0,iss=0,ies=0,isides=0;//Coding for FEMAP users EFP 12/20/2010
  long NodeNum=0,ie=0,numElInSlice=0,incognito=0,
@@ -11218,8 +11352,9 @@ iPers=iPersistVFT/100,jPers=(iPersistVFT-100*iPers)/10,
 // String extensCharS2[]={L"Sequence# "};
 // String extensCharS3[]={L" of "};
 
-if(Form1->WindowState==wsMaximized){X=Xraw;Y=Yraw;}
-else {X=Xraw+(Width-ClientWidth)/2;Y=Yraw+(Width-ClientWidth)/2;} //Non-maximized window needs allowance for margins EFP 7/24/2015
+//if(Form1->WindowState==wsMaximized){X=Xraw;Y=Yraw;}
+//else {X=Xraw+(Width-ClientWidth)/2;Y=Yraw+(Width-ClientWidth)/2;} //Non-maximized window needs allowance for margins EFP 7/24/2015
+// X=Xraw;Y=Yraw;
 
  //Convention: CRB_sel=CreateLinWeldPass->CheckISEL
 //  0-> Create full length
@@ -11616,8 +11751,9 @@ ieGID2= base.arrELSET[ie];//EFP 7/25/2015
 //													wp.GIDwp=10*(1+wp.nWeldGroup+wp.PRECORD)+wp.temp_eles[wp.memWGa*wp.PRECORD+0]-10*(wp.temp_eles[wp.memWGa*wp.PRECORD+0]/10);
 //												   }
 					   if((wp.CreateWPassMode && ieGID==wp.GIDwp/10) || //Remove iside check EFP 4/10/2011
-//						  (!wp.CreateWPassMode && (ieGID==wp.GIDwp/10 || ieGID==wp.prevGID[wp.PRECORD]))) //Revision: Generalize iside EFP 5/02/2010
-						  (!wp.CreateWPassMode && ieGID==base.allGrp+wp.PRECORD)) //Revision: Generalize iside EFP 5/02/2010
+////						  (!wp.CreateWPassMode && (ieGID==wp.GIDwp/10 || ieGID==wp.prevGID[wp.PRECORD]))) //Revision: Generalize iside EFP 5/02/2010
+//						  (!wp.CreateWPassMode && ieGID==base.allGrp+wp.PRECORD)) //Revision: Generalize iside EFP 5/02/2010
+						  (!wp.CreateWPassMode && (ieGID==base.allGrp+wp.PRECORD || ieGID==ieGID2))) //Revision: Generalize iside EFP 5/02/2010
 										  {
 		  ir=ieGID-9*(ieGID/9);
 		  if     (ir==0)Canvas->Brush->Color=clRed;
@@ -12669,13 +12805,13 @@ Screen->Cursor=crSizeAll;
 // delete sb;
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::FormMouseMove(TObject *Sender, TShiftState Shift, int Xraw, int Yraw)
+void __fastcall TForm1::FormMouseMove(TObject *Sender, TShiftState Shift, int X, int Y)
 // "Highlight" points/lines are plotted directly to Form1->Canvas, not buffer tBitmap->Canvas
-{int X=0,Y=0;
- panMouseM=1;
+{panMouseM=1;
 
-if(Form1->WindowState==wsMaximized){X=Xraw;Y=Yraw;}
-else {X=Xraw+(Width-ClientWidth)/2;Y=Yraw+(Width-ClientWidth)/2;} //Non-maximized window needs allowance for margins EFP 7/24/2015
+//if(Form1->WindowState==wsMaximized){X=Xraw;Y=Yraw;}
+//else {X=Xraw+(Width-ClientWidth)/2;Y=Yraw+(Width-ClientWidth)/2;} //Non-maximized window needs allowance for margins EFP 7/24/2015
+// X=Xraw;Y=Yraw;
 
  if(FD_LButtonstatus==1)
 	 {if(zoomDrag){zoomRect.right=X;zoomRect.bottom=Y;
@@ -12694,12 +12830,13 @@ else {X=Xraw+(Width-ClientWidth)/2;Y=Yraw+(Width-ClientWidth)/2;} //Non-maximize
 							  }
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::FormMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int Xraw, int Yraw)
+void __fastcall TForm1::FormMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {//enum TMouseButton { mbLeft, mbRight, mbMiddle }; // Draw directly on Canvas
- float rad=0.f;int TB1H=0,P1W=0,X=0,Y=0;
+ float rad=0.f;int TB1H=0,P1W=0;
 
-if(Form1->WindowState==wsMaximized){X=Xraw;Y=Yraw;}
-else {X=Xraw+(Width-ClientWidth)/2;Y=Yraw+(Width-ClientWidth)/2;} //Non-maximized window needs allowance for margins EFP 7/24/2015
+//if(Form1->WindowState==wsMaximized){X=Xraw;Y=Yraw;}
+//else {X=Xraw+(Width-ClientWidth)/2;Y=Yraw+(Width-ClientWidth)/2;} //Non-maximized window needs allowance for margins EFP 7/24/2015
+// X=Xraw;Y=Yraw;
 
  if(Button==TMouseButton::mbLeft)
    {if(FD_LButtonstatus==1){if(zoomDrag){zoomDrag=false;zoomRect.right=X;zoomRect.bottom=Y;FD_LButtonstatus=0;
@@ -13212,7 +13349,7 @@ void TForm1::Rot_program(int isw,float ang0,float ang1,float ang2)
 	   FDelemfacets3a(indat.npoin,indat.nelt,indat.nop1,indat.matno);
 	  }
 /////////////// EFP 3/19/2012
-for(ie=0;ie<base.nelt;ie++)indat.arrELSET[ie]=base.arrELSET[ie];
+//for(ie=0;ie<base.nelt;ie++)indat.arrELSET[ie]=base.arrELSET[ie];
 /////////////
  iPaintyesno=10+1;iCullyesno=0;
 //	rangle[0]=rangle0[0]=0.;rangle[1]=rangle0[1]=0.;rangle[2]=rangle0[2]=180.;

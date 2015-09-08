@@ -26,14 +26,19 @@ object Form1: TForm1
     Height = 345
   end
   object PaintBox1: TPaintBox
-    Left = 16
-    Top = 8
-    Width = 747
-    Height = 635
+    Left = 0
+    Top = 0
+    Width = 803
+    Height = 651
+    Align = alClient
     OnMouseDown = FormMouseDown
     OnMouseMove = FormMouseMove
     OnMouseUp = FormMouseUp
     OnPaint = Form1Paint
+    ExplicitLeft = 8
+    ExplicitTop = 8
+    ExplicitWidth = 755
+    ExplicitHeight = 635
   end
   object Panel1: TPanel
     Left = 803
