@@ -1,3 +1,12 @@
+// Dire warning about Abaqus datafiles:
+//  (i) Beware of missing GENERATEs
+//  (ii) *END or *END STEP required at end
+//  (iii) Only one PART/ASSEMBLY/INSTANCE can be read.
+//  (iv) Lots of cards are unsupported, especially *TIE, *NGEN
+//  (v) *TRANSFORM and SYSTEM unsupported.
+//  (vi) temp2odb_solid_save.py can accept only one material name (e.g. material.dat)
+//       in modelName_ABA.inp
+//
 //---------------------------------------------------------------------------
 // Warning:
 //   This VFTsolid version writes the multi-materials version of WARP3D uexternal_data_file.inp
@@ -60,6 +69,7 @@
 //        WELD
 //        WG
 //        WP
+//        GROUP (*.msh files only)
 // (ix) Although the term ELSET comes from Simulia/ABAQUS, it is inferred here to mean any non-node/non-element "**" data in *.msh.
 //
 // 32-to-64 bit conversion issues:
@@ -108,6 +118,14 @@
 //   (ix) Huge bugfix: FDelem_interrog1() occasionally spurious ZP from homsubm() ignored. EFP 9/04/2015
 //   (x) Huge bugfix: Design tab/Paintbox1 Align=alClient (fixes imprecise mouse). EFP 9/04/2015
 //       Remember to undo (Xraw,Yraw) change to FormMouseDown()/Up/Move
+//   (xi) FormMouseWheel() to subvert rotation timer
+//       zoomRect.left=zoomRect.right=0;zoomRect.top=zoomRect.bottom=0; //Use this to subvert Timer1
+//   (xii) void __fastcall TForm1::ImportVFTrExecute(TObject *Sender)
+//		  base.allGrp=wpWG+wpWP+1;//Emergency Code to plot WP without WG
+//		  FDdynmem_manage(20,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.allGrp);//EFP 8/07/2011
+//		  base.ELSETinputnames[0]=L"ALLEL";
+//		  for(in=0;in<wpWG;in++)base.ELSETinputnames[in+1]=L"GenericWG";
+//		  for(in=0;in<wpWP;in++)base.ELSETinputnames[in+wpWG+1]=L"GenericWP";  //EFP 9/17/2015
 
 #include <vcl.h>
 #pragma hdrstop
@@ -168,7 +186,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.57j_64 2015";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.57ja_64 2015";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -3728,7 +3746,7 @@ void __fastcall TForm1::ImportVFTrExecute(TObject *Sender)
  ,bufferSize1=0,bufferSize2=0,bufferSize3=0
 ;
 // int *tw_allGID=NULL;
- float pval=0.,darr[9];
+ float pval=0.f,darr[9];
 // long ix=0,i=0,ii=0,ie=0,ir=0,ipid=0,nop0=0,nop1=0,nop2=0,nop3=0,nop4=0,nop5=0,nop6=0,nop7=0,dummy=0,larr[9]
  long ix=0,i=0,ii=0,ie=0,ir=0,ipid=0,nop0=0,nop1=0,nop2=0,nop3=0,nop4=0,nop5=0,nop6=0,nop7=0,dummy=0,larr[20+1]
 	  ,control[10],accum=0,j=0,eltype=0,bscode=0,node=0,ieGID=0,t7=10000000,t5=100000,t3=1000,sumlim=0,
@@ -3951,6 +3969,13 @@ Screen->Cursor=Save_Cursor;
 //		 {FDdynmem_manage(1,base.npoin,base.nelt,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.ncoorf,dummy,MXNPEL);
 		 {FDdynmem_manage(1,base.npoin,base.nelt,dummy,dummy,dummy,base.npoin,dummy,dummy,dummy,dummy,base.ncoorf,dummy,MXNPEL);
 		  FDdynmem_manage(15,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.nelt);
+//////////
+		  base.allGrp=wpWG+wpWP+1;//Emergency Code to plot WP without WG
+		  FDdynmem_manage(20,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.allGrp);//EFP 8/07/2011
+		  base.ELSETinputnames[0]=L"ALLEL";
+		  for(in=0;in<wpWG;in++)base.ELSETinputnames[in+1]=L"GenericWG";
+		  for(in=0;in<wpWP;in++)base.ELSETinputnames[in+wpWG+1]=L"GenericWP";  //EFP 9/17/2015
+//////////
 //vvvvvvvvvvvvvvvvvvv //Correction  EFp 4/13/2013
 			 for(in=0;in<2*base.npoin;in++)base.nofix[in]=0;
 			 for(in=0;in<base.npoin;in++)base.nrfix[in]=0;
@@ -3960,8 +3985,8 @@ Screen->Cursor=Save_Cursor;
 		  if(ntape)
 			{
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
-//			 base.allGrp=wpWG+1;
-			 base.allGrp=wpWG+wpWP+1;//Emergency Code to plot WP without WG
+////			 base.allGrp=wpWG+1;
+//			 base.allGrp=wpWG+wpWP+1;//Emergency Code to plot WP without WG
 //honk<<base.allGrp<<" "<<wpWG<<" "<<wpWP<<" Zooey0 "<<wp.memWGa<<"\n";
 //if(1==1)exit(0);
 
@@ -8760,9 +8785,9 @@ ie1=wp.sttEles[wp.memWGa*inw+0]/10;iside1=wp.sttEles[wp.memWGa*inw+0]-10*ie1; //
 if(iside1==0){xc=  0.f;yc= -1.f;zc=  0.f;}else if(iside1==2){xc=  0.f;yc=  1.f;zc=  0.f;}else if(iside1==1){xc=  1.f;yc=  0.f;zc=  0.f;}else if(iside1==3){xc= -1.f;yc=  0.f;zc=  0.f;}else if(iside1==4){xc=  0.f;yc=  0.f;zc= -1.f;}else {xc=  0.f;yc=  0.f;zc=  1.f;}
 STFISO8(3,xc,yc,zc,&DJD,HN,SN,SG,DJR,indat.nop1+MXNPEL*ie1,indat.c1); //EFP 3/24/2012
 tBitmap->Canvas->LineTo(int(xave)+(min(ClientWidth,ClientHeight)/200)*int(-50.f*HN[0]),ClientHeight-(int(yave)+(min(ClientWidth,ClientHeight)/200)*int(-50.f*HN[1]))); //GIANTS
-tBitmap->Canvas->MoveTo(int(xave+25.f*(HN[0]+HN[1]))+(min(ClientWidth,ClientHeight)/200)*int(-50.f*HN[0]),ClientHeight-(int(yave+25.f*(HN[0]+HN[1]))+(min(ClientWidth,ClientHeight)/200)*int(-50.*HN[1])));
+tBitmap->Canvas->MoveTo(int(xave+25.f*(HN[0]+HN[1]))+(min(ClientWidth,ClientHeight)/200)*int(-50.f*HN[0]),ClientHeight-(int(yave+25.f*(HN[0]+HN[1]))+(min(ClientWidth,ClientHeight)/200)*int(-50.f*HN[1])));
 tBitmap->Canvas->LineTo(int(xave)+(min(ClientWidth,ClientHeight)/200)*int(-50.f*HN[0]),ClientHeight-(int(yave)+(min(ClientWidth,ClientHeight)/200)*int(-50.f*HN[1])));
-tBitmap->Canvas->LineTo(int(xave+25.f*(HN[0]-HN[1]))+(min(ClientWidth,ClientHeight)/200)*int(-50.f*HN[0]),ClientHeight-(int(yave+25.f*(HN[1]-HN[0]))+(min(ClientWidth,ClientHeight)/200)*int(-50.*HN[1])));
+tBitmap->Canvas->LineTo(int(xave+25.f*(HN[0]-HN[1]))+(min(ClientWidth,ClientHeight)/200)*int(-50.f*HN[0]),ClientHeight-(int(yave+25.f*(HN[1]-HN[0]))+(min(ClientWidth,ClientHeight)/200)*int(-50.f*HN[1])));
 ////////////////////
 ///////////////////
 //////////////////
@@ -19424,7 +19449,7 @@ Screen->Cursor=Save_Cursor;
 ////}
  viewfile.close();
 		   }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No BCs found",L"Notice",MB_OK);}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Advisory: No BCs found",L"Notice",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::ChAllWParam_currExecute(TObject *Sender)

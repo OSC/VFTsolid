@@ -1,6 +1,7 @@
 object Form29: TForm29
   Left = 0
   Top = 0
+  ActiveControl = Edit6
   BorderIcons = []
   Caption = 'Form29'
   ClientHeight = 209

@@ -1,6 +1,7 @@
 object Form15: TForm15
   Left = 0
   Top = 102
+  ActiveControl = Edit21
   BorderIcons = []
   ClientHeight = 591
   ClientWidth = 420
@@ -68,7 +69,7 @@ object Form15: TForm15
     Top = 27
     Width = 401
     Height = 521
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     TabOrder = 4
     object TabSheet1: TTabSheet
       Caption = 'Weld Pass Location'
@@ -170,6 +171,10 @@ object Form15: TForm15
     object TabSheet2: TTabSheet
       Caption = 'Welding Parameters'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label9: TLabel
         Left = 3
         Top = 8

@@ -1,6 +1,7 @@
 object Form21: TForm21
   Left = 0
   Top = 0
+  ActiveControl = Button1
   BorderIcons = []
   Caption = 'Form21'
   ClientHeight = 520
