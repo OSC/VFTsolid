@@ -707,6 +707,9 @@ void TForm21::getItemIndex5_public()
  else {
 //             Edit9->Text=L"aluminum_file.dat";
  OpenDialog1->Filter= L"ABA_mat (*.dat)|*.dat;*.DAT";
+ // initialize file dialog in MATDIR path
+ // if MATDIR is not set, it falls back to default behavior
+ OpenDialog1->InitialDir = getenv("MATDIR");
  if(OpenDialog1->Execute()){
 TStringDynArray DynStrings=SplitString(OpenDialog1->FileName,L"."); //How to delete DynStrings after this?
 dumA=DynStrings[0];icrec=0;
@@ -733,6 +736,9 @@ else {Edit1->Text=DynStrings[0];setEdit8(DynStrings[0]+s66);
  else {
 /////////////////
  OpenDialog1->Filter= L"ABA_mat (*.dat)|*.dat;*.DAT";
+ // initialize file dialog in MATDIR path
+ // if MATDIR is not set, it falls back to default behavior
+ OpenDialog1->InitialDir = getenv("MATDIR");
  if(OpenDialog1->Execute()){
 TStringDynArray DynStrings=SplitString(OpenDialog1->FileName,L"."); //How to delete DynStrings after this?
 dumA=DynStrings[0];icrec=0;

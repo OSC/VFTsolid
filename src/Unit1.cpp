@@ -1474,13 +1474,9 @@ i=0,j=0,k=0,kk=0,kp=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1
  base.ELSETelsum=MXNPEL=wp.nWeldGroup=0; //Establish MXNPEL
  OpenDialog1->Filter= L"SIMULIA/ABAQ (*.abq/*.inp)|*.inp;*.ABQ";
 
- // initialize file dialog in VFTHOME path if no previous file selected
+ // initialize file dialog in VFTHOME path
  // if VFTHOME is not set, it falls back to default behavior
- if (OpenDialog1->FileName == "") {
-   OpenDialog1->InitialDir = getenv("VFTHOME");
- } else {
-   OpenDialog1->InitialDir = "";
- }
+ OpenDialog1->InitialDir = getenv("VFTHOME");
 
 //// if(iswtype)OpenDialog1->Filter= "SIMULIA_Abq (*.abq)|*.abq;*.ABQ|SIMULIA_Abq (*.inp)|*.inp;*.INP";
 //// else       OpenDialog1->Filter= "SIMULIA_Abq (*.inp)|*.inp;*.INP|SIMULIA_Abq (*.abq)|*.abq;*.ABQ";
@@ -3224,13 +3220,9 @@ totWG=0,ELSETmobsize=0,exALLEL=0,exALLWD=0,iallGrp=0, *revnode_map=NULL;
  base.ELSETelsum=MXNPEL=wp.nWeldGroup=0; //Establish MXNPEL
  OpenDialog1->Filter= L"Msh (*.msh)|*.msh;*.MSH";
 
- // initialize file dialog in VFTHOME path if no previous file selected
+ // initialize file dialog in VFTHOME path
  // if VFTHOME is not set, it falls back to default behavior
- if (OpenDialog1->FileName == "") {
-   OpenDialog1->InitialDir = getenv("VFTHOME");
- } else {
-   OpenDialog1->InitialDir = "";
- }
+ OpenDialog1->InitialDir = getenv("VFTHOME");
 
 /////////////////////////////////////
  if(OpenDialog1->Execute())
@@ -3778,13 +3770,9 @@ _TCHAR *efpChar=NULL, *texasbuf;
  else {
  OpenDialog1->Filter= L"VFTr format (*.VFTr,*.vftr)|*.VFTr;*.vftr";
 
- // initialize file dialog in VFTHOME path if no previous file selected
+ // initialize file dialog in VFTHOME path
  // if VFTHOME is not set, it falls back to default behavior
- if (OpenDialog1->FileName == "") {
-   OpenDialog1->InitialDir = getenv("VFTHOME");
- } else {
-   OpenDialog1->InitialDir = "";
- }
+ OpenDialog1->InitialDir = getenv("VFTHOME");
 
  if(OpenDialog1->Execute())
    {ifstream ntape0(OpenDialog1->FileName.c_str(),ios::nocreate|ios::binary,0);
