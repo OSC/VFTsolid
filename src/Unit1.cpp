@@ -10608,16 +10608,7 @@ void TForm1::VFT_SaveAs1(int ksw)
 	  {
 
 //ggggggggggg
-String currDir2=GeomFileName;
-int buffersize=WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,NULL,0,NULL,NULL);
-char* mm=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,mm,buffersize,NULL,NULL);
-for(i=buffersize;i>=0;i--)if(*(mm+i)=='\\')break;
-char* mmm=new char[i+1];
-for(j=0;j<i;j++) *(mmm+j)= *(mm+j);
-*(mmm+i)= '\0';delete mm;
-int wchars_num=MultiByteToWideChar(CP_UTF8,0,mmm, -1,NULL,0);
-wchar_t* wstr=new wchar_t[wchars_num];MultiByteToWideChar(CP_UTF8,0,mmm, -1,wstr,wchars_num);
-delete mmm;SetCurrentDirectory(wstr);delete wstr;
+SetCurrentDir(ExtractFilePath(GeomFileName));
 //hhhhhhhhhhh
 
 //	   StringCchCopy(VFTr_name,strlen(fnNeed),fnNeed);
@@ -15818,16 +15809,7 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
  StringCchCatW(string0,160,curMess3);
 
 //ggggggggggg
-String currDir2=GeomFileName;
-int buffersize=WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,NULL,0,NULL,NULL);
-char* mm=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,mm,buffersize,NULL,NULL);
-for(i=buffersize;i>=0;i--)if(*(mm+i)=='\\')break;
-char* mmm=new char[i+1];
-for(j=0;j<i;j++) *(mmm+j)= *(mm+j);
-*(mmm+i)= '\0';delete mm;
-int wchars_num=MultiByteToWideChar(CP_UTF8,0,mmm, -1,NULL,0);
-wchar_t* wstr=new wchar_t[wchars_num];MultiByteToWideChar(CP_UTF8,0,mmm, -1,wstr,wchars_num);
-delete mmm;SetCurrentDirectory(wstr);delete wstr;
+SetCurrentDir(ExtractFilePath(GeomFileName));
 //hhhhhhhhhhh
 
  if(mcm==1){
@@ -16997,16 +16979,7 @@ void TForm1::exportWARP3D1a_public()
 // StringCchCopy(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,gWsiAlias.t_str());StringCchCat(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,extensChar2);
 
 //ggggggggggg
-String currDir2=GeomFileName;
-int buffersize=WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,NULL,0,NULL,NULL);
-char* mm=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,mm,buffersize,NULL,NULL);
-for(i=buffersize;i>=0;i--)if(*(mm+i)=='\\')break;
-char* mmm=new char[i+1];
-for(j=0;j<i;j++) *(mmm+j)= *(mm+j);
-*(mmm+i)= '\0';delete mm;
-int wchars_num=MultiByteToWideChar(CP_UTF8,0,mmm, -1,NULL,0);
-wchar_t* wstr=new wchar_t[wchars_num];MultiByteToWideChar(CP_UTF8,0,mmm, -1,wstr,wchars_num);
-delete mmm;SetCurrentDirectory(wstr);delete wstr;
+SetCurrentDir(ExtractFilePath(GeomFileName));
 //hhhhhhhhhhh
 
 //honk<<" WARPing1\n";
