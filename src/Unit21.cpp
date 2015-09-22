@@ -689,7 +689,7 @@ else {Edit1->Text=DynStrings[0];setEdit8(DynStrings[0]+s66);
 void TForm21::getItemIndex5_public()
 {String dumA,dumB,s66=L".dat",s77=L"#",s33=L"\\"; //CAUTION: s33 is MS_Windows ONLY
  TReplaceFlags Flags;// Note: Flags would be set by WHAT??? Flags not set (I HOPE).
- int ic=0,icrec=0,index=Form5->CheckItemIndex;Form5->Close();
+ int ic=0,icrec=0,index=Form5->CheckItemIndex;//Form5->Close(); //Bugfix: moved to bottom  EFP 9/22/2015
  if(Form5->ListBox1->Count >1)
    {
 /////////////////
@@ -753,6 +753,7 @@ else {Edit1->Text=DynStrings[0];setEdit8(DynStrings[0]+s66);
  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unable to create MAT file-open dialog",L"Failure",MB_OK);}
 /////////////////
 	  }
+ Form5->Close();
 }
 //---------------------------------------------------------------------------
 void TForm21::parse_cdmQ_fixthis(char descript[],int* nic,int* nrc,long iparse[],float parse[])

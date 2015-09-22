@@ -29,10 +29,12 @@ void __fastcall TForm8::Button1Click(TObject *Sender)
  try {StrToFloat(Edit1->Text);
 	  if(Edit1->Text=="0")ac1=0.;
 	  else ac1=StrToFloat(Edit1->Text);  //Necessary since Edit ignores 0
-//	  if(isw==1){Close();Form1->res_scalehea_public();}
-	  if(isw==2 || isw==4 || isw==5){Close();Form1->tshiftCTSP_public();}
-//	  else if(isw==3){Close();Form1->tdeltCTSP_public();}
-	  else if(isw==7 || isw==8 || isw==9){Close();Form1->tshiftCTSP3_public();} //EFP 5/09/2013
+////	  if(isw==1){Close();Form1->res_scalehea_public();}
+//	  if(isw==2 || isw==4 || isw==5){Close();Form1->tshiftCTSP_public();}
+	  if(isw==2 || isw==4 || isw==5){Form1->tshiftCTSP_public();Close();}
+////	  else if(isw==3){Close();Form1->tdeltCTSP_public();}
+//	  else if(isw==7 || isw==8 || isw==9){Close();Form1->tshiftCTSP3_public();} //EFP 5/09/2013
+	  else if(isw==7 || isw==8 || isw==9){Form1->tshiftCTSP3_public();Close();} //EFP 5/09/2013
 //	  else Form1->defshapehea_public();
 	 }
  catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit1->Text.w_str(),L"Reenter float",MB_OK);}

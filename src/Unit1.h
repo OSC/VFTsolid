@@ -403,7 +403,7 @@ char *comboCWD;
 					 float temp_curr,temp_volt,temp_eff,temp_speed,*curr,*volt,*eff,*speed;
 					 String temp_name,*name;
 					} wps;
- String gWsiAlias;
+ String gWsiAlias,GeomFileName;
  char *VFTr_name,modelName_g[260]; //Warning#1: modelName_g[260] does NOT have file extension. See Borland C++ v4.0 Lib Ref p106 fnsplit() & dir.h
 // Warning#2: For VFTr file import, both VFTr_name & modelName_g are used.
 // End from VFTgen
@@ -495,7 +495,7 @@ char *comboCWD;
 	   void WARP3DepBlock(String); //THIS IS ORIGINAL OUTPUT FORMAT (pre 12/2012)
 	   void tshiftCTSP2(int);
 public:		// User declarations
-	AnsiString GeomFileName;
+//	AnsiString GeomFileName;
 	void QNodeTRASH_public(),
 		 QNDistTRASH_public(),
 		 QElemTRASH_public(),

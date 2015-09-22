@@ -126,6 +126,8 @@
 //		  base.ELSETinputnames[0]=L"ALLEL";
 //		  for(in=0;in<wpWG;in++)base.ELSETinputnames[in+1]=L"GenericWG";
 //		  for(in=0;in<wpWP;in++)base.ELSETinputnames[in+wpWG+1]=L"GenericWP";  //EFP 9/17/2015
+//   (xiii) Unit21.cpp getItemIndex5_public() Form5->Close(); //Bugfix: move to bottom  EFP 9/22/2015
+//        Unit8.cpp Close()
 
 #include <vcl.h>
 #pragma hdrstop
@@ -186,7 +188,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.57ja_64 2015";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.57jb_64 2015";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -1491,6 +1493,8 @@ i=0,j=0,k=0,kk=0,kp=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1
 	if(ntape2)
 	  { //OPEN04
 
+GeomFileName=OpenDialog1->FileName;
+
 gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
 //honk<<gWsiAlias.t_str()<<" gWsiAliasImportAbmmmmmm\n";
 // Perhaps the above should be moved within   if(ntape){  ??? EFP 2/27/2012
@@ -1835,7 +1839,7 @@ Screen->Cursor=Save_Cursor;
 //honk<<base.allGrp<<" "<<wp.nWeldGroup<<" Early A & WG\n";
 //if(1==1)exit(0);
 
-GeomFileName=OpenDialog1->FileName;
+//GeomFileName=OpenDialog1->FileName;
 //	   base.npoin=nodeuplim;
 	   base.npoin=totNnum;
 //	   base.nelt=eluplim;
@@ -3235,6 +3239,8 @@ totWG=0,ELSETmobsize=0,exALLEL=0,exALLWD=0,iallGrp=0, *revnode_map=NULL;
 	if(ntape2)
 	  {
 
+GeomFileName=OpenDialog1->FileName;
+
 gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
 //honk<<gWsiAlias.t_str()<<" gWsiAliasImportAbmmmmmm\n";
 // Perhaps the above should be moved within   if(ntape){  ??? EFP 2/27/2012
@@ -3389,7 +3395,7 @@ Screen->Cursor=Save_Cursor;
 							Application->MessageBox(L"No weld groups (*ELSET=WD,WG,WP,WELD,GROUP) found in *.msh",L"Terminate: ",MB_OK);exit(0);
 						   }
 //honk<<base.allGrp<<" "<<wp.nWeldGroup<<" Early A & WG\n";
-GeomFileName=OpenDialog1->FileName;
+//GeomFileName=OpenDialog1->FileName;
 	   base.npoin=totNnum;
 	   base.nelt=totEnum; //Policy: Reserve storage for #elements read-in, even if there is duplication  EFP 4/19/2012
 //
@@ -3798,6 +3804,7 @@ _TCHAR *efpChar=NULL, *texasbuf;
 ////////////////////////////////////////// end
 
 
+GeomFileName=OpenDialog1->FileName;
 
 
 //TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
@@ -3956,7 +3963,8 @@ nGID=wp.nWeldGroup+wp.nWeldPass+1;nGIDmax=nGID;
 
 
 //HERO
-	   GeomFileName=OpenDialog1->FileName;ntape0.close();
+//	   GeomFileName=OpenDialog1->FileName;
+	   ntape0.close();
 /////////// Cursor EFP 1/03/2013
 //Screen->Cursor=crSizeAll;
 Screen->Cursor=Save_Cursor;
@@ -10598,6 +10606,20 @@ void TForm1::VFT_SaveAs1(int ksw)
 
 	if(jsw)
 	  {
+
+//ggggggggggg
+String currDir2=GeomFileName;
+int buffersize=WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,NULL,0,NULL,NULL);
+char* mm=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,mm,buffersize,NULL,NULL);
+for(i=buffersize;i>=0;i--)if(*(mm+i)=='\\')break;
+char* mmm=new char[i+1];
+for(j=0;j<i;j++) *(mmm+j)= *(mm+j);
+*(mmm+i)= '\0';delete mm;
+int wchars_num=MultiByteToWideChar(CP_UTF8,0,mmm, -1,NULL,0);
+wchar_t* wstr=new wchar_t[wchars_num];MultiByteToWideChar(CP_UTF8,0,mmm, -1,wstr,wchars_num);
+delete mmm;SetCurrentDirectory(wstr);delete wstr;
+//hhhhhhhhhhh
+
 //	   StringCchCopy(VFTr_name,strlen(fnNeed),fnNeed);
 	   ofstream ntape(fnNeed);delete [] fnNeed;
 //honk<<VFTr_name<<" VFTr_name VFTSAVEASsolid\n";
@@ -15770,7 +15792,7 @@ void TForm1::exportCTSP2_public() //Version with load balancing  EFP 11/24/2012
 ////{wchar_t curMess0[]=L"_CTSP_input.in\n",curMess1[]=L"_CTSP_node.in\n",curMess2[]=L"_CTSP_element.in",string0[90];
 //{int ic=0,mcmlo=0,mcmup=0,mcminc=0,maxCore=128,mcm=CTSPnames->CheckEdit4;
 {int ic=0,mcmlo=0,mcmup=0,mcminc=0,maxCore=999,mcm=CTSPnames->CheckEdit4; //EFP 4/29/2013
- long i=0,ip=0,iseq=0,icount=0,itotal=0,stepsum=0, *loadBal=NULL;
+ long i=0,j=0,ip=0,iseq=0,icount=0,itotal=0,stepsum=0, *loadBal=NULL;
 //char *temps;
  char extensChar1a[]="CTSPsubd00",extensChar1b[]="CTSPsubd0",extensChar1c[]="CTSPsubd",
 //	  extensChar2[]="_CTSP_input.in",extensChar3[]="_CTSP_element.in",extensChar4[]="_CTSP_node.in",extensChar5[]="_CTSP_param.in",
@@ -15794,6 +15816,20 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
  StringCchCatW(string0,160,curMess1);
  StringCchCatW(string0,160,curMess2);
  StringCchCatW(string0,160,curMess3);
+
+//ggggggggggg
+String currDir2=GeomFileName;
+int buffersize=WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,NULL,0,NULL,NULL);
+char* mm=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,mm,buffersize,NULL,NULL);
+for(i=buffersize;i>=0;i--)if(*(mm+i)=='\\')break;
+char* mmm=new char[i+1];
+for(j=0;j<i;j++) *(mmm+j)= *(mm+j);
+*(mmm+i)= '\0';delete mm;
+int wchars_num=MultiByteToWideChar(CP_UTF8,0,mmm, -1,NULL,0);
+wchar_t* wstr=new wchar_t[wchars_num];MultiByteToWideChar(CP_UTF8,0,mmm, -1,wstr,wchars_num);
+delete mmm;SetCurrentDirectory(wstr);delete wstr;
+//hhhhhhhhhhh
+
  if(mcm==1){
 //honk<<"\n"<<" Writing CTSP(TM) files...\n";
 			extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing CTSP files",MB_OK);
@@ -16959,6 +16995,19 @@ void TForm1::exportWARP3D1a_public()
 // StringCchCopy(fnNeed1,strlen(gWsiAlias.t_str())+strlen(extensChar1)+1,gWsiAlias.t_str());StringCchCat(fnNeed1,strlen(gWsiAlias.t_str())+strlen(extensChar1)+1,extensChar1);
 // char extensChar2[]=".incid";char *fnNeed2=new char[strlen(gWsiAlias.t_str())+strlen(extensChar2)+1];
 // StringCchCopy(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,gWsiAlias.t_str());StringCchCat(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,extensChar2);
+
+//ggggggggggg
+String currDir2=GeomFileName;
+int buffersize=WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,NULL,0,NULL,NULL);
+char* mm=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,currDir2.w_str(), -1,mm,buffersize,NULL,NULL);
+for(i=buffersize;i>=0;i--)if(*(mm+i)=='\\')break;
+char* mmm=new char[i+1];
+for(j=0;j<i;j++) *(mmm+j)= *(mm+j);
+*(mmm+i)= '\0';delete mm;
+int wchars_num=MultiByteToWideChar(CP_UTF8,0,mmm, -1,NULL,0);
+wchar_t* wstr=new wchar_t[wchars_num];MultiByteToWideChar(CP_UTF8,0,mmm, -1,wstr,wchars_num);
+delete mmm;SetCurrentDirectory(wstr);delete wstr;
+//hhhhhhhhhhh
 
 //honk<<" WARPing1\n";
  fnNeedS1=gWsiAlias+extensCharS1;
