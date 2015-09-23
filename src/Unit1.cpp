@@ -19113,16 +19113,17 @@ void TForm1::exportWARP3D5_public()
  if(Form9->CheckListBox1->Checked[ 1]){icount++;outfile5<<"  output flat text nodal displacements\n";}  //BB 1/15/2015
  if(Form9->CheckListBox1->Checked[ 2]){icount++;outfile5<<"  output flat text nodal temperatures\n";}  //BB 1/15/2015
 //
- if(Form9->CheckListBox1->Checked[ 3]){icount++;outfile5<<"!  output flat text nodal pe11\n";}  //BB 1/15/2015
- if(Form9->CheckListBox1->Checked[ 4]){icount++;outfile5<<"!  output flat text nodal pe22\n";}  //BB 1/15/2015
- if(Form9->CheckListBox1->Checked[ 5]){icount++;outfile5<<"!  output flat text nodal pe33\n";}  //BB 1/15/2015
- if(Form9->CheckListBox1->Checked[ 6]){icount++;outfile5<<"!  output flat text nodal pe12\n";}  //BB 1/15/2015
- if(Form9->CheckListBox1->Checked[ 7]){icount++;outfile5<<"!  output flat text nodal pe13\n";}  //BB 1/15/2015
- if(Form9->CheckListBox1->Checked[ 8]){icount++;outfile5<<"!  output flat text nodal pe23\n";}  //BB 1/15/2015
+//Huge bugfix: "!  output flat changed to "  output flat in the following
+ if(Form9->CheckListBox1->Checked[ 3]){icount++;outfile5<<"  output flat text nodal pe11\n";}  //BB 1/15/2015
+ if(Form9->CheckListBox1->Checked[ 4]){icount++;outfile5<<"  output flat text nodal pe22\n";}  //BB 1/15/2015
+ if(Form9->CheckListBox1->Checked[ 5]){icount++;outfile5<<"  output flat text nodal pe33\n";}  //BB 1/15/2015
+ if(Form9->CheckListBox1->Checked[ 6]){icount++;outfile5<<"  output flat text nodal pe12\n";}  //BB 1/15/2015
+ if(Form9->CheckListBox1->Checked[ 7]){icount++;outfile5<<"  output flat text nodal pe13\n";}  //BB 1/15/2015
+ if(Form9->CheckListBox1->Checked[ 8]){icount++;outfile5<<"  output flat text nodal pe23\n";}  //BB 1/15/2015
 //
- if(Form9->CheckListBox1->Checked[ 9]){icount++;outfile5<<"!  output flat text nodal temp.end.incr\n";}  //BB 1/15/2015
- if(Form9->CheckListBox1->Checked[10]){icount++;outfile5<<"!  output flat text nodal max.temp.occurring\n";}  //BB 1/15/2015
- if(Form9->CheckListBox1->Checked[11]){icount++;outfile5<<"!  output flat text element states\n";}  //BB 1/15/2015
+ if(Form9->CheckListBox1->Checked[ 9]){icount++;outfile5<<"  output flat text nodal temp.end.incr\n";}  //BB 1/15/2015
+ if(Form9->CheckListBox1->Checked[10]){icount++;outfile5<<"  output flat text nodal max.temp.occurring\n";}  //BB 1/15/2015
+ if(Form9->CheckListBox1->Checked[11]){icount++;outfile5<<"  output flat text element states\n";}  //BB 1/15/2015
  outfile5.close();
 ///////////////////////////////////////////////////////////
  if(icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"*.wrp & compute_commands_all_profiles.inp written",L"Success",MB_OK);}
