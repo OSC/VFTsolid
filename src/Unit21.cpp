@@ -472,9 +472,12 @@ void __fastcall TForm21::Button1Click(TObject *Sender)
  Form5->ListBox1->AddItem(L"Browse...",this);
 
  // Populate material list with files in MATDIR
- TStringDynArray Files = TDirectory::GetFiles(getenv("MATDIR"));
- for(int i = 0; i < Files.Length; i++)
-	Form5->ListBox1->AddItem(ChangeFileExt(ExtractFileName(Files[i]), L""), this);
+ UnicodeString matpath = getenv("MATDIR");
+ if (matpath != "") {
+	TStringDynArray Files = TDirectory::GetFiles(matpath);
+	for(int i = 0; i < Files.Length; i++)
+		Form5->ListBox1->AddItem(ChangeFileExt(ExtractFileName(Files[i]), L""), this);
+ }
 
  // Are these necessary???
  fstream ntape; //Place at top #include <fstream.h>
@@ -719,7 +722,7 @@ void TForm21::getItemIndex5_public()
 		filepath = Files[index-1];
 		matname = ChangeFileExt(ExtractFileName(filepath), L"");
 	} else {
-		index -= Files.Length - 1;
+		index -= Files.Length + 1;
 		if     (index== 0){matname=L"mildsteel_iso";filepath=L"mildsteel_iso_file.dat";}
 		else if(index== 1){matname=L"reactorsteel_iso";filepath=L"reactorsteel_iso_file.dat";}
 		else if(index== 2){matname=L"inconel718_iso";filepath=L"inconel718_iso_file.dat";}
