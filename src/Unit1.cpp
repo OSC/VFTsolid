@@ -130,6 +130,7 @@
 //        Unit8.cpp Close()
 
 #include <vcl.h>
+#include <IOUtils.hpp>
 #pragma hdrstop
 #include <Jpeg.hpp>
 //#include <GIFImg.hpp> // Bug in CodeGear: Unable to load *.gif ???
@@ -16099,37 +16100,10 @@ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Too many non
 //---------------------------------------------------------------------------
 int TForm1::DelSubd0()
 {
-	WIN32_FIND_DATA FindDirData;
-	HANDLE hFind;
+	TStringDynArray Dirs = TDirectory::GetDirectories(GetCurrentDir(), L"CTSPsubd*");
+	for(int i = 0; i < Dirs.Length; i++)
+		TDirectory::Delete(Dirs[i], TRUE);
 
-	// Scan through CTSPsubdXXX sub-directories
-	hFind = FindFirstFile(L"CTSPsubd*", &FindDirData);
-	if (hFind == INVALID_HANDLE_VALUE) return 0;
-
-	do {
-		// Go into sub-directory
-		SetCurrentDirectory(FindDirData.cFileName);
-
-		WIN32_FIND_DATA FindFileData;
-		HANDLE hFindFile;
-
-		// Scan through all files in sub-directory and delete them
-		hFindFile = FindFirstFile(L"*.*", &FindFileData);
-		do {
-			if (hFindFile == INVALID_HANDLE_VALUE) break;
-			if (wcscmp(FindFileData.cFileName, L".") == 0 || wcscmp(FindFileData.cFileName, L"..") == 0) continue;
-			DeleteFile(FindFileData.cFileName);
-		} while (FindNextFile(hFindFile, &FindFileData));
-		FindClose(hFindFile);
-
-		// Drop back out of sub-directory
-		SetCurrentDirectory(L"..");
-
-		// Remove this empty sub-directory now
-		RemoveDirectory(FindDirData.cFileName);
-	} while (FindNextFile(hFind, &FindDirData));
-
-	FindClose(hFind);
 	return 1;
 }
 //---------------------------------------------------------------------------
