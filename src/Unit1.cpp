@@ -14100,7 +14100,7 @@ void TForm1::EditMatPropProg(int VFTitemindex)
  Form21->Label7->Caption="Annealing Initiation Temperature";
  Form21->Label8->Caption="Annealing Temperature";
  Form21->Label9->Caption="Material Melting Temperature";
- Form21->Label10->Caption="Mechanical Property File Path/Name:";
+ Form21->Label10->Caption="File Path:";
  Form21->RadioButton1->Caption="Isotropic (multi-linear)";
  Form21->RadioButton2->Caption="Combined Hardening (multi-linear)";
  Form21->RadioButton3->Caption="Simple Phase Transformation";
@@ -15018,7 +15018,7 @@ void __fastcall TForm1::MatPropertiesExecute(TObject *Sender)
 	   Form21->Label7->Caption="Annealing Initiation Temperature";
 	   Form21->Label8->Caption="Annealing Temperature";
 	   Form21->Label9->Caption="Material Melting Temperature";
-	   Form21->Label10->Caption="Mechanical Property File Path/Name:";
+	   Form21->Label10->Caption="File Path:";
 	   Form21->RadioButton1->Caption="Isotropic (multi-linear)";
 	   Form21->RadioButton2->Caption="Combined Hardening (multi-linear)";
 	   Form21->RadioButton3->Caption="Simple Phase Transformation";

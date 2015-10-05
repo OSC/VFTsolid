@@ -295,9 +295,9 @@ object Form21: TForm21
       Caption = 'Label10'
     end
     object Edit9: TEdit
-      Left = 200
-      Top = 16
-      Width = 225
+      Left = 72
+      Top = 18
+      Width = 353
       Height = 21
       TabOrder = 0
       Text = 'Edit9'

@@ -2,6 +2,7 @@
 // VFTmisc Form21 == VFTgen Form16  EFP 8/07/2010
 // Note: Function int ParseSteps(String) is duplicated in Unit1.cpp/h  EFP 3/14/2012
 #include <vcl.h>
+#include <IOUtils.hpp>
 //#include <fstream.h> //Need for use with ofstream konk()
 #include <fstream> //Need for use with ofstream konk()
 #pragma hdrstop
@@ -466,6 +467,16 @@ void __fastcall TForm21::Button1Click(TObject *Sender)
 // if(OpenDialog1->Execute())setEdit8(OpenDialog1->FileName);
 // else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unable to create MAT file-open dialog",L"Failure",MB_OK);}
  Form5=new TForm5(this);Form5->Caption=L"Available materials";
+
+// Form5->ListBox1->AddItem(L"Other",this);
+ Form5->ListBox1->AddItem(L"Browse...",this);
+
+ // Populate material list with files in MATDIR
+ TStringDynArray Files = TDirectory::GetFiles(getenv("MATDIR"));
+ for(int i = 0; i < Files.Length; i++)
+	Form5->ListBox1->AddItem(ChangeFileExt(ExtractFileName(Files[i]), L""), this);
+
+ // Are these necessary???
  fstream ntape; //Place at top #include <fstream.h>
  ntape.open(L"mildsteel_iso_file.dat");
  if(ntape){ntape.close();
@@ -511,8 +522,7 @@ void __fastcall TForm21::Button1Click(TObject *Sender)
  if(ntape){ntape.close();
 		   Form5->ListBox1->AddItem(L"alloy82_fph",this);
 		  }
-// Form5->ListBox1->AddItem(L"Other",this);
- Form5->ListBox1->AddItem(L"Browse...",this);
+
  Form5->ListBox1->ItemIndex=0;Form5->ShowModal();delete Form5;Form5=NULL;
 }
 //---------------------------------------------------------------------------
@@ -687,78 +697,45 @@ else {Edit1->Text=DynStrings[0];setEdit8(DynStrings[0]+s66);
 */
 //---------------------------------------------------------------------------
 void TForm21::getItemIndex5_public()
-{String dumA,dumB,s66=L".dat",s77=L"#",s33=L"\\"; //CAUTION: s33 is MS_Windows ONLY
- TReplaceFlags Flags;// Note: Flags would be set by WHAT??? Flags not set (I HOPE).
- int ic=0,icrec=0,index=Form5->CheckItemIndex;//Form5->Close(); //Bugfix: moved to bottom  EFP 9/22/2015
- if(Form5->ListBox1->Count >1)
-   {
-/////////////////
- if     (index== 0){Edit1->Text=L"mildsteel_iso";Edit9->Text=L"mildsteel_iso_file.dat";}
- else if(index== 1){Edit1->Text=L"reactorsteel_iso";Edit9->Text=L"reactorsteel_iso_file.dat";}
- else if(index== 2){Edit1->Text=L"inconel718_iso";Edit9->Text=L"inconel718_iso_file.dat";}
- else if(index== 3){Edit1->Text=L"monel_iso";Edit9->Text=L"monel_iso_file.dat";}
- else if(index== 4){Edit1->Text=L"aluminum_iso";Edit9->Text=L"aluminum_iso_file.dat";}
- else if(index== 5){Edit1->Text=L"alloy82_iso";Edit9->Text=L"alloy82_iso_file.dat";}
- else if(index== 6){Edit1->Text=L"alloy82_kin";Edit9->Text=L"alloy82_kin_file.dat";}
- else if(index== 7){Edit1->Text=L"alloy82_mln";Edit9->Text=L"alloy82_mln_file.dat";}
- else if(index== 8){Edit1->Text=L"alloy82_mix";Edit9->Text=L"alloy82_mix_file.dat";}
- else if(index== 9){Edit1->Text=L"alloy82_phs";Edit9->Text=L"alloy82_phs_file.dat";}
- else if(index==10){Edit1->Text=L"alloy82_fph";Edit9->Text=L"alloy82_fph_file.dat";}
- else {
-//             Edit9->Text=L"aluminum_file.dat";
- OpenDialog1->Filter= L"ABA_mat (*.dat)|*.dat;*.DAT";
- // initialize file dialog in MATDIR path
- // if MATDIR is not set, it falls back to default behavior
- OpenDialog1->InitialDir = getenv("MATDIR");
- if(OpenDialog1->Execute()){
-TStringDynArray DynStrings=SplitString(OpenDialog1->FileName,L"."); //How to delete DynStrings after this?
-dumA=DynStrings[0];icrec=0;
-for(ic=0;ic<128-1;ic++){if(ContainsStr(dumA,s33)){icrec++; //Replace one-at-a-time
-												  dumB=StringReplace(dumA,s33,s77,Flags);dumA=dumB;
-												 }
-						else break;
-					   }
-if(icrec){dumA=DynStrings[0];
-		  for(ic=0;ic<icrec-1;ic++){dumB=StringReplace(dumA,s33,s77,Flags);dumA=dumB;
-								   }
-		  TStringDynArray DynStrings1=SplitString(dumA,s33); //How to delete DynStrings after this?
-		  Edit1->Text=DynStrings1[1];setEdit8(DynStrings1[1]+s66);
-		 }
-else {Edit1->Text=DynStrings[0];setEdit8(DynStrings[0]+s66);
-	 }
-//							Edit1->Text=OpenDialog1->FileName;
-//							setEdit8(OpenDialog1->FileName);
-						   }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unable to create MAT file-open dialog",L"Failure",MB_OK);}
-	  }
-/////////////////
-   }
- else {
-/////////////////
- OpenDialog1->Filter= L"ABA_mat (*.dat)|*.dat;*.DAT";
- // initialize file dialog in MATDIR path
- // if MATDIR is not set, it falls back to default behavior
- OpenDialog1->InitialDir = getenv("MATDIR");
- if(OpenDialog1->Execute()){
-TStringDynArray DynStrings=SplitString(OpenDialog1->FileName,L"."); //How to delete DynStrings after this?
-dumA=DynStrings[0];icrec=0;
-for(ic=0;ic<128-1;ic++){if(ContainsStr(dumA,s33)){icrec++; //Replace one-at-a-time
-												  dumB=StringReplace(dumA,s33,s77,Flags);dumA=dumB;
-												 }
-						else break;
-					   }
-if(icrec){dumA=DynStrings[0];
-		  for(ic=0;ic<icrec-1;ic++){dumB=StringReplace(dumA,s33,s77,Flags);dumA=dumB;
-								   }
-		  TStringDynArray DynStrings1=SplitString(dumA,s33); //How to delete DynStrings after this?
-		  Edit1->Text=DynStrings1[1];setEdit8(DynStrings1[1]+s66);
-		 }
-else {Edit1->Text=DynStrings[0];setEdit8(DynStrings[0]+s66);
-	 }
-						   }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unable to create MAT file-open dialog",L"Failure",MB_OK);}
-/////////////////
-	  }
+{
+ int index=Form5->CheckItemIndex;
+ UnicodeString filepath, matname;
+
+ if (index == 0) {
+	OpenDialog1->Filter= L"ABA_mat (*.dat)|*.dat;*.DAT";
+	if (OpenDialog1->Execute()) {
+		filepath = OpenDialog1->FileName;
+		matname = ChangeFileExt(ExtractFileName(filepath), L"");
+	} else {
+		extern PACKAGE void __fastcall Beep(void);
+		Application->MessageBox(L"Unable to create MAT file-open dialog",L"Failure",MB_OK);
+		filepath = Edit9->Text;
+		matname = Edit1->Text;
+	}
+ } else {
+	// Auto-populated material list from MATDIR
+	TStringDynArray Files = TDirectory::GetFiles(getenv("MATDIR"));
+	if (index <= Files.Length) {
+		filepath = Files[index-1];
+		matname = ChangeFileExt(ExtractFileName(filepath), L"");
+	} else {
+		index -= Files.Length - 1;
+		if     (index== 0){matname=L"mildsteel_iso";filepath=L"mildsteel_iso_file.dat";}
+		else if(index== 1){matname=L"reactorsteel_iso";filepath=L"reactorsteel_iso_file.dat";}
+		else if(index== 2){matname=L"inconel718_iso";filepath=L"inconel718_iso_file.dat";}
+		else if(index== 3){matname=L"monel_iso";filepath=L"monel_iso_file.dat";}
+		else if(index== 4){matname=L"aluminum_iso";filepath=L"aluminum_iso_file.dat";}
+		else if(index== 5){matname=L"alloy82_iso";filepath=L"alloy82_iso_file.dat";}
+		else if(index== 6){matname=L"alloy82_kin";filepath=L"alloy82_kin_file.dat";}
+		else if(index== 7){matname=L"alloy82_mln";filepath=L"alloy82_mln_file.dat";}
+		else if(index== 8){matname=L"alloy82_mix";filepath=L"alloy82_mix_file.dat";}
+		else if(index== 9){matname=L"alloy82_phs";filepath=L"alloy82_phs_file.dat";}
+		else if(index==10){matname=L"alloy82_fph";filepath=L"alloy82_fph_file.dat";}
+	}
+ }
+ Edit9->Text = filepath;
+ Edit1->Text = matname;
+
  Form5->Close();
 }
 //---------------------------------------------------------------------------
