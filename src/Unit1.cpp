@@ -1490,6 +1490,7 @@ i=0,j=0,k=0,kk=0,kp=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1
 	  { //OPEN04
 
 GeomFileName=OpenDialog1->FileName;
+SetCurrentDir(ExtractFilePath(GeomFileName));
 
 gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
 //honk<<gWsiAlias.t_str()<<" gWsiAliasImportAbmmmmmm\n";
@@ -10595,10 +10596,6 @@ void TForm1::VFT_SaveAs1(int ksw)
 	if(jsw)
 	  {
 
-//ggggggggggg
-SetCurrentDir(ExtractFilePath(GeomFileName));
-//hhhhhhhhhhh
-
 //	   StringCchCopy(VFTr_name,strlen(fnNeed),fnNeed);
 	   ofstream ntape(fnNeed);delete [] fnNeed;
 //honk<<VFTr_name<<" VFTr_name VFTSAVEASsolid\n";
@@ -14100,7 +14097,7 @@ void TForm1::EditMatPropProg(int VFTitemindex)
  Form21->Label7->Caption="Annealing Initiation Temperature";
  Form21->Label8->Caption="Annealing Temperature";
  Form21->Label9->Caption="Material Melting Temperature";
- Form21->Label10->Caption="File Path:";
+ Form21->Label10->Caption="Mechanical Property File Path/Name:";
  Form21->RadioButton1->Caption="Isotropic (multi-linear)";
  Form21->RadioButton2->Caption="Combined Hardening (multi-linear)";
  Form21->RadioButton3->Caption="Simple Phase Transformation";
@@ -15018,7 +15015,7 @@ void __fastcall TForm1::MatPropertiesExecute(TObject *Sender)
 	   Form21->Label7->Caption="Annealing Initiation Temperature";
 	   Form21->Label8->Caption="Annealing Temperature";
 	   Form21->Label9->Caption="Material Melting Temperature";
-	   Form21->Label10->Caption="File Path:";
+	   Form21->Label10->Caption="Mechanical Property File Path/Name:";
 	   Form21->RadioButton1->Caption="Isotropic (multi-linear)";
 	   Form21->RadioButton2->Caption="Combined Hardening (multi-linear)";
 	   Form21->RadioButton3->Caption="Simple Phase Transformation";
@@ -15795,10 +15792,6 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
  StringCchCatW(string0,160,curMess1);
  StringCchCatW(string0,160,curMess2);
  StringCchCatW(string0,160,curMess3);
-
-//ggggggggggg
-SetCurrentDir(ExtractFilePath(GeomFileName));
-//hhhhhhhhhhh
 
  if(mcm==1){
 //honk<<"\n"<<" Writing CTSP(TM) files...\n";
@@ -16965,10 +16958,6 @@ void TForm1::exportWARP3D1a_public()
 // StringCchCopy(fnNeed1,strlen(gWsiAlias.t_str())+strlen(extensChar1)+1,gWsiAlias.t_str());StringCchCat(fnNeed1,strlen(gWsiAlias.t_str())+strlen(extensChar1)+1,extensChar1);
 // char extensChar2[]=".incid";char *fnNeed2=new char[strlen(gWsiAlias.t_str())+strlen(extensChar2)+1];
 // StringCchCopy(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,gWsiAlias.t_str());StringCchCat(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,extensChar2);
-
-//ggggggggggg
-SetCurrentDir(ExtractFilePath(GeomFileName));
-//hhhhhhhhhhh
 
 //honk<<" WARPing1\n";
  fnNeedS1=gWsiAlias+extensCharS1;

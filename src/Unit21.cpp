@@ -702,13 +702,17 @@ else {Edit1->Text=DynStrings[0];setEdit8(DynStrings[0]+s66);
 void TForm21::getItemIndex5_public()
 {
  int index=Form5->CheckItemIndex;
- UnicodeString filepath, matname;
+ UnicodeString filepath, copypath, filename, matname;
 
+ UnicodeString cwd = GetCurrentDir();
  if (index == 0) {
 	OpenDialog1->Filter= L"ABA_mat (*.dat)|*.dat;*.DAT";
 	if (OpenDialog1->Execute()) {
 		filepath = OpenDialog1->FileName;
-		matname = ChangeFileExt(ExtractFileName(filepath), L"");
+		filename = ExtractFileName(filepath);
+		matname = ChangeFileExt(filename, L"");
+		copypath = cwd + L"\\" + filename;
+		CopyFile(filepath.c_str(), copypath.c_str(), FALSE);
 	} else {
 		extern PACKAGE void __fastcall Beep(void);
 		Application->MessageBox(L"Unable to create MAT file-open dialog",L"Failure",MB_OK);
@@ -720,23 +724,26 @@ void TForm21::getItemIndex5_public()
 	TStringDynArray Files = TDirectory::GetFiles(getenv("MATDIR"));
 	if (index <= Files.Length) {
 		filepath = Files[index-1];
-		matname = ChangeFileExt(ExtractFileName(filepath), L"");
+		filename = ExtractFileName(filepath);
+		matname = ChangeFileExt(filename, L"");
+		copypath = cwd + L"\\" + filename;
+		CopyFile(filepath.c_str(), copypath.c_str(), FALSE);
 	} else {
 		index -= Files.Length + 1;
-		if     (index== 0){matname=L"mildsteel_iso";filepath=L"mildsteel_iso_file.dat";}
-		else if(index== 1){matname=L"reactorsteel_iso";filepath=L"reactorsteel_iso_file.dat";}
-		else if(index== 2){matname=L"inconel718_iso";filepath=L"inconel718_iso_file.dat";}
-		else if(index== 3){matname=L"monel_iso";filepath=L"monel_iso_file.dat";}
-		else if(index== 4){matname=L"aluminum_iso";filepath=L"aluminum_iso_file.dat";}
-		else if(index== 5){matname=L"alloy82_iso";filepath=L"alloy82_iso_file.dat";}
-		else if(index== 6){matname=L"alloy82_kin";filepath=L"alloy82_kin_file.dat";}
-		else if(index== 7){matname=L"alloy82_mln";filepath=L"alloy82_mln_file.dat";}
-		else if(index== 8){matname=L"alloy82_mix";filepath=L"alloy82_mix_file.dat";}
-		else if(index== 9){matname=L"alloy82_phs";filepath=L"alloy82_phs_file.dat";}
-		else if(index==10){matname=L"alloy82_fph";filepath=L"alloy82_fph_file.dat";}
+		if     (index== 0){matname=L"mildsteel_iso";filename=L"mildsteel_iso_file.dat";}
+		else if(index== 1){matname=L"reactorsteel_iso";filename=L"reactorsteel_iso_file.dat";}
+		else if(index== 2){matname=L"inconel718_iso";filename=L"inconel718_iso_file.dat";}
+		else if(index== 3){matname=L"monel_iso";filename=L"monel_iso_file.dat";}
+		else if(index== 4){matname=L"aluminum_iso";filename=L"aluminum_iso_file.dat";}
+		else if(index== 5){matname=L"alloy82_iso";filename=L"alloy82_iso_file.dat";}
+		else if(index== 6){matname=L"alloy82_kin";filename=L"alloy82_kin_file.dat";}
+		else if(index== 7){matname=L"alloy82_mln";filename=L"alloy82_mln_file.dat";}
+		else if(index== 8){matname=L"alloy82_mix";filename=L"alloy82_mix_file.dat";}
+		else if(index== 9){matname=L"alloy82_phs";filename=L"alloy82_phs_file.dat";}
+		else if(index==10){matname=L"alloy82_fph";filename=L"alloy82_fph_file.dat";}
 	}
  }
- Edit9->Text = filepath;
+ Edit9->Text = filename;
  Edit1->Text = matname;
 
  Form5->Close();
