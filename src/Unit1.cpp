@@ -18429,7 +18429,7 @@ delete[] m1;
 //---------------------------------------------------------------------------
 //void TForm1::WARP3DepBlock(String gWsiAlias) //THIS IS ORIGINAL OUTPUT FORMAT (pre 12/2012)
 void TForm1::exportWARP4_public()
-//Routine too write *.wrp, compute_commands_all_profiles.inp, uexternal_data_file.inp, output_commands.inp
+//Routine to write *.wrp, compute_commands_all_profiles.inp, uexternal_data_file.inp, output_commands.inp
 //limlist= number of "a-b" pairs in WARP3D list output format, before writing next line
 {int solidshellsw=0,limlist=5,i=0,isw=0,mtype=0,icount=0,buffersize=0,nlist=Form7->CheckNlist, *rollcall=NULL;
  long ic=0,hinode=0,hielem=0,lolim=0,uplim=0,mdummy=0,ir=0,j=0,js=0,k=0,ies=0,iesr=0,icycle=0,irec=0,itype=0,ilast=0,istart=0,iELSETtype=0,t3=1000,ibrsw=0, *iELSETorder=NULL;
@@ -18965,6 +18965,13 @@ delete[] m1;
  outfile4<<"!  o - heating is occurring and has continued beyond N1 above\n";
  outfile4<<"!  o - cooling is occurring and has continued beyond N1 above\n";
  outfile4<<"! - (N1) number of sequential thermal profiles over which\n";
+ outfile4<<"!N3 is the number of load steps per profile for all profiles after the number of\n";
+ outfile4<<"!profiles dictated by N1.\n";
+ outfile4<<"!\n";
+ outfile4<<"!For example,  N1 = 5, N2 = 10, N3=15\n";
+ outfile4<<"!The first 5 profiles in any heating or cooling cycle will use 10 load steps per profile.\n";
+ outfile4<<"!All load steps after that in that profile will use 15 load steps per profile.  Then it\n";
+ outfile4<<"!starts again at the next heating or cooling cycle.\n";
  outfile4<<"!\n";
  outfile4<<"!  N3 =1 is the most common value.\n";
  outfile4<<"!\n";
