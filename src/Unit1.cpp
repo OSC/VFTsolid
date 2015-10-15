@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.57jb_64 2015";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.58_64 2015";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -16190,7 +16190,7 @@ Screen->Cursor=Save_Cursor;
 //void TForm1::export_CTSP_INPUTp1(char gVFTnameStem[],float overlap) //Version with mirror file  EFP 3/26/2011
 void TForm1::export_CTSP_INPUTp1(float overlap) //Version with mirror file  EFP 3/26/2011
 // Version for use with mcm only, which writes a preemptive time.out  EFP 6/26/2012
-{long i=0,k=0,icount=0,steptotal=0,sttEles_size=0,eles_size=0,iseq=0,mstep=0,medge=0,mseg=0,maxelp=0,
+{long i=0,k=0,icount=0,icount1=0,steptotal=0,sttEles_size=0,eles_size=0,iseq=0,mstep=0,medge=0,mseg=0,maxelp=0,
 	  ipp=0,in=0,ie1=0,iside1=0,is1=0,j=0,max1=0,lastStepIntv=0; //This line junk EFP 6/16/2012
  float timeWeld=0.f,lasttimerec=0.f,highestTmelt=0.f;int solidshellsw=0; //0=solid, 1=shell  EFP 8/19/2012
  int gdata8[24]={0,1,5,4, //Revised to get counterclock faces
@@ -16225,7 +16225,7 @@ void TForm1::export_CTSP_INPUTp1(float overlap) //Version with mirror file  EFP 
 		 if(maxelp<i)maxelp=i; //EFP 3/08/2012
 		}
 	  if(!icount){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Writing zero #time step data",L"Corrupt data",MB_OK);exit(0);}
-	  mstep=icount;
+	  mstep=icount1=icount;
 //	  viewfile<<"1, "<<icount<<"\n";
 	  mirrorfile<<"1, "<<icount<<"\n";
 //	  viewfile<<wms.cond[0]<<", "<<wms.heat[0]<<", "<<wms.den[0]<<", "<<wp.eff[0]<<", "<<wp.nWeldPass<<", 0.0\n";//Extra 0 at end (i.e. new format) BB 4/16/2010
@@ -16420,12 +16420,15 @@ Screen->Cursor=Save_Cursor;
  sleep(5); //Allow real time 5 seconds for file to close... Needs <dos.h>
  ifstream infile3("scratch0.txt");
  ofstream outfile3a("preWARP.txt");
- int hcflag1=0,hcrec=3,hc_stor[500];float timesum=0.f,time1=0.f,time_stor[500];
+// int hcflag1=0,hcrec=3,hc_stor[500];float timesum=0.f,time1=0.f,time_stor[500];
+ int hcflag1=0,hcrec=3, *hc_stor=NULL;float timesum=0.f,time1=0.f, *time_stor=NULL;
+ hc_stor=new int[icount1];time_stor=new float[icount1];
  infile3>>time1>>hcflag1;
 //honk<<hcflag1<<" "<<time1<<" first\n";
 //if(1==1)exit(0);
  hc_stor[0]=hcflag1;time_stor[0]=time1; //Presume time_stor[0]=0.
- for(i=0;i<wp.nWeldPass;i++){for(j=0;j<100;j++){infile3>>time1>>hcflag1;
+// for(i=0;i<wp.nWeldPass;i++){for(j=0;j<100;j++){infile3>>time1>>hcflag1;
+ for(i=0;i<wp.nWeldPass;i++){for(j=0;j<icount1;j++){infile3>>time1>>hcflag1;
 //honk<<hcflag1<<" "<<time1<<" secnd\n";
 //if(j>13)exit(0);
 													hc_stor[j+1]=hcflag1;time_stor[j+1]=time1;
@@ -16449,6 +16452,7 @@ Screen->Cursor=Save_Cursor;
 							 if(i==wp.nWeldPass-1)outfile3a<<time_stor[wp.stepInterval[i]]<<" "<<hc_stor[wp.stepInterval[i]]<<" "<<0.f<<"\n";
 							 hc_stor[0]=hcflag1;time_stor[0]=time1;
 							}
+ delete [] time_stor;delete [] hc_stor;
  outfile3a.close();infile3.close();DeleteFile(L"scratch0.txt");
 
 // ofstream outfile4("uexternal_data_file.inp");
