@@ -1441,7 +1441,7 @@ void TForm1::ImportAba_prog(int iswtype)
 // *SYSTEM
 // *TIE, etc
 //
- int nic=0,nic1=0,nrc=0,jsw=0,iswNode=0,iswElem=0, *attendEl=NULL;
+ int nic=0,nic1=0,nrc=0,jsw=0,iswNode=0,iswElem=0;
  long
 // itype=0,
 in=0,kn=0,klim=0,
@@ -1904,8 +1904,6 @@ revnode_map=new long[nodeuplim-nodelolim+1];
 //			 for(in=0;in<base.allGrp*base.nelt;in++)temp_allGID[in]=0;
 //			 for(in=0;in<base.nelt;in++)temp_allGID[in]=1;
 ////			   for(in=0;in<base.allGrp;in++)temp_orgGID[in]=0;
-			 attendEl=new int[eluplim-ellolim+1];
-			 for(in=0;in<eluplim-ellolim+1;in++)attendEl[in]=0;
 //			 for(in=0;in<base.npoin;in++)base.arrELSET[in]=0;
 			 for(in=0;in<base.nelt;in++)base.arrELSET[in]=0; //Correction EFP 1/14/2015
 ////////////
@@ -2061,9 +2059,6 @@ for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
 																	}
 
 																 n8=nic-1;in=larr[0]-1;
-/////////////// start New code to manage element duplication  EFP 4/19/2012
-if(attendEl[in-ellolim+1])attendEl[in-ellolim+1]= -1;
-else {attendEl[in-ellolim+1]=1;
 
 //if(n8==8) //EFP 12/19/2011
 //  {if(larr[0+1]==larr[4+1] && larr[3+1]==larr[7+1])
@@ -2123,7 +2118,6 @@ if(n8==8)degen8_test(&eltype,&n8,larr);
 base.orig_matno[totEnum]=eltype*t7+n8*t3;
 ////////////
 																 totEnum++;
-	 }
 /////////////// end
 																}
 															   else break;
@@ -2169,9 +2163,6 @@ base.orig_matno[totEnum]=eltype*t7+n8*t3;
 
 
 								n8=nic-1;in=larr[0]-1;
-/////////////// start New code to manage element duplication  EFP 4/19/2012
-if(attendEl[in-ellolim+1])attendEl[in-ellolim+1]= -1;
-else {attendEl[in-ellolim+1]=1;
 
 //if(n8==8) //EFP 12/19/2011
 //  {if(larr[0+1]==larr[4+1] && larr[3+1]==larr[7+1])
@@ -2209,7 +2200,6 @@ base.orig_matno[totEnum]=eltype*t7+n8*t3;
 ////////////
 //honk<<totEnum+1<<" "<<in+1<<" ElemB "<<n8<<" "<<ipid<<"\n";
 								totEnum++;
-	 }
 /////////////// end
 							   }
 							while (ntape1.peek()!= '*');
@@ -2468,7 +2458,7 @@ while (ntape1.peek()!= '*')ntape1.getline(cht,200-1);
 //for(in=0;in<base.nelt;in++)honk<<(in+1)<<" next0MATNO "<<base.matno[in]<<"\n";
 
 
-//			 delete [] revnode_map; //THIS CAUSES MEMORY CRASH BUT WHY??? NECESSARY!!! EFP 7/31/2014
+			 delete [] revnode_map;
 			 *revnode_map=NULL;
 
 //honk<<iallGrp<<" "<<base.allGrp<<" Later A &WG "<<nGID<<"\n";
@@ -2480,40 +2470,40 @@ while (ntape1.peek()!= '*')ntape1.getline(cht,200-1);
 			 old_npoin=new_npoin=base.npoin;new_nelt=base.nelt;new_mat=base.mat;new_ncoorf=base.ncoorf;nGID=wp.nWeldGroup+1;
 			 ntape1.close();DeleteFile("record.tmp");
 
-//aaaaaaaaaaaaa
-//aaaaaaaaaaaaaaa
-//aaaaaaaaaaaaaaaaa
-//ifstream ntape3(OpenDialog1->FileName.t_str(),ios::nocreate|ios::binary,0);
-ifstream ntape3(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
-if(ntape3){ofstream tmpfile1("omnibusAba.inp",ios::binary,0);
-		   ofstream tmpfile3("scratchAba3.tmp",ios::binary,0);
-		   if(tmpfile1 && tmpfile3)
-			 {jsw=0;
-			  do {ntape3.getline(cht,200-1);
-//				  if(cht[0]=='*' && (cht[1]=='e' || cht[1]=='E') && (cht[2]=='n' || cht[2]=='N') &&
-//									(cht[3]=='d' || cht[3]=='D')){tmpfile3.close();break;}
-				  if(cht[0]=='*' &&
-(((cht[1]=='e' || cht[1]=='E') && (cht[2]=='n' || cht[2]=='N') && (cht[3]=='d' || cht[3]=='D'))
-||
- ((cht[1]=='s' || cht[1]=='S') && (cht[2]=='t' || cht[2]=='T') && (cht[3]=='e' || cht[3]=='E') && (cht[3]=='p' || cht[3]=='P')))
-					)
-					{tmpfile3.close();break;} //Read+write until *STEP or *END is encountered  EFP 1/14/2015
-				  else if(cht[0]=='*' && (cht[1]=='e' || cht[1]=='E') && (cht[2]=='l' || cht[2]=='L') &&
-										 (cht[3]=='s' || cht[3]=='S') && (cht[4]=='e' || cht[4]=='E') &&
-										 (cht[5]=='t' || cht[5]=='T')){if(!jsw)tmpfile1.close();jsw=1;}
-				  if(jsw){tmpfile3.write(cht,strlen(cht));tmpfile3.put('\n');}
-				  else   {tmpfile1.write(cht,strlen(cht));tmpfile1.put('\n');}
-				 }
-			  while (!ntape3.eof());
-			 }
-		   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not open Aba scratch files",L"Terminate",MB_OK);exit(0);}
-		   ntape3.close();
-		  }
-else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not reopen input file",L"Terminate",MB_OK);exit(0);}
-//bbbbbbbbbbbbbbbbb
-//bbbbbbbbbbbbbbb
-//bbbbbbbbbbbbb
-//for(in=0;in<base.nelt;in++)honk<<(in+1)<<" next1MATNO "<<base.matno[in]<<"\n";
+////aaaaaaaaaaaaa
+////aaaaaaaaaaaaaaa
+////aaaaaaaaaaaaaaaaa
+////ifstream ntape3(OpenDialog1->FileName.t_str(),ios::nocreate|ios::binary,0);
+//ifstream ntape3(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
+//if(ntape3){ofstream tmpfile1("omnibusAba.inp",ios::binary,0);
+//		   ofstream tmpfile3("scratchAba3.tmp",ios::binary,0);
+//		   if(tmpfile1 && tmpfile3)
+//			 {jsw=0;
+//			  do {ntape3.getline(cht,200-1);
+////				  if(cht[0]=='*' && (cht[1]=='e' || cht[1]=='E') && (cht[2]=='n' || cht[2]=='N') &&
+////									(cht[3]=='d' || cht[3]=='D')){tmpfile3.close();break;}
+//				  if(cht[0]=='*' &&
+//(((cht[1]=='e' || cht[1]=='E') && (cht[2]=='n' || cht[2]=='N') && (cht[3]=='d' || cht[3]=='D'))
+//||
+// ((cht[1]=='s' || cht[1]=='S') && (cht[2]=='t' || cht[2]=='T') && (cht[3]=='e' || cht[3]=='E') && (cht[3]=='p' || cht[3]=='P')))
+//					)
+//					{tmpfile3.close();break;} //Read+write until *STEP or *END is encountered  EFP 1/14/2015
+//				  else if(cht[0]=='*' && (cht[1]=='e' || cht[1]=='E') && (cht[2]=='l' || cht[2]=='L') &&
+//										 (cht[3]=='s' || cht[3]=='S') && (cht[4]=='e' || cht[4]=='E') &&
+//										 (cht[5]=='t' || cht[5]=='T')){if(!jsw)tmpfile1.close();jsw=1;}
+//				  if(jsw){tmpfile3.write(cht,strlen(cht));tmpfile3.put('\n');}
+//				  else   {tmpfile1.write(cht,strlen(cht));tmpfile1.put('\n');}
+//				 }
+//			  while (!ntape3.eof());
+//			 }
+//		   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not open Aba scratch files",L"Terminate",MB_OK);exit(0);}
+//		   ntape3.close();
+//		  }
+//else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not reopen input file",L"Terminate",MB_OK);exit(0);}
+////bbbbbbbbbbbbbbbbb
+////bbbbbbbbbbbbbbb
+////bbbbbbbbbbbbb
+////for(in=0;in<base.nelt;in++)honk<<(in+1)<<" next1MATNO "<<base.matno[in]<<"\n";
 
 			 FDbase_indat(1,shapecombo,iplotflag,nColRes);
 //			   FDdynmem_manage(-16,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy);
@@ -3658,7 +3648,7 @@ else {k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGr
 			   {eltype=base.matno[j]/t7;bscode=(base.matno[j]-eltype*t7)/t5;node=(base.matno[j]-eltype*t7-bscode*t5)/t3;
 				for(in=0;in<node;in++)base.nop1[MXNPEL*j+in]=revnode_map[base.nop1[MXNPEL*j+in]-nodelolim+1];
 			   }
-//			 delete [] revnode_map; //THIS CAUSES MEMORY CRASH BUT WHY??? NECESSARY!!! EFP 7/31/2014
+			 delete [] revnode_map; //THIS CAUSES MEMORY CRASH BUT WHY??? NECESSARY!!! EFP 7/31/2014
 			 *revnode_map=NULL;
 
 base.allGrp=nGID; //Special restriction to 1 basemetal + WGs (not needed)
@@ -4104,7 +4094,7 @@ base.nop1[MXNPEL*i+ 8]=revnode_map[larr[ 9]-nodelolim];base.nop1[MXNPEL*i+ 9]=re
 
 
 										 }
-			 delete [] revnode_map;
+			 delete [] revnode_map; *revnode_map=NULL;
 
 //if(1==1)exit(0);
 
