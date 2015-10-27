@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.58_64 2015";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59_64 2015";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -288,7 +288,7 @@ __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 void __fastcall TForm1::FileCloseExecute(TObject *Sender)
 {
  Form1->Caption=VFTversion;
- long dum=0;base.nop1=indat.nop1=NULL;  // Pointer NULL applies to int & long only
+ long dum=0;
  iplotflag=iCircleplot=iCullyesno=nGIDmax=nGID=nColRes=0;
  base.nop1=indat.nop1=NULL;  // Pointer NULL applies to int & long only
  iplotflag=iCircleplot=iCullyesno=nGIDmax=nGID=0;
@@ -340,7 +340,11 @@ void __fastcall TForm1::FileCloseExecute(TObject *Sender)
 						  FDdynmem_manage(-8,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum);
 						 }
 	FDdynmem_manage(-20,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum);
-	base.nofix=NULL;base.nldel=NULL;base.lodpt=NULL;base.matyp=NULL;base.ebody=NULL;Invalidate();
+	base.nofix=NULL;base.nldel=NULL;base.lodpt=NULL;base.matyp=NULL;base.ebody=NULL;
+
+ if(rbTemp){delete [] rbTemp;rbTemp=NULL;}
+ if(arbFacet){delete [] arbFacet;arbFacet=NULL;}
+ Invalidate();
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::ExitExecute(TObject *Sender){exit(0);}
@@ -1456,17 +1460,19 @@ i=0,j=0,k=0,kk=0,kp=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1
 //,MUL=1,inpGIDmax= -1,matstep=0
 //,nodeuplim=0,totNnum=0,eluplim=0,totEnum=0,nGIDmax=0;
 ,nodeuplim=0,nodelolim=0,totNnum=0,eluplim=0,ellolim=0,totEnum=0,sumWG=0,sumlim=0,sumELSETel=0,totBMG=0,totWG=0
-,iallGrp=0, *revnode_map=NULL;
+,iallGrp=0, *revnode_map;
 // float r1=0.,r2=0.,r3=0.,r4=0.,r5=0.,r6=0.,darr[10];
  float darr[10];
  char cht[200],extensChar[]=".inp"
  //,chELSET[78+1]
- , *temp_cht=NULL, *temp_cht1=NULL, *fnNeed1=NULL,*fnNeed2=NULL,
+ , *temp_cht, *temp_cht1, *fnNeed1,*fnNeed2,
 	  ch_I='I',ch_i='i',ch_N='N',ch_n='n',ch_P='P',ch_p='p',ch_U='U',ch_u='u',ch_T='T',ch_t='t',ch_eq='=';
  wchar_t string0[11];
 ////////////////
 //String *tw_groupsname=NULL;
 ////////////////
+ revnode_map=NULL;temp_cht=NULL;temp_cht1=NULL;fnNeed1=NULL;fnNeed2=NULL;
+
  if(base.nop1){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"First, close current file->FileClose",L"Halt",MB_OK);}
  else {  //OPEN02
  base.matsteps=base.ncoorf=1;
@@ -1577,7 +1583,7 @@ for(j=8;j<int(strlen(cht))-4;j++){
 //honk<<totNnum<<" First totNnum from node coord file\n";
 														  }
 											 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Node *.inp file not found",L"Terminate",MB_OK);exit(0);}
-											 delete [] fnNeed1; *fnNeed1=NULL; // NODE, stored in fnNeed1 file
+											 delete [] fnNeed1;fnNeed1=NULL; // NODE, stored in fnNeed1 file
 											 break;
 											}
 							}
@@ -1668,7 +1674,7 @@ for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
 														   viewfile2.close();
 														  }
 											 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Element *.inp file not found",L"Terminate",MB_OK);exit(0);}
-											 delete [] fnNeed2; *fnNeed2=NULL; // NODE, stored in fnNeed2 file
+											 delete [] fnNeed2;fnNeed2=NULL; // NODE, stored in fnNeed2 file
 											 break;
 											}
 //////////
@@ -1983,7 +1989,7 @@ for(j=8;j<int(strlen(cht))-4;j++){
 														   viewfile3.close();
 														  }
 											 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Node *.inp file not found",L"Terminate",MB_OK);exit(0);}
-											 delete [] fnNeed1; *fnNeed1=NULL; // NODE, stored in fnNeed1 file
+											 delete [] fnNeed1;fnNeed1=NULL; // NODE, stored in fnNeed1 file
 											 break;
 											}
 							}
@@ -2128,7 +2134,7 @@ base.orig_matno[totEnum]=eltype*t7+n8*t3;
 														   viewfile4.close();
 														  }
 											 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Element *.inp file not found",L"Terminate",MB_OK);exit(0);}
-											 delete [] fnNeed2; *fnNeed2=NULL; // NODE, stored in fnNeed2 file
+											 delete [] fnNeed2;fnNeed2=NULL; // NODE, stored in fnNeed2 file
 											 break;
 											}
 //////////
@@ -2310,7 +2316,7 @@ temp_cht1[kp]='\0';
 
 					base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht1); //This creates a UnicodeString of 80 characters but how to "trim"?
 					// Something like base.groupsname[j].SetLength(base.groupsname[j].Length()-1);  ???
-					iallGrp++;delete [] temp_cht1; *temp_cht1=NULL;
+					iallGrp++;delete [] temp_cht1;temp_cht1=NULL;
 nGID++;
 
 
@@ -2372,7 +2378,7 @@ if(jsw){temp_cht=new char[kp+1];
 		for(i=0;i<kp;i++)temp_cht[i]=cht[i+jrec];
 		temp_cht[kp]='\0';
 		base.groupsname[totWG]=temp_cht; //EFP 3/25/2011
-		delete [] temp_cht; *temp_cht=NULL;
+		delete [] temp_cht;temp_cht=NULL;
 		totWG++;sumWG=0;
 	   }
 					if(in==2){
@@ -2458,8 +2464,7 @@ while (ntape1.peek()!= '*')ntape1.getline(cht,200-1);
 //for(in=0;in<base.nelt;in++)honk<<(in+1)<<" next0MATNO "<<base.matno[in]<<"\n";
 
 
-			 delete [] revnode_map;
-			 *revnode_map=NULL;
+			 delete [] revnode_map;revnode_map=NULL;
 
 //honk<<iallGrp<<" "<<base.allGrp<<" Later A &WG "<<nGID<<"\n";
 
@@ -3194,15 +3199,17 @@ void __fastcall TForm1::ImportMshExecute(TObject *Sender)
  long in=0,n8=0,dummy=0,jrec=0,//iswELSET2=0,
 i=0,j=0,k=0,kk=0,kp=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1000,larr[10],//larr1[10],
 nodeuplim=0,nodelolim=0,totNnum=0,eluplim=0,ellolim=0,totEnum=0,sumWG=0,sumlim=0,sumELSETel=0,//totBMG=0,
-totWG=0,ELSETmobsize=0,exALLEL=0,exALLWD=0,iallGrp=0, *revnode_map=NULL;
+totWG=0,ELSETmobsize=0,exALLEL=0,exALLWD=0,iallGrp=0, *revnode_map;
  float //fval=0.f,
  darr[10];
- char cht[200], *temp_cht=NULL, *temp_cht1=NULL//,extensChar[]=".msh",chELSET[78+1], *fnNeed1=NULL,*fnNeed2=NULL
+ char cht[200], *temp_cht, *temp_cht1//,extensChar[]=".msh",chELSET[78+1], *fnNeed1=NULL,*fnNeed2=NULL
  ;
  wchar_t string0[11];
 ////////////////
 //String *tw_groupsname=NULL;
 ////////////////
+ revnode_map=NULL;temp_cht=NULL;temp_cht1=NULL;
+
  if(base.nop1){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"First, close current file->FileClose",L"Halt",MB_OK);}
  else {
 
@@ -3570,7 +3577,7 @@ temp_cht1[kp-1]='\0';
 
 
 
-					iallGrp++;delete [] temp_cht1; *temp_cht1=NULL;delete [] temp_cht; *temp_cht=NULL;
+					iallGrp++;delete [] temp_cht1;temp_cht1=NULL;delete [] temp_cht;temp_cht=NULL;
 					totWG++;nGID++;sumWG=0;
 					do {ntape1.getline(cht,200-1);
 						parse_cdmQ(cht,&nic,&nrc,larr,darr); //This accommodates comma-end or no-comma EFP 4/15/2011
@@ -3604,9 +3611,9 @@ temp_cht1[kp-1]='\0';
 							   base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht1); //This creates a UnicodeString of 80 characters but how to "trim"?
 
 
-							   iallGrp++;delete [] temp_cht1; *temp_cht1=NULL;
+							   iallGrp++;delete [] temp_cht1;temp_cht1=NULL;
 							  }
-		delete [] temp_cht; *temp_cht=NULL;nGID++;
+		delete [] temp_cht;temp_cht=NULL;nGID++;
 				  do {ntape1.getline(cht,200-1);
 //					  if(iallGrp != exALLEL)
 					  if(iallGrp != exALLEL && iallGrp != exALLWD)
@@ -3648,8 +3655,7 @@ else {k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGr
 			   {eltype=base.matno[j]/t7;bscode=(base.matno[j]-eltype*t7)/t5;node=(base.matno[j]-eltype*t7-bscode*t5)/t3;
 				for(in=0;in<node;in++)base.nop1[MXNPEL*j+in]=revnode_map[base.nop1[MXNPEL*j+in]-nodelolim+1];
 			   }
-			 delete [] revnode_map; //THIS CAUSES MEMORY CRASH BUT WHY??? NECESSARY!!! EFP 7/31/2014
-			 *revnode_map=NULL;
+			 delete [] revnode_map;revnode_map=NULL;
 
 base.allGrp=nGID; //Special restriction to 1 basemetal + WGs (not needed)
 
@@ -3740,13 +3746,13 @@ void __fastcall TForm1::ImportVFTrExecute(TObject *Sender)
 // long ix=0,i=0,ii=0,ie=0,ir=0,ipid=0,nop0=0,nop1=0,nop2=0,nop3=0,nop4=0,nop5=0,nop6=0,nop7=0,dummy=0,larr[9]
  long ix=0,i=0,ii=0,ie=0,ir=0,ipid=0,nop0=0,nop1=0,nop2=0,nop3=0,nop4=0,nop5=0,nop6=0,nop7=0,dummy=0,larr[20+1]
 	  ,control[10],accum=0,j=0,eltype=0,bscode=0,node=0,ieGID=0,t7=10000000,t5=100000,t3=1000,sumlim=0,
-	  nodeuplim=0,nodelolim=0,eluplim=0,wpWG=0,wpWP=0,in=0,ip=0,inp=0,sumELSETel=0, *revnode_map=NULL;
+	  nodeuplim=0,nodelolim=0,eluplim=0,wpWG=0,wpWP=0,in=0,ip=0,inp=0,sumELSETel=0, *revnode_map;
  char cht[10*(MXNPELS+3)],chtm[200]; // Anticipate 23I10
- _TCHAR descript0[41],descript1[41],descript2[41], *temp_cht=NULL; // Anticipate 23I10
+ _TCHAR descript0[41],descript1[41],descript2[41], *temp_cht; // Anticipate 23I10
 //String efpAnsi1[20];
 //String *efpAnsi=NULL;
 //String *SWPTname=NULL;
-_TCHAR *efpChar=NULL, *texasbuf;
+_TCHAR *efpChar, *texasbuf;
  wchar_t curMess0[]=L"WeldParam",string1[15],curMess1[16],curMess2[]=L"Reduced from ",curMess3[]=L" to ",string0[32];
 // wchar_t string0[40],curMess0[]=L"WeldParam",string1[15];
 //wchar_t curMess0[]=L"WeldParam",string1[15];
@@ -3755,6 +3761,8 @@ _TCHAR *efpChar=NULL, *texasbuf;
 // wps.name[wps.nWeldParamSet]=curMess0;
 
 //String *tw_groupsname=NULL;
+ revnode_map=NULL;temp_cht=NULL;efpChar=NULL;
+
 
  base.npoin=base.nelt=base.nvfix=base.nedge=base.pload=base.mat=base.nblod=nGIDmax=base.allGrp=base.ELSETelsum=0;
  base.matsteps=base.ncoorf=1;MXNPEL=8;
@@ -4094,7 +4102,7 @@ base.nop1[MXNPEL*i+ 8]=revnode_map[larr[ 9]-nodelolim];base.nop1[MXNPEL*i+ 9]=re
 
 
 										 }
-			 delete [] revnode_map; *revnode_map=NULL;
+			 delete [] revnode_map;revnode_map=NULL;
 
 //if(1==1)exit(0);
 
@@ -4777,30 +4785,45 @@ void TForm1::FDdynmem_manage(int isel,long bnpoin,long bnelt,long inpoin,long in
 // Global NDF
 {
 //**************** Start from VFTgen
- int *SWTseqNum=NULL,*SWTboolFlags=NULL,*SWTtype=NULL,*SWTshape=NULL,*SWTstepInterval=NULL,
-	 *SWThp=NULL,*SWTnsegs=NULL,*SWTiselect=NULL,*SWTmcr=NULL,*SWTsource=NULL,*SWTutil_arr=NULL
-	 ;
+ int *SWTseqNum,*SWTboolFlags,*SWTtype,*SWTshape,*SWTstepInterval,
+	 *SWThp,*SWTnsegs,*SWTiselect,*SWTmcr,*SWTsource,*SWTutil_arr;
 // GIDwp: 1st col= current iside, remainder=GID
- long in=0,dum=0,*SWTeles=NULL,*SWTsttEles=NULL,*SWTstpEle=NULL,*SWTfirstEle=NULL,
-	  *SWTnextEle=NULL,*SWTsnorm1=NULL,*SWTsnorm2=NULL,
-	  *SWTcircEles=NULL,*SWTedgeEles=NULL,*SWTedgeNodes=NULL,*SWTsttEleNodes=NULL,
-	  *SWThlightel=NULL,*SWTn_curr_sttEl=NULL,*SWTprevGID=NULL,*SWTreset=NULL;
- float *SWTcurr=NULL,*SWTvolt=NULL,*SWTeff=NULL,*SWTspeed=NULL,*SWTtroom=NULL,*SWTtmelt=NULL,
-	   *SWTtcutl=NULL,*SWTtcuth=NULL,*SWTtimeInterval=NULL,
-	   *SWTmaxiHeatStep=NULL,*SWTminiHeatStep=NULL,*SWTthk1=NULL,*SWTthk2=NULL,*SWTwpTimes=NULL;
- double *SWTlstart=NULL,*SWTlend=NULL,*SWTarrows=NULL;
- String *SWTname=NULL,*SWTmatName=NULL;
- TColor *SWTWeldColor=NULL;
+ long in=0,dum=0,*SWTeles,*SWTsttEles,*SWTstpEle,*SWTfirstEle,
+	  *SWTnextEle,*SWTsnorm1,*SWTsnorm2,
+	  *SWTcircEles,*SWTedgeEles,*SWTedgeNodes,*SWTsttEleNodes,
+	  *SWThlightel,*SWTn_curr_sttEl,*SWTprevGID,*SWTreset;
+ float *SWTcurr,*SWTvolt,*SWTeff,*SWTspeed,*SWTtroom,*SWTtmelt,
+	   *SWTtcutl,*SWTtcuth,*SWTtimeInterval,
+	   *SWTmaxiHeatStep,*SWTminiHeatStep,*SWTthk1,*SWTthk2,*SWTwpTimes;
+ double *SWTlstart,*SWTlend,*SWTarrows;
+ String *SWTname,*SWTmatName;
+ TColor *SWTWeldColor;
 // boolFlags[]: showFlag=1st digit,circFlag=2nd,edgeFlag=3rd,merge=4th,girthFlag=5th
 
- int *SWMTmcr=NULL,*SWMTannjd=NULL,*SWMTved=NULL,*SWMThetjd=NULL,*SWMTnprops=NULL;
- float *SWMTcond=NULL,*SWMTheat=NULL,*SWMTden=NULL,*SWMTTi=NULL,*SWMTTa=NULL,*SWMTTm=NULL;
- String *SWMTname=NULL,*SWMTmatFileName=NULL,*SWMTSteps=NULL;
- bool *SWMTswitc=NULL;
+ int *SWMTmcr,*SWMTannjd,*SWMTved,*SWMThetjd,*SWMTnprops;
+ float *SWMTcond,*SWMTheat,*SWMTden,*SWMTTi,*SWMTTa,*SWMTTm;
+ String *SWMTname,*SWMTmatFileName,*SWMTSteps;
+ bool *SWMTswitc;
 
- float *SWPTcurr=NULL,*SWPTvolt=NULL,*SWPTeff=NULL,*SWPTspeed=NULL;
- String *SWPTname=NULL;
+ float *SWPTcurr,*SWPTvolt,*SWPTeff,*SWPTspeed;
+ String *SWPTname;
 //**************** End from VFTgen
+ SWTseqNum=NULL;SWTboolFlags=NULL;SWTtype=NULL;SWTshape=NULL;SWTstepInterval=NULL;
+ SWThp=NULL;SWTnsegs=NULL;SWTiselect=NULL;SWTmcr=NULL;SWTsource=NULL;SWTutil_arr=NULL;
+ SWTeles=NULL;SWTsttEles=NULL;SWTstpEle=NULL;SWTfirstEle=NULL;
+ SWTnextEle=NULL;SWTsnorm1=NULL;SWTsnorm2=NULL;
+ SWTcircEles=NULL;SWTedgeEles=NULL;SWTedgeNodes=NULL;SWTsttEleNodes=NULL;
+ SWThlightel=NULL;SWTn_curr_sttEl=NULL;SWTprevGID=NULL;SWTreset=NULL;
+ SWTcurr=NULL;SWTvolt=NULL;SWTeff=NULL;SWTspeed=NULL;SWTtroom=NULL;SWTtmelt=NULL;
+ SWTtcutl=NULL;SWTtcuth=NULL;SWTtimeInterval=NULL;
+ SWTmaxiHeatStep=NULL;SWTminiHeatStep=NULL;SWTthk1=NULL;SWTthk2=NULL;SWTwpTimes=NULL;
+ SWTlstart=NULL;SWTlend=NULL;SWTarrows=NULL;SWTname=NULL;SWTmatName=NULL;SWTWeldColor=NULL;
+ SWMTmcr=NULL;SWMTannjd=NULL;SWMTved=NULL;SWMThetjd=NULL;SWMTnprops=NULL;
+ SWMTcond=NULL;SWMTheat=NULL;SWMTden=NULL;SWMTTi=NULL;SWMTTa=NULL;SWMTTm=NULL;
+ SWMTname=NULL;SWMTmatFileName=NULL;SWMTSteps=NULL;
+ SWMTswitc=NULL;SWPTcurr=NULL;SWPTvolt=NULL;SWPTeff=NULL;SWPTspeed=NULL;SWPTname=NULL;
+
+
 
  if(isel==1)
   {
@@ -6082,9 +6105,10 @@ void TForm1::FDelemfacets3(long npoin,long nelt,long nop1[],long matno[],long ar
  ieGID=0,t3=1000,t5=100000,t7=10000000,
 	  ip=0,in=0,iv=0,ivp=0,nside=0,in0=0,in0p=0,in0pp=0,inx=0,inxp=0,inxpp=0,oppn0=0,oppn1=0,oppn3=0,prod=0,
 	  iex=0,eltypex=0,bscodex=0,nodex=0,ieGIDx=0,mxnelvertex=0,accum=0,
-	  lows=0,mids=0,tops=0,istx=0,lowsp=0,midsp=0,topsp=0,istxp=0,corruptf[4],*arr1=NULL,*arr3=NULL;
+	  lows=0,mids=0,tops=0,istx=0,lowsp=0,midsp=0,topsp=0,istxp=0,corruptf[4],*arr1,*arr3;
 // Note: matno[i]=8*10000000+nodes*1000+ipid -1; Also bscodex=1+2+4+8+16+32......
 // corruptf[0]=counter for corrupt hex-wedge, [1] wedge-wedge, [2] tetra-wedge, [3] unsupported elements
+ arr1=NULL;arr3=NULL;
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //try {
 //
@@ -6382,8 +6406,9 @@ void TForm1::FDelemfacets3a(long npoin,long nelt,long nop1[],long matno[])
  long ie=0,eltype=0,bscode=0,t3=1000,t5=100000,t7=10000000,
 	  ip=0,in=0,iv=0,ivp=0,nside=0,in0=0,in0p=0,in0pp=0,inx=0,inxp=0,inxpp=0,oppn0=0,oppn1=0,oppn3=0,prod=0,
 	  iex=0,eltypex=0,bscodex=0,nodex=0,mxnelvertex=0,accum=0,
-	  lows=0,mids=0,tops=0,istx=0,lowsp=0,midsp=0,topsp=0,istxp=0,corruptf[4],*arr1=NULL,*arr3=NULL;
+	  lows=0,mids=0,tops=0,istx=0,lowsp=0,midsp=0,topsp=0,istxp=0,corruptf[4],*arr1,*arr3;
 // Note: matno[i]=8*10000000+nodes*1000+ipid -1; Also bscodex=1+2+4+8+16+32......
+ arr1=NULL;arr3=NULL;
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //try {
 //
@@ -6671,8 +6696,9 @@ void TForm1::FDelemfacets_arE3(long npoin,long nelt,long nop1[],long matno[],int
  long ie=0,eltype=0,bscode=0,node=0,ieGID=0,t3=1000,t5=100000,t7=10000000,
 	  ip=0,in=0,iv=0,ivp=0,nside=0,in0=0,in0p=0,in0pp=0,inx=0,inxp=0,inxpp=0,oppn0=0,oppn1=0,oppn3=0,prod=0,
 	  iex=0,eltypex=0,bscodex=0,nodex=0,ieGIDx=0,mxnelvertex=0,accum=0,
-	  lows=0,mids=0,tops=0,istx=0,lowsp=0,midsp=0,topsp=0,istxp=0,corruptf[4],*arr1=NULL,*arr3=NULL;
+	  lows=0,mids=0,tops=0,istx=0,lowsp=0,midsp=0,topsp=0,istxp=0,corruptf[4],*arr1,*arr3;
 // Note: matno[i]=8*10000000+nodes*1000+ipid -1; Also bscodex=1+2+4+8+16+32......
+ arr1=NULL;arr3=NULL;
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //try {
 //
@@ -7407,10 +7433,12 @@ rbTemp[nFacets]=iprox*100+idist;
 void TForm1::FDsort_low1(long *indat_nop1,float *indat_c1,long nFace,long *arbFace,long *rbTem,long ntranche)
 // Version with status[nFace]. Note that constant ntranche=8 (throughout) was found to be fastest....
 // Sort in increasing order (Buckets & efficient partition/stride sort used)  Global NDF,MXNPEI
-{int isw=0,procsw=0;long ic=0,ip=0,is=0,ie=0,t3=1000,curstat=1,statct=0,outct=0,outct0=nFace,loopct=0,sval=0,irec0=0,irec1=0,*facetmap=NULL,*facettrash=NULL,*facetloc=NULL,*status=NULL;
+{int isw=0,procsw=0;long ic=0,ip=0,is=0,ie=0,t3=1000,curstat=1,statct=0,outct=0,outct0=nFace,loopct=0,sval=0,irec0=0,irec1=0, *facetmap, *facettrash, *facetloc, *status;
 //// float lolim=0.,upmax=0.,disTOL=0.01,*partition=NULL;
- float lolim=0.f,upmax=0.f,disTOL=0.1f,*partition=NULL;
+ float lolim=0.f,upmax=0.f,disTOL=0.1f, *partition;
 // float lolim=0.,upmax=0.,disTOL=0.5,*partition=NULL;
+ facetmap=NULL;facettrash=NULL;facetloc=NULL;status=NULL;partition=NULL;
+
  if(nFace<2){
 //             honk<<nFace<<" nFacets\n";
 			 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"FDsort_low insufficient nFacets",L"Terminate",MB_OK);exit(0);}
@@ -8493,6 +8521,8 @@ else                       {Canvas->Brush->Color=clBlack;Canvas->Pen->Color=clWh
 	if(iCircleplot==0)FDwireplot(indat.nelt,indat.nop1,indat.matno,indat.c1);
 	else if(iCircleplot==1)
 	  {if(iCullyesno==0){
+						 if(rbTemp){delete [] rbTemp;rbTemp=NULL;}
+						 if(arbFacet){delete [] arbFacet;arbFacet=NULL;}
 /////////////////////////////////
 						 if(iplotType==2){//nFacets=FDcullfacet_arE_mem(indat.nelt,indat.nop1,indat.matno,indat.c1,base.arELEM);
 											 arbFacet=new long[4*base.nelt]; //Use approx storage instead of computing nFacets exactly EFP 1/02/2012
@@ -8527,6 +8557,8 @@ iCullyesno=1;
 	if(iCircleplot==0)FDwireplot(indat.nelt,indat.nop1,indat.matno,indat.c1);
 	else if(iCircleplot==1)
 	  {if(iCullyesno==0){
+						 if(rbTemp){delete [] rbTemp;rbTemp=NULL;}
+						 if(arbFacet){delete [] arbFacet;arbFacet=NULL;}
 /////////////////////////////////
 						 if(iplotType==2){//nFacets=FDcullfacet_arE_mem(indat.nelt,indat.nop1,indat.matno,indat.c1,base.arELEM);
 //										  GlobalMemoryStatus(&ms);
@@ -9779,9 +9811,10 @@ void TForm1::FDrotate_axisplot(int transpose,float rangle[])
 void TForm1::maskelemPolyhea(int flag)
 // Subroutine to hide polygon-surrounded-elements from mesh visibility (flag != 0), or to show only them (flag=0)
 // This does NOT section the mesh.
-{int *polytri=NULL,tricount=0,pc=0;
+{int *polytri,tricount=0,pc=0;
  long in=0,ie=0,eltype=0,bscode=0,node=0,t3=1000,t5=100000,t7=10000000;
  float xavg=0.f,yavg=0.f;
+ polytri=NULL;
  TCursor Save_Cursor=Screen->Cursor;Screen->Cursor= crHourGlass;
 ////////////////////
 //for(in=0;in<indat.npoin;in++)honk<<(in+1)<<" "<<base.c1[NDF*in+0]<<" "<<base.c1[NDF*in+1]<<" "<<base.c1[NDF*in+2]
@@ -10512,6 +10545,8 @@ void TForm1::FDrestore()
 									  iPaintyesno=10;
 									 }
 							   }
+ if(rbTemp){delete [] rbTemp;rbTemp=NULL;}
+ if(arbFacet){delete [] arbFacet;arbFacet=NULL;}
 	  arbFacet=new long[6*base.nelt];rbTemp=new long[6*base.nelt];
 //// base.GIDcol=2; // Always prioritize WP when RESTOREing
 // FDcomp_nGID(base.nelt,&nGID,arGID);  //BUT THIS USES indat.arrELSET internally....
@@ -10560,7 +10595,8 @@ void TForm1::VFT_SaveAs1(int ksw)
 // TBD: Currently using & writing highest node number but only writing active nodes. Switch to memory-saving "true node number" scheme
 //      This is a cat's ass scheme. Switch to pre-read/reserve memory/read again
 {long i=0,j=0,jsw=0,control[10],eltype=0,bscode=0,node=0,ieGID=0,t7=10000000,t5=100000,t3=1000,accum=0;
- char *fnNeed=NULL;
+ char *fnNeed;
+ fnNeed=NULL;
  if(base.nop1)
 //   {if(ksw)
    {
@@ -10980,10 +11016,11 @@ void TForm1::CTSPinterpolate_prog(int solidshellsw)
 // int solidshellsw=0; //Solid only
  long ntime1=0,nndmax1=0,ntime2=0,nndmax2=0,in=0,ic=0,id=0,
 	  index1old=0,index2old=0,index1=0,index2=0,inodemin=0,inodemax=0,isum=0,
-	  nndv1=0,nndm1=0,nndv2=0,nndm2=0,larr[5], *nstor1=NULL, *nstor2=NULL;
+	  nndv1=0,nndm1=0,nndv2=0,nndm2=0,larr[5], *nstor1, *nstor2;
  float t11=0.f,t12=0.f,t13=0.f,t14=0.f,t15=0.f,rkm=0.f,tstorprox1=0.f,tstorprox2=0.f,tvalv1=0.f,tvalm1=0.f,tvalv2=0.f,tvalm2=0.f,
-	   tol=0.001f,darr[5], *rstor1=NULL, *rstor2=NULL, *combo=NULL;
+	   tol=0.001f,darr[5], *rstor1, *rstor2, *combo;
  char descript[76];
+ nstor1=NULL;nstor2=NULL;rstor1=NULL;rstor2=NULL;combo=NULL;
  OpenDialog1->Filter=L"Out (*.out)|*.out;*.OUT";
  if(OpenDialog1->Execute())
 //   {ifstream viewfile1(OpenDialog1->FileName.t_str(),ios::nocreate,0);
@@ -11326,7 +11363,7 @@ iPers=iPersistVFT/100,jPers=(iPersistVFT-100*iPers)/10,
  iside=0,eltype=0,bscode=0,node=0,ieGID=0,t3=1000,t5=100000,t7=10000000,eltype5=0,bscode5=0,
    is=0,in=0,ir=0,numdum=0,eltype1=0,ieGID1=0,ip1=0,is1=0,iside1=0,
    ie1=0,icount=0,ieGID2=0,eltype3=0,ieGID3=0,
-   *dumarr=NULL,*dummap=NULL,*duminv=NULL,*dumgrp=NULL;
+   *dumarr,*dummap,*duminv,*dumgrp;
  float rv=0.f,xave=0.f,yave=0.f,zave=0.f,xnor=0.f,ynor=0.f,znor=0.f,rave=0.f,zero=0.f,dx1=0.f,dy1=0.f,dx3=0.f,dy3=0.f,norm=0.f,RN1=0.f,RN2=0.f,RN3=0.f,
 //	   DJD=0.f,SN[20],SG[60],DJR[9+1],
 	   HN[9],xc=0.f,yc=0.f,zc=0.f,xnor1=0.f,ynor1=0.f,znor1=0.f,dist=0.f,areafac=0.f;
@@ -11359,6 +11396,7 @@ iPers=iPersistVFT/100,jPers=(iPersistVFT-100*iPers)/10,
 // String extensCharS3[]={L" of "};
  String extensCharS=UnicodeString(L"Query ELSET= "),extensCharS1=UnicodeString(L"Weld Pass= "),extensCharS2=UnicodeString(L"Sequence# "),extensCharS3=UnicodeString(L" of ");
  TPoint ptDraw[MAXPOINTS];
+ dumarr=NULL;dummap=NULL;duminv=NULL;dumgrp=NULL;
 
 // TStringBuilder *sb=new TStringBuilder();
 // String extensCharS[]={L"Query ELSET= "};
@@ -13153,8 +13191,9 @@ void __fastcall TForm1::QueryElementExecute(TObject *Sender)
  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
-void TForm1::QElemTRASH_public(){if(QElem){// delete QElem;
-										   QElem=NULL;}
+void TForm1::QElemTRASH_public(){//if(QElem){// delete QElem;
+								 //		   QElem=NULL;}
+delete QElem;QElem=NULL;
 FD_LButtonstatus=11; //EFP 8/29/2011
 /////////// Cursor EFP 1/21/2011
 Screen->Cursor=crSizeAll;
@@ -13550,23 +13589,33 @@ void TForm1::DelWeldPass(int VFTitemindex,long bnelt)
 if(Application->MessageBox(L"Sure you want to delete WP?",L"Delete this WP",MB_OKCANCEL)==1){
 //int i=0,j=0;
 // TBD: Adjust memory
- int i=0,*SWTseqNum=NULL,*SWTboolFlags=NULL,*SWTtype=NULL,*SWTshape=NULL,*SWTstepInterval=NULL,
-	 *SWThp=NULL,*SWTnsegs=NULL,*SWTiselect=NULL,*SWTmcr=NULL,*SWTsource=NULL,*SWTutil_arr=NULL
+ int i=0,*SWTseqNum,*SWTboolFlags,*SWTtype,*SWTshape,*SWTstepInterval,
+	 *SWThp,*SWTnsegs,*SWTiselect,*SWTmcr,*SWTsource,*SWTutil_arr
 //	 ,*SWTedgeFlag,*SWTcircFlag,*SWTmerge
 	 ;
 // GIDwp: 1st col= current iside, remainder=GID
  long ii=0,in=0,dum=0,ieGID1=0,//eltype1=0,bscode1=0,node1=0,t3=1000,t5=100000,t7=10000000,
-	  *SWTeles=NULL,*SWTsttEles=NULL,*SWTstpEle=NULL,*SWTfirstEle=NULL,
-	  *SWTnextEle=NULL,*SWTsnorm1=NULL,*SWTsnorm2=NULL,
-	  *SWTcircEles=NULL,*SWTedgeEles=NULL,*SWTedgeNodes=NULL,*SWTsttEleNodes=NULL,
-	  *SWThlightel=NULL,*SWTn_curr_sttEl=NULL,*SWTprevGID=NULL,*SWTreset=NULL;
- float *SWTcurr=NULL,*SWTvolt=NULL,*SWTeff=NULL,*SWTspeed=NULL,*SWTtroom=NULL,*SWTtmelt=NULL,
-	   *SWTtcutl=NULL,*SWTtcuth=NULL,*SWTtimeInterval=NULL,
-	   *SWTmaxiHeatStep=NULL,*SWTminiHeatStep=NULL,*SWTthk1=NULL,*SWTthk2=NULL,*SWTwpTimes=NULL;
- double *SWTlstart=NULL,*SWTlend=NULL,*SWTarrows=NULL;
- String *SWTname=NULL,*SWTmatName=NULL;
- TColor *SWTWeldColor=NULL;
+	  *SWTeles,*SWTsttEles,*SWTstpEle,*SWTfirstEle,
+	  *SWTnextEle,*SWTsnorm1,*SWTsnorm2,
+	  *SWTcircEles,*SWTedgeEles,*SWTedgeNodes,*SWTsttEleNodes,
+	  *SWThlightel,*SWTn_curr_sttEl,*SWTprevGID,*SWTreset;
+ float *SWTcurr,*SWTvolt,*SWTeff,*SWTspeed,*SWTtroom,*SWTtmelt,
+	   *SWTtcutl,*SWTtcuth,*SWTtimeInterval,
+	   *SWTmaxiHeatStep,*SWTminiHeatStep,*SWTthk1,*SWTthk2,*SWTwpTimes;
+ double *SWTlstart,*SWTlend,*SWTarrows;
+ String *SWTname,*SWTmatName;
+ TColor *SWTWeldColor;
 
+ SWTseqNum=NULL;SWTboolFlags=NULL;SWTtype=NULL;SWTshape=NULL;SWTstepInterval=NULL;
+ SWThp=NULL;SWTnsegs=NULL;SWTiselect=NULL;SWTmcr=NULL;SWTsource=NULL;SWTutil_arr=NULL;
+ SWTeles=NULL;SWTsttEles=NULL;SWTstpEle=NULL;SWTfirstEle=NULL;
+ SWTnextEle=NULL;SWTsnorm1=NULL;SWTsnorm2=NULL;
+ SWTcircEles=NULL;SWTedgeEles=NULL;SWTedgeNodes=NULL;SWTsttEleNodes=NULL;
+ SWThlightel=NULL;SWTn_curr_sttEl=NULL;SWTprevGID=NULL;SWTreset=NULL;
+ SWTcurr=NULL;SWTvolt=NULL;SWTeff=NULL;SWTspeed=NULL;SWTtroom=NULL;SWTtmelt=NULL;
+ SWTtcutl=NULL;SWTtcuth=NULL;SWTtimeInterval=NULL;
+ SWTmaxiHeatStep=NULL;SWTminiHeatStep=NULL;SWTthk1=NULL;SWTthk2=NULL;SWTwpTimes=NULL;
+ SWTlstart=NULL;SWTlend=NULL;SWTarrows=NULL;SWTname=NULL;SWTmatName=NULL;SWTWeldColor=NULL;
 
 for(in=0;in<base.nelt;in++)
   {
@@ -13884,9 +13933,10 @@ FDcomp_nGID(indat.nelt,&nGID,arGID);
 //---------------------------------------------------------------------------
 void TForm1::DelWeldParam(int VFTitemindex)
 {long i=0,dum=0;
- float *SWTcurr=NULL,*SWTvolt=NULL,*SWTeff=NULL,*SWTspeed=NULL;
- String *SWTname=NULL;
+ float *SWTcurr,*SWTvolt,*SWTeff,*SWTspeed;
+ String *SWTname;
 //honk<<VFTitemindex<<" DelWeldParamSet\n";
+ SWTcurr=NULL;SWTvolt=NULL;SWTeff=NULL;SWTspeed=NULL;SWTname=NULL;
  if(wps.nWeldParamSet>1)
    {
 	SWTname=new String[wps.nWeldParamSet-1];
@@ -14228,11 +14278,14 @@ void TForm1::DelMatPropProg(int VFTitemindex)
 // float *SWTcurr=NULL,*SWTvolt=NULL,*SWTeff=NULL,*SWTspeed=NULL;
 // String *SWTname=NULL;
 
- int isw=0,*SWMTmcr=NULL,*SWMTannjd=NULL,*SWMTved=NULL,*SWMThetjd=NULL,*SWMTnprops=NULL;
- float *SWMTcond=NULL,*SWMTheat=NULL,*SWMTden=NULL,*SWMTTi=NULL,*SWMTTa=NULL,*SWMTTm=NULL;
- String *SWMTname=NULL,*SWMTmatFileName=NULL,*SWMTSteps=NULL;
- bool *SWMTswitc=NULL;
+ int isw=0,*SWMTmcr,*SWMTannjd,*SWMTved,*SWMThetjd,*SWMTnprops;
+ float *SWMTcond,*SWMTheat,*SWMTden,*SWMTTi,*SWMTTa,*SWMTTm;
+ String *SWMTname,*SWMTmatFileName,*SWMTSteps;
+ bool *SWMTswitc;
 //honk<<VFTitemindex<<" DelMatPropSet\n";
+ SWMTmcr=NULL;SWMTannjd=NULL;SWMTved=NULL;SWMThetjd=NULL;SWMTnprops=NULL;
+ SWMTcond=NULL;SWMTheat=NULL;SWMTden=NULL;SWMTTi=NULL;SWMTTa=NULL;SWMTTm=NULL;
+ SWMTname=NULL;SWMTmatFileName=NULL;SWMTSteps=NULL;SWMTswitc=NULL;
 
  isw=1; // MaterialPropertyName test  EFP 4/15/2011
  if(wp.nWeldPass)
@@ -15531,7 +15584,7 @@ void TForm1::WeldPassEditSeqn3_public(){Screen->Cursor=crSizeAll;delete WeldPass
 //---------------------------------------------------------------------------
 void TForm1::RevProg0(long iWP)
 {int opp_arr8[6]={2,3,0,1,5,4};
- long ie=0,iside=0,ipp=0,ippp=0,ip1=0,in=0,icount=0,is=0,ip=0, *dumarr=NULL;
+ long ie=0,iside=0,ipp=0,ippp=0,ip1=0,in=0,icount=0,is=0,ip=0, *dumarr;
  float xc=0.f,yc=0.f,zc=0.f,DJD=0.f,HN[9],SN[MXNPELS],SG[NDF*MXNPELS],DJR[9];
  int gdata8[24]={0,1,5,4, //Revised to get counterclock faces
 				 1,2,6,5,
@@ -15539,6 +15592,7 @@ void TForm1::RevProg0(long iWP)
 				 3,0,4,7,
 				 3,2,1,0,
 				 4,5,6,7};
+ dumarr=NULL;
 //// This might be wrong???
 //   if(CRB_sel) //Partial
 //	 {ippp=wp.circEles[3*iWP+0];
@@ -15759,12 +15813,9 @@ void TForm1::exportCTSP2_public() //Version with load balancing  EFP 11/24/2012
 ////{wchar_t curMess0[]=L"_CTSP_input.in\n",curMess1[]=L"_CTSP_node.in\n",curMess2[]=L"_CTSP_element.in",string0[90];
 //{int ic=0,mcmlo=0,mcmup=0,mcminc=0,maxCore=128,mcm=CTSPnames->CheckEdit4;
 {int ic=0,mcmlo=0,mcmup=0,mcminc=0,maxCore=999,mcm=CTSPnames->CheckEdit4; //EFP 4/29/2013
- long i=0,j=0,ip=0,iseq=0,icount=0,itotal=0,stepsum=0, *loadBal=NULL;
+ long i=0,j=0,ip=0,iseq=0,icount=0,itotal=0,stepsum=0, *loadBal;
 //char *temps;
- char extensChar1a[]="CTSPsubd00",extensChar1b[]="CTSPsubd0",extensChar1c[]="CTSPsubd",
-//	  extensChar2[]="_CTSP_input.in",extensChar3[]="_CTSP_element.in",extensChar4[]="_CTSP_node.in",extensChar5[]="_CTSP_param.in",
-	  *fnNeed=NULL
-//	  ,*fnNeed1=NULL,*fnNeed2=NULL,*fnNeed3=NULL,*fnNeed4=NULL,*fnNeed5=NULL
+ char extensChar1a[]="CTSPsubd00",extensChar1b[]="CTSPsubd0",extensChar1c[]="CTSPsubd"
 ;
  UnicodeString fnNeedS,extensCharS1a=UnicodeString(L"CTSPsubd00"),extensCharS1b=UnicodeString(L"CTSPsubd0"),extensCharS1c=UnicodeString(L"CTSPsubd");
  char buf[3+1];
@@ -15772,6 +15823,8 @@ void TForm1::exportCTSP2_public() //Version with load balancing  EFP 11/24/2012
  wchar_t curMess0[]=L"input.in\n",curMess1[]=L"node.in\n",curMess2[]=L"element.in\n",curMess3[]=L"param.in",string0[160];
 //{wchar_t curMess0[]=L"_CTSP_input.txt\n",curMess1[]=L"_CTSP_node.txt\n",curMess2[]=L"_CTSP_element.txt",string0[90];
 ////		  Application->MessageBox(PtrToStringChars(gWsiAlias),L"Warning",MB_OK); // Visual C++ function
+ loadBal=NULL;
+
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 
 // gWsiAlias=CTSPnames->CheckEdit1;
@@ -16411,7 +16464,8 @@ Screen->Cursor=Save_Cursor;
  ifstream infile3("scratch0.txt");
  ofstream outfile3a("preWARP.txt");
 // int hcflag1=0,hcrec=3,hc_stor[500];float timesum=0.f,time1=0.f,time_stor[500];
- int hcflag1=0,hcrec=3, *hc_stor=NULL;float timesum=0.f,time1=0.f, *time_stor=NULL;
+ int hcflag1=0,hcrec=3, *hc_stor;float timesum=0.f,time1=0.f, *time_stor;
+ hc_stor=NULL;time_stor=NULL;
  hc_stor=new int[icount1];time_stor=new float[icount1];
  infile3>>time1>>hcflag1;
 //honk<<hcflag1<<" "<<time1<<" first\n";
@@ -16909,15 +16963,15 @@ void TForm1::exportWARP3D_public()
 }
 //---------------------------------------------------------------------------
 void TForm1::exportWARP3D1a_public()
-{long i=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1000;
- long isw=0;
- long ie=0,ies=0,j=0,k=0,ir=0,istart=0,iELSETtype=0,iELSETactive=0,ibrsw=0, *iELSETarr=NULL;
+{long i=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1000,isw=0,
+	  ie=0,ies=0,j=0,k=0,ir=0,istart=0,iELSETtype=0,iELSETactive=0,ibrsw=0, *iELSETarr;
  float timesave2=0.f;
 // long epStepsPerT=long(tdeltCTSP->Angle0 +0.5); //To reverse, comment this
  UnicodeString fnNeedS1,fnNeedS2,extensCharS1=UnicodeString(L".coordinates"),extensCharS2=UnicodeString(L".incid");
  wchar_t curMess0[]=L".wrp\n",    //curMess0[]=L"_ABA_input.inp\n",
 		 curMess1[]=L"_VED.dat\n",curMess2[]=L".coordinates\n",
 		 curMess3[]=L".incid\n",string0[160]; //Correction EFP 11/12/2012
+ iELSETarr=NULL;
  StringCchCopyW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess0);
  StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess1);
  StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess2);
@@ -18425,15 +18479,18 @@ delete[] m1;
 void TForm1::exportWARP4_public()
 //Routine to write *.wrp, compute_commands_all_profiles.inp, uexternal_data_file.inp, output_commands.inp
 //limlist= number of "a-b" pairs in WARP3D list output format, before writing next line
-{int solidshellsw=0,limlist=5,i=0,isw=0,mtype=0,icount=0,buffersize=0,nlist=Form7->CheckNlist, *rollcall=NULL;
- long ic=0,hinode=0,hielem=0,lolim=0,uplim=0,mdummy=0,ir=0,j=0,js=0,k=0,ies=0,iesr=0,icycle=0,irec=0,itype=0,ilast=0,istart=0,iELSETtype=0,t3=1000,ibrsw=0, *iELSETorder=NULL;
+{int solidshellsw=0,limlist=5,i=0,isw=0,mtype=0,icount=0,buffersize=0,nlist=Form7->CheckNlist, *rollcall;
+ long ic=0,hinode=0,hielem=0,lolim=0,uplim=0,mdummy=0,ir=0,j=0,js=0,k=0,ies=0,iesr=0,icycle=0,irec=0,itype=0,ilast=0,istart=0,iELSETtype=0,t3=1000,ibrsw=0, *iELSETorder;
  float tcuth=0.f,tdummy=0.f;
 // char *nameMat;
  char umat[5+1]="_umat",chb[1+1]=" ",chendl[1+1]="\0";
 
 // String umat=L"_umat", *sArr=NULL;
- String *sArr=NULL;
+ String *sArr;
  UnicodeString fnNeedS1,extensCharS1=UnicodeString(L".wrp");
+
+ rollcall=NULL;iELSETorder=NULL;sArr=NULL;
+
 // char longo1[2],longo2[3],longo3[4];
 //
 

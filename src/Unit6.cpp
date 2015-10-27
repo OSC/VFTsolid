@@ -86,7 +86,8 @@ void TForm6::setFacetArea(float s)
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm6::Button1Click(TObject *Sender)
-{Close();Form1->QElemTRASH_public();
+{//Close();
+ Form1->QElemTRASH_public();
 }
 //---------------------------------------------------------------------------
 
