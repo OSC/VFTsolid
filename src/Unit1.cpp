@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59_64 2015";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59a_64 2015";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -16235,7 +16235,7 @@ void TForm1::export_CTSP_INPUTp1(float overlap) //Version with mirror file  EFP 
 // Version for use with mcm only, which writes a preemptive time.out  EFP 6/26/2012
 {long i=0,k=0,icount=0,icount1=0,steptotal=0,sttEles_size=0,eles_size=0,iseq=0,mstep=0,medge=0,mseg=0,maxelp=0,
 	  ipp=0,in=0,ie1=0,iside1=0,is1=0,j=0,max1=0,lastStepIntv=0; //This line junk EFP 6/16/2012
- float timeWeld=0.f,lasttimerec=0.f,highestTmelt=0.f;int solidshellsw=0; //0=solid, 1=shell  EFP 8/19/2012
+ float biasintv=1.5f,timeWeld=0.f,lasttimerec=0.f,highestTmelt=0.f;int solidshellsw=0; //0=solid, 1=shell  EFP 8/19/2012
  int gdata8[24]={0,1,5,4, //Revised to get counterclock faces
 				 1,2,6,5,
 				 2,3,7,6,
@@ -16244,7 +16244,7 @@ void TForm1::export_CTSP_INPUTp1(float overlap) //Version with mirror file  EFP 
 				 4,5,6,7},
 	  opp_arr8[6]={2,3,0,1,5,4};
  float dist=0.f,xc=0.f,yc=0.f,zc=0.f;
- double heritageTime=0.f,delt=0.f,deltc=0.f,sumdeltc=0.f,echo=0.f;
+ double heritageTime=0.f,delt=0.f,deltc=0.f,echo=0.f;
 // char extensChar[]="_CTSP_input.in";char *fnNeed=new char[strlen(gVFTnameStem)+strlen(extensChar)+1];
 // StringCchCopy(fnNeed,strlen(gVFTnameStem)+strlen(extensChar)+1,gVFTnameStem);StringCchCat(fnNeed,strlen(gVFTnameStem)+strlen(extensChar)+1,extensChar);
 // ofstream viewfile(fnNeed);delete [] fnNeed;
@@ -16428,15 +16428,25 @@ else {
 //heritageTime=heritageTime+a0;a0=a0*1.2;
 //outfile2<<setw(12)<<max1<<setw(15)<<scientific<<heritageTime<<"\n";max1++;
 //										 }
-	  sumdeltc=0.f;
-	  for(j=0;j<wp.stepInterval[k]-1;j++){ //EFP 1/18/2013
+//	  sumdeltc=0.f;
+//	  for(j=0;j<wp.stepInterval[k]-1;j++){ //EFP 1/18/2013
+//deltc=wp.timeInterval[k]*
+//  log((wp.stepInterval[k]-float(j)+float(j)*0.0353f)/(wp.stepInterval[k]-float(j)-1.f+float(j+1)*0.0353f))/
+//  log(1.f/0.0353f);
+//sumdeltc=sumdeltc+deltc;
+//heritageTime=heritageTime+wp.timeInterval[k]*
+//  log((wp.stepInterval[k]-float(j)+float(j)*0.0353f)/(wp.stepInterval[k]-float(j)-1.f+float(j+1)*0.0353f))/
+//  log(1.f/0.0353f);
+//outfile2<<setw(12)<<max1<<setw(15)<<scientific<<heritageTime<<"\n";max1++;
+////outfile3<<deltc<<" "<<3<<"\n";
+//outfile3<<heritageTime<<" "<<3<<"\n";
+//										 }
+
+	  for(j=0;j<wp.stepInterval[k]-1;j++){ //EFP 11/05/2015
 deltc=wp.timeInterval[k]*
-  log((wp.stepInterval[k]-float(j)+float(j)*0.0353f)/(wp.stepInterval[k]-float(j)-1.f+float(j+1)*0.0353f))/
-  log(1.f/0.0353f);
-sumdeltc=sumdeltc+deltc;
-heritageTime=heritageTime+wp.timeInterval[k]*
-  log((wp.stepInterval[k]-float(j)+float(j)*0.0353f)/(wp.stepInterval[k]-float(j)-1.f+float(j+1)*0.0353f))/
-  log(1.f/0.0353f);
+(std::pow(double(biasintv),double(j+1-wp.stepInterval[k]))-std::pow(double(biasintv), -double(wp.stepInterval[k])))/
+(1.f-std::pow(double(biasintv),-double(wp.stepInterval[k])));
+heritageTime=echo+deltc;
 outfile2<<setw(12)<<max1<<setw(15)<<scientific<<heritageTime<<"\n";max1++;
 //outfile3<<deltc<<" "<<3<<"\n";
 outfile3<<heritageTime<<" "<<3<<"\n";
