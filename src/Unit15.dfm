@@ -33,7 +33,7 @@ object Form15: TForm15
   object Edit1: TEdit
     Left = 104
     Top = 8
-    Width = 65
+    Width = 82
     Height = 21
     TabOrder = 0
     Text = 'Edit1'
@@ -171,10 +171,6 @@ object Form15: TForm15
     object TabSheet2: TTabSheet
       Caption = 'Welding Parameters'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label9: TLabel
         Left = 3
         Top = 8

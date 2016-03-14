@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59a_64 2015";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59b_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -1604,6 +1604,9 @@ for(j=8;j<int(strlen(cht))-4;j++){
 
 
 		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+								   (cht[ 9]=='O' || cht[ 9]=='o') && (cht[10]=='P' || cht[10]=='p') && (cht[11]=='E' || cht[11]=='e') && (cht[12]=='R' || cht[12]=='r') && (cht[13]=='A' || cht[13]=='a') && (cht[14]=='T' || cht[14]=='t'))
+				  {while (ntape.peek()!= '*')ntape.getline(cht,200-1);} // *ELEMENT OPERATOR OUTPUT
+		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
 								   (cht[ 9]=='O' || cht[ 9]=='o') && (cht[10]=='U' || cht[10]=='u') && (cht[11]=='T' || cht[11]=='t') && (cht[12]=='P' || cht[12]=='p') && (cht[13]=='U' || cht[13]=='u') && (cht[14]=='T' || cht[14]=='t'))
 				  {while (ntape.peek()!= '*')ntape.getline(cht,200-1);} // *ELEMENT OUTPUT
 		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
@@ -2009,6 +2012,9 @@ for(j=8;j<int(strlen(cht))-4;j++){
 					  while (ntape1.peek()!= '*');
 					 }
 						}
+		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+								   (cht[ 9]=='O' || cht[ 9]=='o') && (cht[10]=='P' || cht[10]=='p') && (cht[11]=='E' || cht[11]=='e') && (cht[12]=='R' || cht[12]=='r') && (cht[13]=='A' || cht[13]=='a') && (cht[14]=='T' || cht[14]=='t'))
+				  {while (ntape1.peek()!= '*')ntape1.getline(cht,200-1);} // *ELEMENT OPERATOR OUTPUT
 		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
 								   (cht[ 9]=='O' || cht[ 9]=='o') && (cht[10]=='U' || cht[10]=='u') && (cht[11]=='T' || cht[11]=='t') && (cht[12]=='P' || cht[12]=='p') && (cht[13]=='U' || cht[13]=='u') && (cht[14]=='T' || cht[14]=='t'))
 				  {while (ntape1.peek()!= '*')ntape1.getline(cht,200-1);} // *ELEMENT OUTPUT
@@ -3635,7 +3641,7 @@ else {k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGr
 ////
 								 }
 						   }
-				   else {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);} //Read+ignore unacceptable ELSET
+				   else {while (ntape1.peek()!= '*'){ntape1.getline(cht,200-1);} //Read+ignore unacceptable ELSET
 						}
 				  }
 ///////////////////////////
@@ -15259,7 +15265,7 @@ void __fastcall TForm1::CreateWPPartLengthPartWidthExecute(TObject *Sender){crea
 void TForm1::create_new_weld(int isw)//TBD: Move base.nop1/etc tests to above calling routines  EFP 3/22/2012
 {long dum=0,ir=0;
 // char string0[40],currMess[]=" MAX_WELDPASSES exceeded.";
- wchar_t curMess0[]=L"weldpass",string1[11];  //TEST FOR EXISTING FORM
+ wchar_t curMess0[]=L"weldpass",string1[17];  //TEST FOR EXISTING FORM
  wp.CreateWPassMode=1;
  wp.PRECORD=wp.nWeldPass;
 /////////////
@@ -15389,8 +15395,10 @@ CreateLinWeldPass->Label7->Caption=L"Plate1 normal";
 CreateLinWeldPass->Label8->Caption=L"Plate2 normal";
 //CreateLinWeldPass->CheckEdit1=L"****";
 // _ltow(wp.nWeldPass+1,string1,10);
- _ltow(wp.highest+1,string1,10);
-StringCchCatW(curMess0,11,string1);CreateLinWeldPass->CheckEdit1=curMess0;
+
+ _ltow(wp.highest+1,string1,17-1);
+StringCchCatW(curMess0,17,string1);
+CreateLinWeldPass->CheckEdit1=curMess0;
 
 CreateLinWeldPass->PageControl1->TabIndex=2;
 /////////////////////// EFP 1/03/2011
