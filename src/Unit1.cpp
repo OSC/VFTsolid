@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59b_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59c_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -3759,13 +3759,7 @@ void __fastcall TForm1::ImportVFTrExecute(TObject *Sender)
 //String *efpAnsi=NULL;
 //String *SWPTname=NULL;
 _TCHAR *efpChar, *texasbuf;
- wchar_t curMess0[]=L"WeldParam",string1[15],curMess1[16],curMess2[]=L"Reduced from ",curMess3[]=L" to ",string0[32];
-// wchar_t string0[40],curMess0[]=L"WeldParam",string1[15];
-//wchar_t curMess0[]=L"WeldParam",string1[15];
-// _ltow(wps.nWeldParamSet+1,string1,10);
-// StringCchCatW(curMess0,39+1,string1); //Length of destination curMess0 is provided.
-// wps.name[wps.nWeldParamSet]=curMess0;
-
+ wchar_t curMess0[]=L"WeldParam",curMess1[16],curMess2[]=L"Reduced from ",curMess3[]=L" to ",string0[32];
 //String *tw_groupsname=NULL;
  revnode_map=NULL;temp_cht=NULL;efpChar=NULL;
 
@@ -13453,12 +13447,7 @@ void __fastcall TForm1::WeldParamExecute(TObject *Sender)
 			 wps.eff[wps.nWeldParamSet]=0.75f;
 			 wps.speed[wps.nWeldParamSet]=5.f;
 			}
-// _ltow(wps.nWeldParamSet+1,string1,10);
- _ltow(wps.highest+1,string1,10);
-// honk<<string1[].t_str()<<" string1\n";
-// honk<<curMess0.t_str()<<" curMess0\n";
- StringCchCatW(curMess0,39+1,string1); //Length of destination curMess0 is provided.
- wps.name[wps.nWeldParamSet]=curMess0;
+ wps.name[wps.nWeldParamSet]=curMess0+IntToStr(__int64(wps.highest+1));
 	   CreateWeldingParamSet=new TForm22(0,this);
 
 
@@ -13467,7 +13456,7 @@ void __fastcall TForm1::WeldParamExecute(TObject *Sender)
 	   CreateWeldingParamSet->Label1->Caption=L"Welding Parameter Set Name";
 	   CreateWeldingParamSet->Label2->Caption=L"Welding Current (Amp):";
 	   CreateWeldingParamSet->Label3->Caption=L"Welding Voltage (Volt):";
-	   CreateWeldingParamSet->Label4->Caption=L"Arc Efficiency:";
+	   CreateWeldingParamSet->Label4->Caption=L"Arc Eff. (MIG 0.75,TIG 0.45):";
 	   CreateWeldingParamSet->Label5->Caption=L"Torch Speed mm/s:";
 	   CreateWeldingParamSet->Button1->Caption=L"Create";
 	   CreateWeldingParamSet->Button2->Caption=L"Cancel";
@@ -14997,7 +14986,7 @@ void __fastcall TForm1::DeleteWeldParamExecute(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::MatPropertiesExecute(TObject *Sender)
 {long dum=0;
- wchar_t curMess0[]=L"MatProp",string1[15];
+ wchar_t curMess0[]=L"MatProp";
  if(base.nop1)
    {if(wps.nWeldParamSet)
 	  {FDdynmem_manage(7,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum,dum);
@@ -15046,10 +15035,7 @@ void __fastcall TForm1::MatPropertiesExecute(TObject *Sender)
 //			 wms.Steps[wms.nMatPropSet]=L"0";
 			 wms.Steps[wms.nMatPropSet]=L"****";//EFP 9/23/2011
 			}
-// _ltow(wms.nMatPropSet+1,string1,10);
- _ltow(wms.highest+1,string1,10);
- StringCchCatW(curMess0,39+1,string1);
- wms.name[wms.nMatPropSet]=curMess0;
+ wms.name[wms.nMatPropSet]=curMess0+IntToStr(__int64(wms.highest+1));
  //	   CreateMatPropSet=new TForm16(this);
 	   Form21=new TForm21(0,this);
 
@@ -15265,7 +15251,7 @@ void __fastcall TForm1::CreateWPPartLengthPartWidthExecute(TObject *Sender){crea
 void TForm1::create_new_weld(int isw)//TBD: Move base.nop1/etc tests to above calling routines  EFP 3/22/2012
 {long dum=0,ir=0;
 // char string0[40],currMess[]=" MAX_WELDPASSES exceeded.";
- wchar_t curMess0[]=L"weldpass",string1[17];  //TEST FOR EXISTING FORM
+ wchar_t curMess0[]=L"weldpass";  //TEST FOR EXISTING FORM
  wp.CreateWPassMode=1;
  wp.PRECORD=wp.nWeldPass;
 /////////////
@@ -15396,9 +15382,7 @@ CreateLinWeldPass->Label8->Caption=L"Plate2 normal";
 //CreateLinWeldPass->CheckEdit1=L"****";
 // _ltow(wp.nWeldPass+1,string1,10);
 
- _ltow(wp.highest+1,string1,17-1);
-StringCchCatW(curMess0,17,string1);
-CreateLinWeldPass->CheckEdit1=curMess0;
+CreateLinWeldPass->CheckEdit1=curMess0+IntToStr(__int64(wp.highest+1));
 
 CreateLinWeldPass->PageControl1->TabIndex=2;
 /////////////////////// EFP 1/03/2011

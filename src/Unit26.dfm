@@ -4,7 +4,7 @@ object Form26: TForm26
   BorderIcons = []
   Caption = 'Form26'
   ClientHeight = 206
-  ClientWidth = 141
+  ClientWidth = 171
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,7 +18,7 @@ object Form26: TForm26
   object ListBox1: TListBox
     Left = 8
     Top = 8
-    Width = 121
+    Width = 155
     Height = 153
     ItemHeight = 13
     TabOrder = 0
@@ -34,7 +34,7 @@ object Form26: TForm26
     OnClick = Button1Click
   end
   object Button2: TButton
-    Left = 72
+    Left = 106
     Top = 176
     Width = 57
     Height = 25

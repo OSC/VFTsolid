@@ -116,6 +116,12 @@ void __fastcall TForm22::Button1Click(TObject *Sender)
 ////			   Close();
 //			  }
 //		}
+//***********************
+ int buffersize=WideCharToMultiByte(CP_UTF8,0,Edit1->Text.w_str(), -1,NULL,0,NULL,NULL);
+ char* m=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,Edit1->Text.w_str(), -1,m,buffersize,NULL,NULL);
+ if(strchr(m,' ') != NULL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit1->Text.w_str(),L"Repeat: inadmissible space\n in WeldParam name",MB_OK);}
+ delete m;m=NULL;
+//***********************
  if(isw)Form1->WeldParam_public();
 }
 //---------------------------------------------------------------------------

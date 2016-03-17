@@ -358,7 +358,7 @@ void __fastcall TForm21::Button2Click(TObject *Sender)
 */
 //---------------------------------------------------------------------------
 void __fastcall TForm21::Button2Click(TObject *Sender)
-{int isw=1,j=0,icount=0,bufferSize=0,nrc=0;long larr[11];float TOL=0.000001f,darr[11];
+{int isw=1,j=0,k=0,icount=0,bufferSize=0,nrc=0;long larr[11];float TOL=0.000001f,darr[11];
  UnicodeString mess01=L"Zero thermal conductivity ",mess02=L"Neg/zero thermal conductivity ",
 			   mess03=L"Zero specific heat ",mess04=L"Neg/zero specific heat ",
 			   mess05=L"Zero density ",mess06=L"Neg/zero density ",
@@ -429,6 +429,36 @@ void __fastcall TForm21::Button2Click(TObject *Sender)
  if(Edit9->Text==L"****"){isw=0;extern PACKAGE void __fastcall Beep(void);
 						  ShowMessage(Label10->Caption +L" "+ Edit9->Text + L" must be a filename");//Note Label/Edit noncoincidence
 						 }
+ else {bufferSize=WideCharToMultiByte(CP_UTF8,0,Edit9->Text.w_str(), -1,NULL,0,NULL,NULL);
+	   char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,Edit9->Text.w_str(), -1,m,bufferSize,NULL,NULL);
+	   if(strchr(m,'-') != NULL){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit9->Text.w_str(),L"Warning: inadmissible hyphen if using WARP3D   ",MB_OK);}
+//////////// Warn about WARP3D-unacceptable file name (e.g. 1e650new.dat) with number in first.
+	   k=1;
+	   if     (m[0]=='A' || m[0]=='a' || m[0]=='B' || m[0]=='b' || m[0]=='C' || m[0]=='c')k=0;
+	   else if(m[0]=='D' || m[0]=='d' || m[0]=='E' || m[0]=='e' || m[0]=='F' || m[0]=='f')k=0;
+	   else if(m[0]=='G' || m[0]=='g' || m[0]=='H' || m[0]=='h' || m[0]=='I' || m[0]=='i')k=0;
+	   else if(m[0]=='J' || m[0]=='j' || m[0]=='K' || m[0]=='k' || m[0]=='L' || m[0]=='l')k=0;
+	   else if(m[0]=='M' || m[0]=='m' || m[0]=='N' || m[0]=='n' || m[0]=='O' || m[0]=='o')k=0;
+	   else if(m[0]=='P' || m[0]=='p' || m[0]=='Q' || m[0]=='q' || m[0]=='R' || m[0]=='r')k=0;
+	   else if(m[0]=='S' || m[0]=='s' || m[0]=='T' || m[0]=='t' || m[0]=='U' || m[0]=='u')k=0;
+	   else if(m[0]=='V' || m[0]=='v' || m[0]=='W' || m[0]=='w' || m[0]=='X' || m[0]=='x')k=0;
+	   else if(m[0]=='Y' || m[0]=='y' || m[0]=='Z' || m[0]=='z')k=0;
+	   if(k){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit9->Text.w_str(),L"Warning: begin material filename with a letter",MB_OK);
+			}
+	   else {
+//***********************
+ if(strchr(m,' ') != NULL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit9->Text.w_str(),L"Repeat: inadmissible space\n in file name",MB_OK);}
+//***********************
+			}
+        delete m;m=NULL;
+	   }
+//***********************
+ bufferSize=WideCharToMultiByte(CP_UTF8,0,Edit1->Text.w_str(), -1,NULL,0,NULL,NULL);
+ char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,Edit1->Text.w_str(), -1,m,bufferSize,NULL,NULL);
+ if(strchr(m,' ') != NULL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit1->Text.w_str(),L"Repeat: inadmissible space\n in MatProps name",MB_OK);}
+ delete m;m=NULL;
+//***********************
+
  if(CheckBox1->Checked){
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 //						icount=iactive=0;        //THIS IS ALL WRONG

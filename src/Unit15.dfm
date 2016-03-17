@@ -1,7 +1,7 @@
 object Form15: TForm15
   Left = 0
   Top = 102
-  ActiveControl = Edit21
+  ActiveControl = ComboBox1
   BorderIcons = []
   ClientHeight = 591
   ClientWidth = 420

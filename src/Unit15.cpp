@@ -61,46 +61,46 @@ long TForm15::getEdit2(){
 	 }
  catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit2->Text).w_str(),L"Reenter +integer",MB_OK);return 0;}
 						  }
-//---------------------------------------------------------------------------
-double TForm15::getEdit9(){
- UnicodeString mess1=L"Zero weld current ",mess2=L"Negative/zero weld current ",mess3=L"Inadmissable weld current ";
- try {StrToFloat(Edit9->Text);
-	  if(Edit9->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit9->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
-	  else if(StrToFloat(Edit9->Text)>0.000001f)return StrToFloat(Edit9->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit9->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
-	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit9->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
-						  }
-//---------------------------------------------------------------------------
-double TForm15::getEdit10(){
- UnicodeString mess1=L"Zero weld voltage ",mess2=L"Negative/zero weld voltage ",mess3=L"Inadmissable weld voltage ";
- try {StrToFloat(Edit10->Text);
-	  if(Edit10->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit10->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
-	  else if(StrToFloat(Edit10->Text)>0.000001f)return StrToFloat(Edit10->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit10->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
-	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit10->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
-						  }
-//---------------------------------------------------------------------------
-double TForm15::getEdit11(){
- UnicodeString mess1=L"Zero arc efficiency ",mess2=L"Arc efficiency out-of-range ",mess3=L"Inadmissable arc efficiency ";
- try {StrToFloat(Edit11->Text);
-	  if(Edit11->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit11->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
-	  else if(StrToFloat(Edit11->Text)>0.000001f && StrToFloat(Edit11->Text)<=1.f)return StrToFloat(Edit11->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit11->Text).w_str(),L"Reenter 0-to-1",MB_OK);return 0.f;}
-	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit11->Text).w_str(),L"Reenter 0-to-1",MB_OK);return 0.f;}
-						  }
-//---------------------------------------------------------------------------
-double TForm15::getEdit12(){
- UnicodeString mess1=L"Zero torch speed ",mess2=L"Negative/zero torch speed ",mess3=L"Inadmissable torch speed ";
- try {StrToFloat(Edit12->Text);
-	  if(Edit12->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit12->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
-	  else if(StrToFloat(Edit12->Text)>0.000001f)return StrToFloat(Edit12->Text);
-	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit12->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
-	 }
- catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit12->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
-						  }
+////---------------------------------------------------------------------------
+//double TForm15::getEdit9(){
+// UnicodeString mess1=L"Zero weld current ",mess2=L"Negative/zero weld current ",mess3=L"Inadmissable weld current ";
+// try {StrToFloat(Edit9->Text);
+//	  if(Edit9->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit9->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
+//	  else if(StrToFloat(Edit9->Text)>0.000001f)return StrToFloat(Edit9->Text);
+//	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit9->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
+//	 }
+// catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit9->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
+//						  }
+////---------------------------------------------------------------------------
+//double TForm15::getEdit10(){
+// UnicodeString mess1=L"Zero weld voltage ",mess2=L"Negative/zero weld voltage ",mess3=L"Inadmissable weld voltage ";
+// try {StrToFloat(Edit10->Text);
+//	  if(Edit10->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit10->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
+//	  else if(StrToFloat(Edit10->Text)>0.000001f)return StrToFloat(Edit10->Text);
+//	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit10->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
+//	 }
+// catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit10->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
+//						  }
+////---------------------------------------------------------------------------
+//double TForm15::getEdit11(){
+// UnicodeString mess1=L"Zero arc efficiency ",mess2=L"Arc efficiency out-of-range ",mess3=L"Inadmissable arc efficiency ";
+// try {StrToFloat(Edit11->Text);
+//	  if(Edit11->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit11->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
+//	  else if(StrToFloat(Edit11->Text)>0.000001f && StrToFloat(Edit11->Text)<=1.f)return StrToFloat(Edit11->Text);
+//	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit11->Text).w_str(),L"Reenter 0-to-1",MB_OK);return 0.f;}
+//	 }
+// catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit11->Text).w_str(),L"Reenter 0-to-1",MB_OK);return 0.f;}
+//						  }
+////---------------------------------------------------------------------------
+//double TForm15::getEdit12(){
+// UnicodeString mess1=L"Zero torch speed ",mess2=L"Negative/zero torch speed ",mess3=L"Inadmissable torch speed ";
+// try {StrToFloat(Edit12->Text);
+//	  if(Edit12->Text==L"0"){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess1+Edit12->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
+//	  else if(StrToFloat(Edit12->Text)>0.000001f)return StrToFloat(Edit12->Text);
+//	  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess2+Edit12->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
+//	 }
+// catch (const EConvertError &E){extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess3+Edit12->Text).w_str(),L"Reenter +float",MB_OK);return 0.f;}
+//						  }
 //---------------------------------------------------------------------------
 double TForm15::getEdit13(){
 UnicodeString mess1=L"Inadmissable room temperature ";
@@ -253,49 +253,49 @@ void __fastcall TForm15::Button1Click(TObject *Sender)
 {int isw=1,testTflag=1,heattimeflag=1;float TOL=0.000001f,roomT=0.f,meltT=0.f,lowcutT=0.f,preheatT=0.f,maxheattime=0.f,minheattime=0.f;
  UnicodeString mess1=L"Zero weld current ",mess2=L"Negative/zero weld current ",mess4=L"Negative/zero weld voltage ",
 			   mess5=L"Zero arc efficiency ",mess6=L"Arc efficiency out-of-range ",mess7=L"Zero torch speed ",mess8=L"Negative/zero torch speed ";
- try {StrToFloat(Edit9->Text);
-	  if(Edit9->Text==L"0"){isw=0;
-							extern PACKAGE void __fastcall Beep(void);
-//							Application->MessageBox(Edit9->Text.w_str(),L"Zero weld current: Reenter a positive floating point",MB_OK);
-							Application->MessageBoxW((mess1+Edit9->Text).w_str(),L"Reenter +float",MB_OK);
-						   }
-	  else if(StrToFloat(Edit9->Text)<=0.000001f){isw=0;
-												  extern PACKAGE void __fastcall Beep(void);
-												  Application->MessageBox((mess2+Edit9->Text).w_str(),L"Reenter +float",MB_OK);
-												 }
-	 }
- catch (EConvertError &E) {isw=0;
-						   extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label10->Caption +L" "+ Edit9->Text + L" must be positive floating-point");
-						  }
- try {StrToFloat(Edit10->Text);
-	  if(Edit10->Text==L"0"){isw=0;
-							 extern PACKAGE void __fastcall Beep(void);
-//							 Application->MessageBox(Edit10->Text.w_str(),L"Zero weld voltage: Reenter a positive floating point",MB_OK);
-							 ShowMessage(Edit10->Text+L" weld voltage: Reenter a positive floating point");
-							}
-	  else if(StrToFloat(Edit10->Text)<=0.000001f){isw=0;
-												   extern PACKAGE void __fastcall Beep(void);
-												   Application->MessageBox((mess4+Edit10->Text).w_str(),L"Reenter +float",MB_OK);
-												  }
-	 }
- catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label11->Caption +L" "+ Edit10->Text + L" must be positive floating-point");
-						  }
- try {StrToFloat(Edit11->Text);
-	  if(Edit11->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess5+Edit11->Text).w_str(),L"Reenter +float",MB_OK);}
-	  else if(StrToFloat(Edit11->Text)<=0.000001f || StrToFloat(Edit11->Text)>1.f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess6+Edit11->Text).w_str(),L"Reenter 0-to-1",MB_OK);}
-	 }
- catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label12->Caption +L" "+ Edit11->Text + L" must be 0-to-1 floating-point");
-						  }
- try {StrToFloat(Edit12->Text);
-	  if(Edit12->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess7+Edit12->Text).w_str(),L"Reenter +float",MB_OK);}
-	  else if(StrToFloat(Edit12->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess8+Edit12->Text).w_str(),L"Reenter +float",MB_OK);}
-	 }
- catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
-						   ShowMessage(Label13->Caption +L" "+ Edit12->Text + L" must be positive floating-point");
-						  }
+// try {StrToFloat(Edit9->Text);
+//	  if(Edit9->Text==L"0"){isw=0;
+//							extern PACKAGE void __fastcall Beep(void);
+////							Application->MessageBox(Edit9->Text.w_str(),L"Zero weld current: Reenter a positive floating point",MB_OK);
+//							Application->MessageBoxW((mess1+Edit9->Text).w_str(),L"Reenter +float",MB_OK);
+//						   }
+//	  else if(StrToFloat(Edit9->Text)<=0.000001f){isw=0;
+//												  extern PACKAGE void __fastcall Beep(void);
+//												  Application->MessageBox((mess2+Edit9->Text).w_str(),L"Reenter +float",MB_OK);
+//												 }
+//	 }
+// catch (EConvertError &E) {isw=0;
+//						   extern PACKAGE void __fastcall Beep(void);
+//						   ShowMessage(Label10->Caption +L" "+ Edit9->Text + L" must be positive floating-point");
+//						  }
+// try {StrToFloat(Edit10->Text);
+//	  if(Edit10->Text==L"0"){isw=0;
+//							 extern PACKAGE void __fastcall Beep(void);
+////							 Application->MessageBox(Edit10->Text.w_str(),L"Zero weld voltage: Reenter a positive floating point",MB_OK);
+//							 ShowMessage(Edit10->Text+L" weld voltage: Reenter a positive floating point");
+//							}
+//	  else if(StrToFloat(Edit10->Text)<=0.000001f){isw=0;
+//												   extern PACKAGE void __fastcall Beep(void);
+//												   Application->MessageBox((mess4+Edit10->Text).w_str(),L"Reenter +float",MB_OK);
+//												  }
+//	 }
+// catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
+//						   ShowMessage(Label11->Caption +L" "+ Edit10->Text + L" must be positive floating-point");
+//						  }
+// try {StrToFloat(Edit11->Text);
+//	  if(Edit11->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess5+Edit11->Text).w_str(),L"Reenter +float",MB_OK);}
+//	  else if(StrToFloat(Edit11->Text)<=0.000001f || StrToFloat(Edit11->Text)>1.f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess6+Edit11->Text).w_str(),L"Reenter 0-to-1",MB_OK);}
+//	 }
+// catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
+//						   ShowMessage(Label12->Caption +L" "+ Edit11->Text + L" must be 0-to-1 floating-point");
+//						  }
+// try {StrToFloat(Edit12->Text);
+//	  if(Edit12->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess7+Edit12->Text).w_str(),L"Reenter +float",MB_OK);}
+//	  else if(StrToFloat(Edit12->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox((mess8+Edit12->Text).w_str(),L"Reenter +float",MB_OK);}
+//	 }
+// catch (EConvertError &E) {isw=0;extern PACKAGE void __fastcall Beep(void);
+//						   ShowMessage(Label13->Caption +L" "+ Edit12->Text + L" must be positive floating-point");
+//						  }
 
  try {StrToFloat(Edit13->Text);
 	  if(Edit13->Text==L"0")roomT=0.f;

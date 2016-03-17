@@ -102,7 +102,8 @@ private:	// User declarations
 			getEdit19(),
 			getISEL(),getFunc(),getType(),getShape(),getMatName(),getWeldParName();
 		long Pl1norm,Pl2norm,getEdit2(),getEdit23(),getEdit24();
-		double getEdit9(),getEdit10(),getEdit11(),getEdit12(),getEdit13(),getEdit14(),getEdit15(),getEdit16(),
+		double //getEdit9(),getEdit10(),getEdit11(),getEdit12(),
+			   getEdit13(),getEdit14(),getEdit15(),getEdit16(),
 			   getEdit17(),getEdit18(),getEdit20(),getEdit21(),getEdit22();
 		void setEdit1(String),setEdit2(long),setEdit9(double),setEdit10(double),setEdit11(double),setEdit12(double),
 			 setEdit13(double),setEdit14(double),setEdit15(double),setEdit16(double),setEdit17(double),setEdit18(double),

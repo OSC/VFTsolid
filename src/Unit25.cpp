@@ -31,19 +31,27 @@ int TForm25::getIsel(){return isel;}
 void TForm25::setIsel(int s){isel=s;}
 //---------------------------------------------------------------------------
 void __fastcall TForm25::Button1Click(TObject *Sender)
-{
+{long isw=1;
 // if(isel==3){Form1->exportCTSP1_public();Close();} //Emergency Close() EFP 4/19/2010
 // else if(isel==2)Form1->exportCTSP_public();
 // else if(isel==1){Form1->exportABAQUS1_public();Close();} //Emergency Close() EFP 4/19/2010
 
 //// if(isel==3){Form1->exportWARP3D1_public();Close();} //Emergency Close() EFP 12/16/2012
 // if(isel==3){Form1->exportWARP3D1a_public();Close();} //Emergency Close() EFP 12/16/2012
+//***********************
+ int buffersize=WideCharToMultiByte(CP_UTF8,0,Edit1->Text.w_str(), -1,NULL,0,NULL,NULL);
+ char* m=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,Edit1->Text.w_str(), -1,m,buffersize,NULL,NULL);
+ if(strchr(m,' ') != NULL){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit1->Text.w_str(),L"Repeat: inadmissible space\n in file name",MB_OK);}
+ delete m;m=NULL;
+//***********************
+ if(isw==1){
  if(isel==3){Form1->exportWARP3D1a_public();Close();} //Emergency Close() EFP 12/16/2012
  else if(isel==2){Form1->exportWARP3D_public();
 //                  Close();
 				 } //EFP 12/16/2012
 // else if(isel==1){Form1->exportABAQUS1_public();Close();} //Emergency Close() EFP 4/19/2010
 // else     Form1->exportABAQUS_public();
+		   }
 }
 //---------------------------------------------------------------------------
 //void __fastcall TForm25::Button2Click(TObject *Sender){Close();}
