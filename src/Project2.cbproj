@@ -135,6 +135,7 @@
         <TASM_Debugging>None</TASM_Debugging>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <ILINK_DelayLoadDll>bluetoothapis.dll;bthprops.dll;$(ILINK_DelayLoadDll)</ILINK_DelayLoadDll>
         <LinkPackageStatics>rtl.lib;vcl.lib;vclimg.lib;vclx.lib</LinkPackageStatics>
         <DynamicRTL>false</DynamicRTL>
         <BCC_PCHUsage>None</BCC_PCHUsage>
