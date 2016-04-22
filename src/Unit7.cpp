@@ -24,12 +24,13 @@ void __fastcall TForm7::Button1Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm7::ListBox1Click(TObject *Sender)
-{LB1ItemIndex=ListBox1->ItemIndex;
- iClickOrder=1;
+{if(ListBox1->ItemIndex> -1 && ListBox1->ItemIndex< ListBox1->Items->Count){LB1ItemIndex=ListBox1->ItemIndex;iClickOrder=1;}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click again",L"Selection unknown",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm7::ListBox3Click(TObject *Sender)
-{if(iClickOrder)
+{if(ListBox3->ItemIndex> -1 && ListBox3->ItemIndex< ListBox3->Items->Count){
+ if(iClickOrder)
    {iClickOrder=0;
 	ListBox2->ItemIndex=LB1ItemIndex;
 ////ListBox2->AddItem(ListBox3->Items(ListBox3->ItemIndex,this));
@@ -37,6 +38,8 @@ void __fastcall TForm7::ListBox3Click(TObject *Sender)
 	ListBox2->Items->Strings[ListBox2->ItemIndex]=ListBox3->Items->Strings[ListBox3->ItemIndex];
    }
  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"First click on Entity; then click Avaliable Material.",L"Incorrect",MB_OK);}
+                                                                           }
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click again",L"Selection unknown",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm7::ListBox2Click(TObject *Sender)

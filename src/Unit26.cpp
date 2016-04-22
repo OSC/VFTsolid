@@ -20,8 +20,8 @@ int TForm26::getItemIndex(){return ListBox1->ItemIndex;}
 int TForm26::getISEL(){return F26_sel;}
 //---------------------------------------------------------------------------
 void __fastcall TForm26::Button1Click(TObject *Sender)
-{
-	Form1->VFTlistbox_public();
+{if(ListBox1->ItemIndex> -1 && ListBox1->ItemIndex <ListBox1->Items->Count)Form1->VFTlistbox_public();
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click an item",L"Selection unknown:",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm26::Button2Click(TObject *Sender)

@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59c_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59d_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -13419,7 +13419,7 @@ Screen->Cursor=crSizeAll;
 //---------------------------------------------------------------------------
 void __fastcall TForm1::WeldParamExecute(TObject *Sender)
 {long dum=0;
- wchar_t curMess0[]=L"WeldParam",string1[15];
+ wchar_t curMess0[]=L"WeldParam";
  if(base.nop1)
 //   {if(wps.nWeldParamSet<MAX_WELDPARSET)
    {if(!CreateWeldingParamSet)

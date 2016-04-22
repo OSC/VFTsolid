@@ -583,7 +583,7 @@ void __fastcall TForm21::RadioButton3Click(TObject *Sender){RB1_count=0;
 //---------------------------------------------------------------------------
 void __fastcall TForm21::RadioButton4Click(TObject *Sender){RB1_count=0;
 // Button1->Caption=L"Choose Mechanical Property File for Combined Hardening (linear)...";
- Button1->Caption=L"Choose Mechanical Property File for Kinematic Hardening (linear)...";
+ Button1->Caption=L"Choose Mechanical Property File for Kinematic Hardening (nonlinear)...";
 														   }
 //---------------------------------------------------------------------------
 void __fastcall TForm21::RadioButton5Click(TObject *Sender){RB1_count=0;

@@ -17,8 +17,8 @@ TForm15 *Form15;
 //---------------------------------------------------------------------------
 __fastcall TForm15::TForm15(int isel,long currWeldPass,long currSeq,long nStartElem,
 							long endElem,long Pl1normEl,long Pl2normEl,
-							long nMatPropSet,String gMatPropName[],
-							long nWeldParSet,String gWeldParName[],
+							long nMatPropSet,const String gMatPropName[],
+							long nWeldParSet,const String gWeldParName[],
    TComponent* Owner) : TForm(Owner) // All arguments start with 1 (not 0)
 {int i=0;F15_isel=isel;Pl1norm=Pl1normEl;Pl2norm=Pl2normEl;
  kflagForm15=jflagForm15= -1;nMatPS=nMatPropSet;nWeldPS=nWeldParSet;
@@ -31,7 +31,7 @@ __fastcall TForm15::TForm15(int isel,long currWeldPass,long currSeq,long nStartE
 // if(Pl1normEl-10*(Pl1normEl/10))Edit7->Text=IntToStr(Pl1normEl-10*(Pl1normEl/10));else Edit7->Text="***";
 // if(Pl2normEl-10*(Pl2normEl/10))Edit8->Text=IntToStr(Pl2normEl-10*(Pl2normEl/10));else Edit8->Text="***";
  RadioGroup2->ItemIndex=0;
-// CheckBox1->Checked=true;
+ CheckBox1->Caption=L"Erase StartEl by click";
  RadioButton5->Checked=true;RadioButton6->Checked=false;//MovingArc is default
 //// TListBox *ListBox1= new TListBox(this);
 // for(i=0;i<nMatPS;i++)ListBox1->Items->Add(gMatPropName[i].c_str());
@@ -206,6 +206,9 @@ long TForm15::getEdit24(){
 						   return StrToInt(Edit24->Text); // NOT USED
 						  }
 //---------------------------------------------------------------------------
+bool TForm15::getCheckBox1(){return CheckBox1->Checked;}
+void TForm15::setCheckBox1(bool s){CheckBox1->Checked=s;}
+//---------------------------------------------------------------------------
 int TForm15::getISEL(){return F15_isel;}
 int TForm15::getFunc(){return 4+RadioGroup1->ItemIndex;}
 void TForm15::setFunc(int s){if(s==4)RadioGroup1->ItemIndex=0;
@@ -251,8 +254,8 @@ void TForm15::setWColor(TColor s){Shape1->Brush->Color=s;}
 //---------------------------------------------------------------------------
 void __fastcall TForm15::Button1Click(TObject *Sender)
 {int isw=1,testTflag=1,heattimeflag=1;float TOL=0.000001f,roomT=0.f,meltT=0.f,lowcutT=0.f,preheatT=0.f,maxheattime=0.f,minheattime=0.f;
- UnicodeString mess1=L"Zero weld current ",mess2=L"Negative/zero weld current ",mess4=L"Negative/zero weld voltage ",
-			   mess5=L"Zero arc efficiency ",mess6=L"Arc efficiency out-of-range ",mess7=L"Zero torch speed ",mess8=L"Negative/zero torch speed ";
+// UnicodeString mess1=L"Zero weld current ",mess2=L"Negative/zero weld current ",mess4=L"Negative/zero weld voltage ",
+//			   mess5=L"Zero arc efficiency ",mess6=L"Arc efficiency out-of-range ",mess7=L"Zero torch speed ",mess8=L"Negative/zero torch speed ";
 // try {StrToFloat(Edit9->Text);
 //	  if(Edit9->Text==L"0"){isw=0;
 //							extern PACKAGE void __fastcall Beep(void);
@@ -458,12 +461,13 @@ void __fastcall TForm15::Button4Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm15::ListBox1Click(TObject *Sender)
-{for(int i=0;i<nMatPS;i++)if(ListBox1->Selected[i]){kflagForm15=i;break;}
+{if(ListBox1->ItemIndex> -1 && ListBox1->ItemIndex <ListBox1->Items->Count)kflagForm15=ListBox1->ItemIndex;
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click on weld material set",L"Selection unknown:",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm15::ListBox2Click(TObject *Sender)
-{for(int i=0;i<nWeldPS;i++)if(ListBox2->Selected[i]){jflagForm15=i;break;}
- Form1->wpCreate1_public();
+{if(ListBox2->ItemIndex> -1 && ListBox2->ItemIndex <ListBox2->Items->Count){jflagForm15=ListBox2->ItemIndex;Form1->wpCreate1_public();}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click on weld parameter set",L"Selection unknown:",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm15::Button3Click(TObject *Sender)
@@ -484,20 +488,20 @@ void __fastcall TForm15::Button3Click(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TForm15::RadioGroup1Click(TObject *Sender)
 {if(RadioGroup1->ItemIndex==1){F15_isel=5;
-							   Label3->Caption="All start elements";
-							   Label4->Caption="One stop element";
+							   Label3->Caption=L"All start elements";
+							   Label4->Caption=L"One stop element";
 							  }
 else if(RadioGroup1->ItemIndex==2){F15_isel=6;
-								   Label3->Caption="One start element";
-								   Label4->Caption="Auto-gen to end run (click for direction)";
+								   Label3->Caption=L"One start element";
+								   Label4->Caption=L"Auto-gen to end run (click for direction)";
 								  }
 else if(RadioGroup1->ItemIndex==3){F15_isel=7;
-								   Label3->Caption="One start element";
-								   Label4->Caption="One stop element";
+								   Label3->Caption=L"One start element";
+								   Label4->Caption=L"One stop element";
 								  }
 else {F15_isel=4;
-	  Label3->Caption="All start elements"; //0
-	  Label4->Caption="Auto-gen to end run (click for direction)";
+	  Label3->Caption=L"All start elements"; //0
+	  Label4->Caption=L"Auto-gen to end run (click for direction)";
 	 }
 }
 //---------------------------------------------------------------------------

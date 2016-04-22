@@ -87,6 +87,7 @@ __published:	// IDE-managed Components
 	TButton *Button4;
 	TListBox *ListBox1;
 	TRadioGroup *RadioGroup1;
+	TCheckBox *CheckBox1;
 	void __fastcall Button1Click(TObject *Sender);
 	void __fastcall Button4Click(TObject *Sender);
 	void __fastcall ListBox1Click(TObject *Sender);
@@ -108,14 +109,17 @@ private:	// User declarations
 		void setEdit1(String),setEdit2(long),setEdit9(double),setEdit10(double),setEdit11(double),setEdit12(double),
 			 setEdit13(double),setEdit14(double),setEdit15(double),setEdit16(double),setEdit17(double),setEdit18(double),
 			 setEdit19(int),setEdit20(double),setEdit21(double),setEdit22(double),setEdit23(long),setEdit24(long),
-			 setFunc(int),setType(int),setShape(int),setWColor(TColor),setNorm1(long),setNorm2(long); //EFP 5/31/2011
+			 setFunc(int),setType(int),setShape(int),setWColor(TColor),setNorm1(long),setNorm2(long),
+			 setCheckBox1(bool)
+			 ; //EFP 5/31/2011
+		bool getCheckBox1();
 		String getEdit1();
 		TColor getWColor();
 public:		// User declarations
 		__property int CheckRadioB={read=getRadioBstatus};
 		__property String CheckEdit1={read=getEdit1,write=setEdit1};
 		__property long CheckEdit2={read=getEdit2,write=setEdit2};
-//		__property int CheckCheckB={read=getCheckBstatus};
+		__property bool CheckCheckB={read=getCheckBox1,write=setCheckBox1};
 //		__property double CheckEdit9={read=getEdit9,write=setEdit9};
 //		__property double CheckEdit10={read=getEdit10,write=setEdit10};
 //		__property double CheckEdit11={read=getEdit11,write=setEdit11};
@@ -145,7 +149,7 @@ public:		// User declarations
 		__property TColor CheckWeldColor={read=getWColor,write=setWColor};
 		__property long CheckNorm1={write=setNorm1}; //EFP 5/31/2011
 		__property long CheckNorm2={write=setNorm2}; //EFP 5/31/2011
-		__fastcall TForm15(int,long,long,long,long,long,long,long,String [],long,String [],TComponent* Owner);
+		__fastcall TForm15(int,long,long,long,long,long,long,long,const String [],long,const String [],TComponent* Owner);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TForm15 *Form15;

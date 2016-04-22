@@ -1,7 +1,7 @@
 object Form15: TForm15
   Left = 0
   Top = 102
-  ActiveControl = ComboBox1
+  ActiveControl = Button4
   BorderIcons = []
   ClientHeight = 591
   ClientWidth = 420
@@ -31,9 +31,9 @@ object Form15: TForm15
     Caption = 'Pass Sequence No.:'
   end
   object Edit1: TEdit
-    Left = 104
+    Left = 96
     Top = 8
-    Width = 82
+    Width = 90
     Height = 21
     TabOrder = 0
     Text = 'Edit1'
@@ -69,7 +69,7 @@ object Form15: TForm15
     Top = 27
     Width = 401
     Height = 521
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     TabOrder = 4
     object TabSheet1: TTabSheet
       Caption = 'Weld Pass Location'
@@ -575,6 +575,14 @@ object Form15: TForm15
         end
       end
     end
+  end
+  object CheckBox1: TCheckBox
+    Left = 246
+    Top = 365
+    Width = 97
+    Height = 17
+    Caption = 'CheckBox1'
+    TabOrder = 5
   end
   object ColorDialog1: TColorDialog
     Left = 376
