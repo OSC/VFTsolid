@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59d_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59e_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -11356,13 +11356,13 @@ void __fastcall TForm1::FormMouseDown(TObject *Sender, TMouseButton Button, TShi
 iPers=iPersistVFT/100,jPers=(iPersistVFT-100*iPers)/10,
 // TB1H=0,P1W=0,
  CCB=0,CRB_sel=0,CRB_selx=0,CRB_ckShape=0,circFlag=0,girthFlag=0;
- long ip=0,ipp=0,ippp=0,signp=0,signm=0,isw=0,nipismin=0,nipismax=0,curiside=0,dumrec=0; // unsigned long prod=1,aflag=0;
- long ik=0,ic=0,iss=0,ies=0,isides=0;//Coding for FEMAP users EFP 12/20/2010
- long NodeNum=0,ie=0,numElInSlice=0,incognito=0,
+ long ip=0,ipp=0,ippp=0,signp=0,signm=0,isw=0,nipismin=0,nipismax=0,curiside=0,dumrec=0, // unsigned long prod=1,aflag=0;
+	  ik=0,ic=0,iss=0,ies=0,isides=0,//Coding for FEMAP users EFP 12/20/2010
+      NodeNum=0,ie=0,numElInSlice=0,incognito=0,
 // iGID=0,
  iside=0,eltype=0,bscode=0,node=0,ieGID=0,t3=1000,t5=100000,t7=10000000,eltype5=0,bscode5=0,
-   is=0,in=0,ir=0,numdum=0,eltype1=0,ieGID1=0,ip1=0,is1=0,iside1=0,
-   ie1=0,icount=0,ieGID2=0,eltype3=0,ieGID3=0,
+   is=0,in=0,in1=0,ir=0,numdum=0,eltype1=0,ieGID1=0,ip1=0,is1=0,iside1=0,is1a=0,is2=0,iw=0,
+   ie1=0,icount=0,icount1=0,ieGID2=0,eltype3=0,ieGID3=0,
    *dumarr,*dummap,*duminv,*dumgrp;
  float rv=0.f,xave=0.f,yave=0.f,zave=0.f,xnor=0.f,ynor=0.f,znor=0.f,rave=0.f,zero=0.f,dx1=0.f,dy1=0.f,dx3=0.f,dy3=0.f,norm=0.f,RN1=0.f,RN2=0.f,RN3=0.f,
 //	   DJD=0.f,SN[20],SG[60],DJR[9+1],
@@ -11389,6 +11389,7 @@ iPers=iPersistVFT/100,jPers=(iPersistVFT-100*iPers)/10,
 				 3,2,1,0,
 				 4,5,6,7},
 	 opp_arr8[6]={2,3,0,1,5,4};//TBD: Add vertplot[15] coding
+ bool startElBool=false;
 // char extensChar[]="Query ELSET= ",extensChar1[]="Weld Pass= ",extensChar2[]="Sequence# ",extensChar3[]=" of "; //EFP 10/03/2011
 // String extensCharS[]={L"Query ELSET= "};
 // String extensCharS1[]={L"Weld Pass= "};
@@ -11754,14 +11755,17 @@ ieGID1=ieGID=indat.arrELSET[ie];isw=1;
 				 eltype3=base.orig_matno[ie]/t7;
 wp.pending=0;wp.elStart=ie;ieGID=ieGID3=indat.arrELSET[ie];
 ieGID2= base.arrELSET[ie];//EFP 7/25/2015
-				 if(eltype!=8 || eltype3!=8){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex element selected for weld pass processing",L"Terminate",MB_OK);exit(0);}
+//				 if(eltype!=8 || eltype3!=8){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex element selected for weld pass processing",L"Terminate",MB_OK);exit(0);}
 //////////////////////////////////
-				}
+				 if(eltype==8 && eltype3==8)
+				   {
+//				}
 	   if(CreateLinWeldPass)
 				{
 				if(CreateLinWeldPass->PageControl1->TabIndex==0)
 				{
 ///////////
+				 startElBool=CreateLinWeldPass->CheckCheckB;
 				 if(wp.CreateWPassMode)incognito=wp.PRECORD;else incognito=wp.nWeldPass;
 ///////////
 				 CRB=CreateLinWeldPass->CheckRadioB;
@@ -11793,6 +11797,9 @@ ieGID2= base.arrELSET[ie];//EFP 7/25/2015
 				 if(CRB==1) // All Start Elements
 				   {if(ieGID && (node==8 || node==20))
 					  {
+					   isw=1;
+					   if(isw){ //Apologies. This is a quick fix...
+
 					   if(wp.count_curr_sttEl==0)
 						 {wp.avis=10*(wp.avis/10); //EFP 6/26/2011 Set first col to zero
 						  if(wp.CreateWPassMode)wp.GIDwp=10*ieGID3+iside; // The GID/iside of the first facet to be clicked becomes the definitive GID.
@@ -11836,6 +11843,9 @@ for(ip=0;ip<4;ip++){ptDraw[ip].x=int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*
 				   }
 Canvas->Polygon(ptDraw,4-1);
 		  Canvas->Pen->Width=1;
+
+										   if(startElBool==false){ //Create start elements
+
 										   if(wp.CreateWPassMode){ //Creating
 										   isw=1;
 										   if(wp.nWeldPass){for(ip=0;ip<wp.nWeldPass;ip++)
@@ -11880,8 +11890,53 @@ Canvas->Polygon(ptDraw,4-1);
 //											  for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*wp.PRECORD+4*wp.count_curr_sttEl+ip]=base.nop1[MXNPEL*ie+gdata8[4*iside+ip]];
 //											  wp.count_curr_sttEl=wp.count_curr_sttEl+1;
 //											 }
+
+
+
+
+																 }
+										   else { // Erase start elements
+//********************** start
+//************************
+//**************************
+Canvas->MoveTo(int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*iside+0]]  ]+0.5f),
+  ClientHeight-int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*iside+0]]+1]+0.5f));
+Canvas->LineTo(int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*iside+2]]  ]+0.5f),
+  ClientHeight-int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*iside+2]]+1]+0.5f));
+Canvas->MoveTo(int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*iside+1]]  ]+0.5f),
+  ClientHeight-int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*iside+1]]+1]+0.5f));
+Canvas->LineTo(int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*iside+3]]  ]+0.5f),
+  ClientHeight-int(indat.c1[NDF*indat.nop1[MXNPEL*ie+gdata8[4*iside+3]]+1]+0.5f));
+if(wp.count_curr_sttEl)
+  {ip1= -1;
+   for(ip=0;ip<wp.count_curr_sttEl;ip++){if(wp.sttEles[wp.memWGa*incognito+ip]/10==ie &&
+	 wp.sttEles[wp.memWGa*incognito+ip]-10*(wp.sttEles[wp.memWGa*incognito+ip]/10)==iside)ip1=ip;
+										}
+   if(ip1>=0){if(ip1+1<wp.count_curr_sttEl)
+				{for(ipp=ip1+1;ipp<wp.count_curr_sttEl;ipp++)wp.sttEles[wp.memWGa*incognito+ipp-1]=wp.sttEles[wp.memWGa*incognito+ipp];
+				 for(ippp=4*(ip1+1);ippp<4*wp.count_curr_sttEl;ippp++)wp.sttEleNodes[wp.memWGa*4*incognito+ippp-4]=wp.sttEleNodes[wp.memWGa*4*incognito+ippp];
+				}
+			  wp.count_curr_sttEl=wp.count_curr_sttEl-1;
+			 }
+   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"This element is not a start element of current WP.",L"Failure",MB_OK);}
+  }
+else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"This WP does not yet have start elements.",L"Failure",MB_OK);}
+												 CreateLinWeldPass->CheckCheckB=false;
+//**************************
+//************************
+//********************** end
+												}
+//}
+
+
+
+
+
 										  }
 					   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Not in current weld group or not current start face.",L"Ignore",MB_OK);}
+
+							  } //if(isw  ---this is just a quick fix
+
 					  }
 					else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Not hex-element or not in a weld group.",L"Ignore",MB_OK);}
 				   }
@@ -12133,69 +12188,116 @@ for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*incognito+4*ir+ip]=base.nop1[MXNPE
 //						 }
 					   for(ipp=0;ipp<numElInSlice;ipp++) //Correction  EFP 1/28/2015
 						 {isw=0;icount=0;is1=ip1=dumgrp[ipp]/10; //ip1 correction EFP 1/05/2012
-						  curiside=dumgrp[ipp]-10*(dumgrp[ipp]/10);icount++;
-//						  if(is1==wp.stpEle[wp.PRECORD]/10){isw=1;break;}
-						  if(is1==wp.stpEle[incognito]/10){isw=1;break;}
-						  else {while(dummap[6*duminv[is1]+opp_arr8[curiside]]> -1)
+						  curiside=dumgrp[ipp]-10*(dumgrp[ipp]/10);
+						  if(is1==wp.stpEle[incognito]/10){icount++;isw=1;break;}
+						  else {icount++;
+								while(dummap[6*duminv[is1]+opp_arr8[curiside]]> -1)
 									 {dumrec=dummap[6*duminv[is1]+opp_arr8[curiside]];
+									  is1a=dumrec/10;
 									  if(ip1==dumrec/10)break;
 									  else {is1=dumrec/10;curiside=dumrec-10*(dumrec/10);icount++;
-//											if(is1==wp.stpEle[wp.PRECORD]/10){isw=1;break;}
 											if(is1==wp.stpEle[incognito]/10){isw=1;break;}
 										   }
 									 }
 							   }
+
 						  if(isw==1)break;
 						 }
-					   ir=icount;icount=0;
+					   ir=icount;icount1=LONG_INT;
 					   for(ipp=0;ipp<wp.count_curr_sttEl;ipp++)
-//						 {wp.eles[wp.memWGa*wp.PRECORD+icount]=wp.sttEles[wp.memWGa*wp.PRECORD+ipp];icount++;
-						 {wp.eles[wp.memWGa*incognito+icount]=wp.sttEles[wp.memWGa*incognito+ipp];icount++;
-//						  is1=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]/10;
-//						  curiside=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]-10*is1;
-						  is1=wp.sttEles[wp.memWGa*incognito+ipp]/10;
-						  curiside=wp.sttEles[wp.memWGa*incognito+ipp]-10*is1;
+						 {isw=0;is1=wp.sttEles[wp.memWGa*incognito+ipp]/10;curiside=wp.sttEles[wp.memWGa*incognito+ipp]-10*is1;
 						  if(ir>1)
 							{for(in=1;in<ir;in++)
 							   {if(dummap[6*duminv[is1]+opp_arr8[curiside]]> -1)
 								  {dumrec=dummap[6*duminv[is1]+opp_arr8[curiside]];
-//								   wp.eles[wp.memWGa*wp.PRECORD+icount]=dumrec;icount++;
-								   wp.eles[wp.memWGa*incognito+icount]=dumrec;icount++;
+								   if(incognito){is1a=dumrec/10;
+												 for(iw=0;iw<incognito;iw++) //Need coding for "edit WP" here
+												   {for(in1=0;in1<wp.memWGa;in1++){if(wp.eles[wp.memWGa*iw+in1]<0)break;
+																				   else {is2=wp.eles[wp.memWGa*iw+in1]/10;
+																						 if(is1a==is2){icount1=min(in,icount1);isw=1;break;}
+																						}
+																				  }
+													if(isw==1)break;
+												   }
+												 if(isw==1)break;
+												}
 								   is1=dumrec/10;curiside=dumrec-10*(dumrec/10);
 								  }
 								else break;
 							   }
 							}
 						 }
+					   ir=min(icount,icount1);icount=0;
+					   for(ipp=0;ipp<wp.count_curr_sttEl;ipp++)
+						 {wp.eles[wp.memWGa*incognito+icount]=wp.sttEles[wp.memWGa*incognito+ipp];icount++;
+						  is1=wp.sttEles[wp.memWGa*incognito+ipp]/10;curiside=wp.sttEles[wp.memWGa*incognito+ipp]-10*is1;
+						  if(ir>1)
+							{for(in=1;in<ir;in++)
+							   {if(dummap[6*duminv[is1]+opp_arr8[curiside]]> -1)
+								  {dumrec=dummap[6*duminv[is1]+opp_arr8[curiside]];wp.eles[wp.memWGa*incognito+icount]=dumrec;icount++;
+								   is1=dumrec/10;curiside=dumrec-10*(dumrec/10);
+								  }
+								else break;
+							   }
+							}
+						 }
+
 								  }
 					   else { //Full length. Not necessary to have same element orientation here...
 					   icount=0;
+// Insert coding for part section, but with full-section parameter
+//// Start
+					   for(ipp=0;ipp<numElInSlice;ipp++) //Correction  EFP 1/28/2015
+						 {isw=0;icount=0;is1=ip1=dumgrp[ipp]/10;curiside=dumgrp[ipp]-10*(dumgrp[ipp]/10);icount++; //ip1 correction EFP 1/05/2012
+						  while(dummap[6*duminv[is1]+opp_arr8[curiside]]> -1)
+							{dumrec=dummap[6*duminv[is1]+opp_arr8[curiside]];
+							 if(ip1==dumrec/10)break;
+							 else {is1=dumrec/10;curiside=dumrec-10*(dumrec/10);icount++;}
+							}
+						  if(isw==1)break;
+						 }
+					   ir=icount;icount1=LONG_INT;
 					   for(ipp=0;ipp<wp.count_curr_sttEl;ipp++)
-						 {
-//						  wp.eles[wp.memWGa*wp.PRECORD+icount]=wp.sttEles[wp.memWGa*wp.PRECORD+ipp];icount++;
-						  wp.eles[wp.memWGa*incognito+icount]=wp.sttEles[wp.memWGa*incognito+ipp];icount++;
-//						  is1=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]/10;
-//						  curiside=wp.sttEles[wp.memWGa*wp.PRECORD+ipp]-10*is1;ip1=is1;
-						  is1=wp.sttEles[wp.memWGa*incognito+ipp]/10;
-						  curiside=wp.sttEles[wp.memWGa*incognito+ipp]-10*is1;ip1=is1;
-
-						  for(in=0;in<numdum;in++)
-							{
-							 if(dummap[6*duminv[is1]+opp_arr8[curiside]]> -1)
-							   {dumrec=dummap[6*duminv[is1]+opp_arr8[curiside]];
-								if(ip1==dumrec/10)break;
-//								else {wp.eles[wp.memWGa*wp.PRECORD+icount]=dumrec;
-								else {wp.eles[wp.memWGa*incognito+icount]=dumrec;
-								   icount++;
-								   is1=dumrec/10;
-								   curiside=dumrec-10*(dumrec/10);
-									 }
+						 {isw=0;is1=wp.sttEles[wp.memWGa*incognito+ipp]/10;curiside=wp.sttEles[wp.memWGa*incognito+ipp]-10*is1;
+						  if(ir>1)
+							{for(in=1;in<ir;in++)
+							   {if(dummap[6*duminv[is1]+opp_arr8[curiside]]> -1)
+								  {dumrec=dummap[6*duminv[is1]+opp_arr8[curiside]];
+								   if(incognito){is1a=dumrec/10;
+												 for(iw=0;iw<incognito;iw++) //Need coding for "edit WP" here
+												   {for(in1=0;in1<wp.memWGa;in1++){if(wp.eles[wp.memWGa*iw+in1]<0)break;
+																				   else {is2=wp.eles[wp.memWGa*iw+in1]/10;
+																						 if(is1a==is2){icount1=min(in,icount1);isw=1;break;}
+																						}
+																				  }
+													if(isw==1)break;
+												   }
+												 if(isw==1)break;
+												}
+								   is1=dumrec/10;curiside=dumrec-10*(dumrec/10);
+								  }
+								else break;
 							   }
-							 else break;
 							}
 						 }
+					   ir=min(icount,icount1);icount=0;
+					   for(ipp=0;ipp<wp.count_curr_sttEl;ipp++)
+						 {wp.eles[wp.memWGa*incognito+icount]=wp.sttEles[wp.memWGa*incognito+ipp];icount++;
+						  is1=wp.sttEles[wp.memWGa*incognito+ipp]/10;curiside=wp.sttEles[wp.memWGa*incognito+ipp]-10*is1;
+						  if(ir>1)
+							{for(in=1;in<ir;in++)
+							   {if(dummap[6*duminv[is1]+opp_arr8[curiside]]> -1)
+								  {dumrec=dummap[6*duminv[is1]+opp_arr8[curiside]];wp.eles[wp.memWGa*incognito+icount]=dumrec;icount++;
+								   is1=dumrec/10;curiside=dumrec-10*(dumrec/10);
+								  }
+								else break;
+							   }
 							}
-					   delete [] dumgrp;// Coding for FEMAP users    Moved EFP 5/05/2011
+						 }
+//// End
+
+							}
+					   delete [] dumgrp;dumgrp=NULL;// Coding for FEMAP users    Moved EFP 5/05/2011
 //					   for(in=0;in<icount;in++)dumarr[in]=wp.eles[wp.memWGa*wp.PRECORD+in];
 					   for(in=0;in<icount;in++)dumarr[in]=wp.eles[wp.memWGa*incognito+in];
 if(wp.CreateWPassMode){dist=0.f;
@@ -12353,7 +12455,7 @@ wp.lend[incognito]=dist/float(wp.count_curr_sttEl);
 	 }
 //					   wp.n_curr_sttEl[wp.PRECORD]=wp.count_curr_sttEl;
 					   wp.n_curr_sttEl[incognito]=wp.count_curr_sttEl;
-					   delete [] dummap;delete [] dumarr;delete [] duminv;
+					   delete [] dummap;delete [] dumarr;delete [] duminv;dummap=NULL;dumarr=NULL;duminv=NULL;
 
 //vvvvvvvvvvvvvvvvv start Coding for circEles NODES  EFP 10/14/2010
 // Ensure that icount is unchanged from above
@@ -12618,6 +12720,16 @@ STFISO8_ncalc(ie,iside,HN,base.nop1,base.c1); //second calc to establish global 
 //					CreateLinWeldPass->CheckNorm1=wp.snorm1[4*wp.PRECORD+0]; //EFP 5/31/2011
 					wp.arrows[NDF*3*incognito+NDF*1+0]=HN[0];wp.arrows[NDF*3*incognito+NDF*1+1]=HN[1];wp.arrows[NDF*3*incognito+NDF*1+2]=HN[2];
 					CreateLinWeldPass->CheckNorm1=wp.snorm1[4*incognito+0]; //EFP 5/31/2011
+//////### 1st occurrence
+////////### CTSP tests for unacceptable parallel normals in fillet welds. This test is added here premptively.
+//////////### EFP 3/18/2016
+ip=0;ip1=1;rv=wp.arrows[NDF*3*incognito+NDF*ip+0]*wp.arrows[NDF*3*incognito+NDF*ip1+0]+
+			  wp.arrows[NDF*3*incognito+NDF*ip+1]*wp.arrows[NDF*3*incognito+NDF*ip1+1]+
+			  wp.arrows[NDF*3*incognito+NDF*ip+2]*wp.arrows[NDF*3*incognito+NDF*ip1+2];
+if(fabs(rv)>0.95f){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Normal & weld have same direction.\nCheck directions & repeat.",L"Advisory: inadmissible",MB_OK);}
+//////////###
+////////###
+//////###
 								}
 					else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Normal must be on plate material",L"Failure",MB_OK);}
 				   }
@@ -12707,6 +12819,22 @@ STFISO8_ncalc(ie,iside,HN,base.nop1,base.c1); //second calc to establish global 
 //					CreateLinWeldPass->CheckNorm2=wp.snorm2[4*wp.PRECORD+0]; //EFP 5/31/2011
 					wp.arrows[NDF*3*incognito+NDF*2+0]=HN[0];wp.arrows[NDF*3*incognito+NDF*2+1]=HN[1];wp.arrows[NDF*3*incognito+NDF*2+2]=HN[2];
 					CreateLinWeldPass->CheckNorm2=wp.snorm2[4*incognito+0]; //EFP 5/31/2011
+//////### 2nd occurrence
+////////###
+//////////### EFP 3/18/2016
+ip=0;ip1=2;rv=wp.arrows[NDF*3*incognito+NDF*ip+0]*wp.arrows[NDF*3*incognito+NDF*ip1+0]+
+			  wp.arrows[NDF*3*incognito+NDF*ip+1]*wp.arrows[NDF*3*incognito+NDF*ip1+1]+
+			  wp.arrows[NDF*3*incognito+NDF*ip+2]*wp.arrows[NDF*3*incognito+NDF*ip1+2];
+if(fabs(rv)>0.95f){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Normal & weld have same direction.\nCheck directions & repeat.",L"Advisory: inadmissible",MB_OK);}
+if(CreateLinWeldPass->CheckType==0){ //Fillet type
+ip=1;ip1=2;rv=wp.arrows[NDF*3*incognito+NDF*ip+0]*wp.arrows[NDF*3*incognito+NDF*ip1+0]+
+			  wp.arrows[NDF*3*incognito+NDF*ip+1]*wp.arrows[NDF*3*incognito+NDF*ip1+1]+
+			  wp.arrows[NDF*3*incognito+NDF*ip+2]*wp.arrows[NDF*3*incognito+NDF*ip1+2];
+if(fabs(rv)>0.95f){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Normals have same direction.\nChange weld type since Fillet is inapplicable.",L"Advisory: Repeat",MB_OK);}
+								   }
+//////////###
+////////###
+//////###
 								}
 					else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Normal must be on plate material",L"Failure",MB_OK);}
 				   }
@@ -12719,7 +12847,14 @@ STFISO8_ncalc(ie,iside,HN,base.nop1,base.c1); //second calc to establish global 
 		   }
 /////////////// New VFT coding //////////////
 /////////////////////////////
-	  }
+
+
+				   }  //if(eltype==8
+				 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Inadmissible non-hex element selected for weld pass processing",L"Failure",MB_OK);}
+				}  //if(ie>=0)
+	   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click on weld group element.",L"Failure",MB_OK);}
+
+	  } //else if(FD_LButtonstatus==17)
 
 
 

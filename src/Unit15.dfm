@@ -1,7 +1,7 @@
 object Form15: TForm15
   Left = 0
   Top = 102
-  ActiveControl = Button4
+  ActiveControl = ComboBox1
   BorderIcons = []
   ClientHeight = 591
   ClientWidth = 420
@@ -69,7 +69,7 @@ object Form15: TForm15
     Top = 27
     Width = 401
     Height = 521
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     TabOrder = 4
     object TabSheet1: TTabSheet
       Caption = 'Weld Pass Location'
@@ -166,6 +166,14 @@ object Form15: TForm15
           'Partial Length/Full Section')
         TabOrder = 3
         OnClick = RadioGroup1Click
+      end
+      object CheckBox1: TCheckBox
+        Left = 232
+        Top = 314
+        Width = 137
+        Height = 17
+        Caption = 'CheckBox1'
+        TabOrder = 4
       end
     end
     object TabSheet2: TTabSheet
@@ -575,14 +583,6 @@ object Form15: TForm15
         end
       end
     end
-  end
-  object CheckBox1: TCheckBox
-    Left = 246
-    Top = 365
-    Width = 97
-    Height = 17
-    Caption = 'CheckBox1'
-    TabOrder = 5
   end
   object ColorDialog1: TColorDialog
     Left = 376
