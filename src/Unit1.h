@@ -437,6 +437,7 @@ char *comboCWD;
 	   sort_by_partition(long *,float *,long,long *,long *,long *,long *,long *,long *,float *,long,long,long,float,float,long *),
 	   sort_by_stride(long *,float *,long *,long *,long *,long,long),
 	   sort_by_bubble(long *,float *,long *,long *,long *,long,long),
+       sortLArr_by_bubble(long *,const long,const long),
 	   STFISO20(int,float,float,float,float *,float [],float [],float [],float [],long [],float []),
 	   STFISO15(int,float,float,float,float *,float [],float [],float [],float [],long [],float []),
 	   STFISO10(int,float,float,float,float *,float [],float [],float [],float [],long [],float []),

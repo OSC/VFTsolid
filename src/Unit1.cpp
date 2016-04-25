@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59e_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59f_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -18516,11 +18516,17 @@ void __fastcall TForm1::exportWARP3DExecute(TObject *Sender)
 	   ABAQnames->Label9->Enabled=false;ABAQnames->Label10->Enabled=false;ABAQnames->Label11->Enabled=false;
 	   ABAQnames->Edit2->Visible=false;ABAQnames->Edit3->Visible=false;ABAQnames->Edit4->Visible=false;
 	   ABAQnames->Edit5->Visible=false;ABAQnames->Edit6->Visible=false;
-//	   ABAQnames->CheckEdit1=gWsiAlias.t_str();
-	   ABAQnames->CheckEdit1=gWsiAlias.w_str();
+////	   ABAQnames->CheckEdit1=gWsiAlias.t_str();
+//	   ABAQnames->CheckEdit1=gWsiAlias.w_str();
+
+int buffersize=WideCharToMultiByte(CP_UTF8,0,gWsiAlias.w_str(), -1,NULL,0,NULL,NULL);
+char* m6=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,gWsiAlias.w_str(), -1,m6,buffersize,NULL,NULL);
+	   if(strlen(m6))ABAQnames->CheckEdit1=gWsiAlias;
+	   else ABAQnames->CheckEdit1=L"****";
+	   delete m6;m6=NULL;
+
 	   ABAQnames->ShowModal();
 	   delete ABAQnames;ABAQnames=NULL;
-
 	  }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Must create weld passes->Weld",L"Halt",MB_OK);}
    }
@@ -18693,20 +18699,28 @@ viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[
 //for(i=0;i<base.nelt;i++)honk<<i<<" "<<base.matno[i]<<" BASEmatno secn\n";
 
 
-	   istart=0;j=1;
-	   iELSETtype= labs(base.matno[istart])-t3*(labs(base.matno[istart])/t3);
-	   do {ibrsw=0;
-		   for(i=istart+1;i<base.nelt;i++)
-			 {k= labs(base.matno[i])-t3*(labs(base.matno[i])/t3);
-			  if(iELSETtype != k){if(base.matno[istart]> -1)
-								  j++;ibrsw=1;istart=i;iELSETtype=k;break;
-								 }
-			 }
-		  }
-	   while(ibrsw);
-	   if(istart<base.nelt){if(base.matno[istart]> -1)
-							j++;
-						   }
+//	   istart=0;j=1;
+//	   iELSETtype= labs(base.matno[istart])-t3*(labs(base.matno[istart])/t3);
+//	   do {ibrsw=0;
+//		   for(i=istart+1;i<base.nelt;i++)
+//			 {k= labs(base.matno[i])-t3*(labs(base.matno[i])/t3);
+//			  if(iELSETtype != k){if(base.matno[istart]> -1)
+//								  j++;ibrsw=1;istart=i;iELSETtype=k;break;
+//								 }
+//			 }
+//		  }
+//	   while(ibrsw);
+//	   if(istart<base.nelt){if(base.matno[istart]> -1)
+//							j++;
+//						   }
+
+
+j=1;for(ir=1;ir<1000;ir++){for(i=0;i<base.nelt;i++){if(base.matno[i]> -1){k=base.matno[i]-t3*(base.matno[i]/t3);
+																		  if(k==ir){j++;break;}
+																		 }
+												   }
+						  }
+
 	   iELSETactive=j;iELSETarr=new long[iELSETactive];for(j=0;j<iELSETactive;j++)iELSETarr[j]= -1;
 	   istart=ies=0;
 	   iELSETtype= labs(base.matno[istart])-t3*(labs(base.matno[istart])/t3);
@@ -18753,7 +18767,7 @@ viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[
 //honk<<" STOP here X1\n";if(1==1)exit(0);
 
 	   Form7->ShowModal();
-	   delete Form7;// *Form7=NULL; (not in Unit1, remember, but perhaps we should not "delete"?)
+	   delete Form7;Form7=NULL; //(not in Unit1, remember, but perhaps we should not "delete"?)
 
 ///////////////////////////////////////////
 ///////////////////////////////////////////
@@ -20074,13 +20088,15 @@ void TForm1::exportWARP4_public()
 //Routine to write *.wrp, compute_commands_all_profiles.inp, uexternal_data_file.inp, output_commands.inp
 //limlist= number of "a-b" pairs in WARP3D list output format, before writing next line
 {int solidshellsw=0,limlist=5,i=0,isw=0,mtype=0,icount=0,buffersize=0,nlist=Form7->CheckNlist, *rollcall;
- long ic=0,hinode=0,hielem=0,lolim=0,uplim=0,mdummy=0,ir=0,j=0,js=0,k=0,ies=0,iesr=0,icycle=0,irec=0,itype=0,ilast=0,istart=0,iELSETtype=0,t3=1000,ibrsw=0, *iELSETorder;
+ long ic=0,hinode=0,hielem=0,lolim=0,uplim=0,mdummy=0,ir=0,j=0,js=0,k=0,ies=0,iesr=0,icycle=0,irec=0,
+	  itype=0,ilast=0,istart=0,iELSETtype=0,t3=1000,ibrsw=0, *iELSETorder=NULL,
+	  iELSETactive=0,swstart=0,tot=0,swactive=0,icountlist=0,ncountlist=0, *iELSETarr=NULL, *wpelORDER=NULL;
  float tcuth=0.f,tdummy=0.f;
 // char *nameMat;
  char umat[5+1]="_umat",chb[1+1]=" ",chendl[1+1]="\0";
 
 // String umat=L"_umat", *sArr=NULL;
- String *sArr;
+ String *sArr=NULL;
  UnicodeString fnNeedS1,extensCharS1=UnicodeString(L".wrp");
 
  rollcall=NULL;iELSETorder=NULL;sArr=NULL;
@@ -20184,6 +20200,30 @@ outfile<<"structure "<<m<<"\n";
 outfile<<"c\nc\nc\n";
 outfile<<"c Material VFT UMAT commands\n";
 
+j=1;for(ir=1;ir<1000;ir++){for(i=0;i<base.nelt;i++){if(base.matno[i]> -1){k=base.matno[i]-t3*(base.matno[i]/t3);
+																		  if(k==ir){j++;break;}
+																		 }
+												   }
+						  }
+	   iELSETactive=j;iELSETarr=new long[iELSETactive];for(j=0;j<iELSETactive;j++)iELSETarr[j]= -1;
+	   istart=ies=0;
+	   iELSETtype= labs(base.matno[istart])-t3*(labs(base.matno[istart])/t3);
+	   do {ibrsw=0;
+		   for(i=istart+1;i<base.nelt;i++)
+			 {k= labs(base.matno[i])-t3*(labs(base.matno[i])/t3);
+			  if(iELSETtype != k){if(base.matno[istart]> -1){isw=1;if(ies){for(ir=0;ir<ies;ir++)if(iELSETarr[ir]==iELSETtype){isw=0;break;}}
+															 if(isw){iELSETarr[ies]=iELSETtype;ies++;}
+															}
+								  ibrsw=1;istart=i;iELSETtype=k;break;
+								 }
+			 }
+		  }
+	   while(ibrsw);
+	   if(istart<base.nelt){if(base.matno[istart]> -1){isw=1;if(ies){for(ir=0;ir<ies;ir++)if(iELSETarr[ir]==iELSETtype){isw=0;break;}}
+													   if(isw){iELSETarr[ies]=iELSETtype;ies++;}
+													  }
+						   }
+
  sArr=new String[nlist];iELSETorder=new long[nlist+wp.nWeldPass];
  for(i=0;i<nlist;i++){Form7->CheckLB2ItemIndex=i;sArr[i]=Form7->CheckLB2Item;}
 
@@ -20216,7 +20256,7 @@ outfile<<"  properties umat  rho "<<wms.den[ir]<<"  alpha 0.0,\n";
 outfile<<"       um_1 "<<(ir+1)<<" um_2 "<<wms.Ti[ir]<<" um_3 "<<wms.Ta[ir]<<",\n";
 outfile<<"       um_4 "<<wms.Tm[ir]<<" um_5 -1.0,\n";
 outfile<<"       um_6 -1.0 um_7 "<<mtype<<" um_8 0\n";  //um_7=0 for isotropic
- delete[] m1;
+ delete[] m1;m1=NULL;
 								 }
 //
 outfile<<"c     ***************************************\n";
@@ -20234,241 +20274,382 @@ outfile<<"c\n";
 ////outfile<<"            1 -   "<<hielem<<" type l3disop    linear material MATERIAL_umat,\n"; //Proper name
 ////outfile<<"					   order 2x2x2 bbar center_output short\n";
 
-	   istart=j=js=0;iELSETtype= labs(base.matno[istart])-t3*(labs(base.matno[istart])/t3);if(base.matno[istart]<0)iELSETtype= -iELSETtype;
-	   do {ibrsw=0;
-		   for(ir=istart+1;ir<base.nelt;ir++)
-			 {k= labs(base.matno[ir])-t3*(labs(base.matno[ir])/t3);if(base.matno[ir]<0)k= -k;
-			  if(iELSETtype != k){isw=1;for(ies=0;ies<j;ies++)if(iELSETorder[ies]/t3==iELSETtype){isw=0;iesr=ies;}
-								  if(isw){if(iELSETtype> -1)iELSETorder[j]=iELSETtype*t3+js;
-										  else              iELSETorder[j]=iELSETtype*t3-js;
-										  j++;
-										 }
-								  else {if(iELSETorder[iesr]> -1)iELSETorder[iesr]=t3*(iELSETorder[iesr]/t3) +js;
-										else                     iELSETorder[iesr]=t3*(iELSETorder[iesr]/t3) -js;
-									   }
-								  js++;ibrsw=1;istart=ir;iELSETtype=k;break;
-								 }
-			 }
-		  }
-	   while(ibrsw);
-	   if(istart<base.nelt){isw=1;for(ies=0;ies<j;ies++)if(iELSETorder[ies]/t3==iELSETtype){isw=0;iesr=ies;}
-							if(isw){if(iELSETtype> -1)iELSETorder[j]=iELSETtype*t3+js;
-									else              iELSETorder[j]=iELSETtype*t3-js;
-									j++;
-								   }
-							else {if(iELSETorder[iesr]> -1)iELSETorder[iesr]=t3*(iELSETorder[iesr]/t3) +js;
-								  else                     iELSETorder[iesr]=t3*(iELSETorder[iesr]/t3) -js;
-								 }
-						   }
- for(icycle=0;icycle< nlist+wp.nWeldPass;icycle++)
-   {itype=iELSETorder[icycle]/t3;ilast= labs(iELSETorder[icycle])-t3*(labs(iELSETorder[icycle])/t3);
-	istart=j=js=0;iELSETtype= labs(base.matno[istart])-t3*(labs(base.matno[istart])/t3);if(base.matno[istart]<0)iELSETtype= -iELSETtype;
-	do {ibrsw=0;
-		for(ir=istart+1;ir<base.nelt;ir++)
-		  {k= labs(base.matno[ir])-t3*(labs(base.matno[ir])/t3);if(base.matno[ir]<0)k= -k;
-		   if(iELSETtype != k){if(iELSETtype==itype){if(j==0){icount=0;
-//																	   if(itype>=0 && itype <10){ltoa(itype,longo1,10);outfile<<"list \"nonWeldPassEntity"<<longo1<<"\" ";}
-//																	   else if(itype>=10 && itype <100){ltoa(itype,longo2,10);outfile<<"list \"nonWeldPassEntity"<<longo2<<"\" ";}
-//																	   else if(itype>=100 && itype <1000){ltoa(itype,longo3,10);outfile<<"list \"nonWeldPassEntity"<<longo3<<"\" ";}
-if(itype>=0 && itype <1000){
-buffersize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,NULL,0,NULL,NULL);
-char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,m1,buffersize,NULL,NULL);
-//for(ic=0;ic<buffersize-1;ic++)if( *(m1+ic)==chb[0]){m1[ic]=chendl[0];break;}
+
+
+
+
+
+
+//	   istart=j=js=0;iELSETtype= labs(base.matno[istart])-t3*(labs(base.matno[istart])/t3);if(base.matno[istart]<0)iELSETtype= -iELSETtype;
+//	   do {ibrsw=0;
+//		   for(ir=istart+1;ir<base.nelt;ir++)
+//			 {k= labs(base.matno[ir])-t3*(labs(base.matno[ir])/t3);if(base.matno[ir]<0)k= -k;
+//			  if(iELSETtype != k){isw=1;for(ies=0;ies<j;ies++)if(iELSETorder[ies]/t3==iELSETtype){isw=0;iesr=ies;}
+//								  if(isw){if(iELSETtype> -1)iELSETorder[j]=iELSETtype*t3+js;
+//										  else              iELSETorder[j]=iELSETtype*t3-js;
+//										  j++;
+//										 }
+//								  else {if(iELSETorder[iesr]> -1)iELSETorder[iesr]=t3*(iELSETorder[iesr]/t3) +js;
+//										else                     iELSETorder[iesr]=t3*(iELSETorder[iesr]/t3) -js;
+//									   }
+//								  js++;ibrsw=1;istart=ir;iELSETtype=k;break;
+//								 }
+//			 }
+//		  }
+//	   while(ibrsw);
+//	   if(istart<base.nelt){isw=1;for(ies=0;ies<j;ies++)if(iELSETorder[ies]/t3==iELSETtype){isw=0;iesr=ies;}
+//							if(isw){if(iELSETtype> -1)iELSETorder[j]=iELSETtype*t3+js;
+//									else              iELSETorder[j]=iELSETtype*t3-js;
+//									j++;
+//								   }
+//							else {if(iELSETorder[iesr]> -1)iELSETorder[iesr]=t3*(iELSETorder[iesr]/t3) +js;
+//								  else                     iELSETorder[iesr]=t3*(iELSETorder[iesr]/t3) -js;
+//								 }
+//						   }
+// for(icycle=0;icycle< nlist+wp.nWeldPass;icycle++)
+//   {itype=iELSETorder[icycle]/t3;ilast= labs(iELSETorder[icycle])-t3*(labs(iELSETorder[icycle])/t3);
+//	istart=j=js=0;iELSETtype= labs(base.matno[istart])-t3*(labs(base.matno[istart])/t3);if(base.matno[istart]<0)iELSETtype= -iELSETtype;
+//	do {ibrsw=0;
+//		for(ir=istart+1;ir<base.nelt;ir++)
+//		  {k= labs(base.matno[ir])-t3*(labs(base.matno[ir])/t3);if(base.matno[ir]<0)k= -k;
+//		   if(iELSETtype != k){if(iELSETtype==itype){if(j==0){icount=0;
+////																	   if(itype>=0 && itype <10){ltoa(itype,longo1,10);outfile<<"list \"nonWeldPassEntity"<<longo1<<"\" ";}
+////																	   else if(itype>=10 && itype <100){ltoa(itype,longo2,10);outfile<<"list \"nonWeldPassEntity"<<longo2<<"\" ";}
+////																	   else if(itype>=100 && itype <1000){ltoa(itype,longo3,10);outfile<<"list \"nonWeldPassEntity"<<longo3<<"\" ";}
+//if(itype>=0 && itype <1000){
+//buffersize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,NULL,0,NULL,NULL);
+//char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,m1,buffersize,NULL,NULL);
+////for(ic=0;ic<buffersize-1;ic++)if( *(m1+ic)==chb[0]){m1[ic]=chendl[0];break;}
+//for(ic=buffersize-2;ic>=0;ic--)if( *(m1+ic) != chb[0]){ *(m1+ic+1)=chendl[0];break;}
+//
+//outfile<<"list \""<<m1<<"\" ";
+//delete [] m1;
+//						   }
+////																	   else if(itype>= -9 && itype <0){ltoa(-itype,longo1,10);outfile<<"list \"WeldPassEntity"<<longo1<<"\" ";}
+////																	   else if(itype>= -99 && itype < -9){ltoa(-itype,longo2,10);outfile<<"list \"WeldPassEntity"<<longo2<<"\" ";}
+////																	   else if(itype>= -999 && itype < -99){ltoa(-itype,longo3,10);outfile<<"list \"WeldPassEntity"<<longo3<<"\" ";}
+//else if(itype>= -999 && itype <0){
+//buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,NULL,0,NULL,NULL);
+//char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,m1,buffersize,NULL,NULL);
+//outfile<<"list \""<<m1<<"\" ";
+//delete [] m1;
+//								 }
+//																	   else {
+////																	         honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
+//extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Too many nonWeld/Weld entities in exportCTSP4_public()",L"Terminate",MB_OK);exit(0);
+//																			}
+//															 }
+//													 j++;
+//													 if(ilast==js)outfile<<(istart+1)<<"-"<<ir<<"\n";
+//													 else {icount++;if(icount<limlist)outfile<<(istart+1)<<"-"<<ir<<",";
+//																	else {icount=0;outfile<<(istart+1)<<"-"<<ir<<",\n      ";}
+//														  }
+//													}
+//							   js++;ibrsw=1;istart=ir;iELSETtype=k;break;
+//							  }
+//		  }
+//	   }
+//	while(ibrsw);
+//	if(istart<base.nelt){
+//							   if(iELSETtype==itype){if(j==0){icount=0;
+////																	   if(itype>=0 && itype <10){ltoa(itype,longo1,10);outfile<<"list \"nonWeldPassEntity"<<longo1<<"\" ";}
+////																	   else if(itype>=10 && itype <100){ltoa(itype,longo2,10);outfile<<"list \"nonWeldPassEntity"<<longo2<<"\" ";}
+////																	   else if(itype>=100 && itype <1000){ltoa(itype,longo3,10);outfile<<"list \"nonWeldPassEntity"<<longo3<<"\" ";}
+//if(itype>=0 && itype <1000){
+//buffersize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,NULL,0,NULL,NULL);
+//char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,m1,buffersize,NULL,NULL);
+////for(ic=0;ic<buffersize-1;ic++)if( *(m1+ic)==chb[0]){m1[ic]=chendl[0];break;}
+//for(ic=buffersize-2;ic>=0;ic--)if( *(m1+ic) != chb[0]){ *(m1+ic+1)=chendl[0];break;}
+//
+//outfile<<"list \""<<m1<<"\" ";
+//delete [] m1;
+//						   }
+////																	   else if(itype>= -9 && itype <0){ltoa(-itype,longo1,10);outfile<<"list \"weldpass"<<longo1<<"\" ";}
+////																	   else if(itype>= -99 && itype < -9){ltoa(-itype,longo2,10);outfile<<"list \"weldpass"<<longo2<<"\" ";}
+////																	   else if(itype>= -999 && itype < -99){ltoa(-itype,longo3,10);outfile<<"list \"weldpass"<<longo3<<"\" ";}
+//else if(itype>= -999 && itype <0){
+//buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,NULL,0,NULL,NULL);
+//char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,m1,buffersize,NULL,NULL);
+//outfile<<"list \""<<m1<<"\" ";
+//delete [] m1;
+//								 }
+//																	   else {
+////																	         honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
+//extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Too many nonWeld/Weld entities in exportCTSP4_public()",L"Terminate",MB_OK);exit(0);
+//																			}
+//															 }
+//													 if(ilast==js)outfile<<(istart+1)<<"-"<<ir<<"\n";
+//													 else {icount++;if(icount<limlist)outfile<<(istart+1)<<"-"<<ir<<",";
+//																	else {icount=0;outfile<<(istart+1)<<"-"<<ir<<",\n      ";}
+//														  }
+//													}
+//						}
+//   }
+
+
+
+
+
+
+
+
+
+
+
+ if(nlist){
+ for(icycle=0;icycle<nlist;icycle++)
+   {tot=swactive=icountlist=0;
+	for(ir=0;ir<base.nelt;ir++){if(base.matno[ir]>=0){iELSETtype=base.matno[istart]-t3*(base.matno[istart]/t3);
+													  if(iELSETtype==iELSETarr[icycle]){tot++;if(!swactive){icountlist++;swactive=1;}}
+													  else if(swactive)swactive=0;
+													 }
+								else if(swactive)swactive=0;
+							   }
+	if(tot)
+	  {ncountlist=icountlist;
+buffersize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[iELSETarr[icycle]].w_str(), -1,NULL,0,NULL,NULL);
+char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[iELSETarr[icycle]].w_str(), -1,m1,buffersize,NULL,NULL);
 for(ic=buffersize-2;ic>=0;ic--)if( *(m1+ic) != chb[0]){ *(m1+ic+1)=chendl[0];break;}
 
 outfile<<"list \""<<m1<<"\" ";
-delete [] m1;
-						   }
-//																	   else if(itype>= -9 && itype <0){ltoa(-itype,longo1,10);outfile<<"list \"WeldPassEntity"<<longo1<<"\" ";}
-//																	   else if(itype>= -99 && itype < -9){ltoa(-itype,longo2,10);outfile<<"list \"WeldPassEntity"<<longo2<<"\" ";}
-//																	   else if(itype>= -999 && itype < -99){ltoa(-itype,longo3,10);outfile<<"list \"WeldPassEntity"<<longo3<<"\" ";}
-else if(itype>= -999 && itype <0){
-buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,NULL,0,NULL,NULL);
-char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,m1,buffersize,NULL,NULL);
-outfile<<"list \""<<m1<<"\" ";
-delete [] m1;
-								 }
-																	   else {
-//																	         honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
-extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Too many nonWeld/Weld entities in exportCTSP4_public()",L"Terminate",MB_OK);exit(0);
-																			}
-															 }
-													 j++;
-													 if(ilast==js)outfile<<(istart+1)<<"-"<<ir<<"\n";
-													 else {icount++;if(icount<limlist)outfile<<(istart+1)<<"-"<<ir<<",";
-																	else {icount=0;outfile<<(istart+1)<<"-"<<ir<<",\n      ";}
-														  }
-													}
-							   js++;ibrsw=1;istart=ir;iELSETtype=k;break;
-							  }
-		  }
-	   }
-	while(ibrsw);
-	if(istart<base.nelt){
-							   if(iELSETtype==itype){if(j==0){icount=0;
-//																	   if(itype>=0 && itype <10){ltoa(itype,longo1,10);outfile<<"list \"nonWeldPassEntity"<<longo1<<"\" ";}
-//																	   else if(itype>=10 && itype <100){ltoa(itype,longo2,10);outfile<<"list \"nonWeldPassEntity"<<longo2<<"\" ";}
-//																	   else if(itype>=100 && itype <1000){ltoa(itype,longo3,10);outfile<<"list \"nonWeldPassEntity"<<longo3<<"\" ";}
-if(itype>=0 && itype <1000){
-buffersize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,NULL,0,NULL,NULL);
-char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,m1,buffersize,NULL,NULL);
-//for(ic=0;ic<buffersize-1;ic++)if( *(m1+ic)==chb[0]){m1[ic]=chendl[0];break;}
-for(ic=buffersize-2;ic>=0;ic--)if( *(m1+ic) != chb[0]){ *(m1+ic+1)=chendl[0];break;}
+delete [] m1;m1=NULL;
 
-outfile<<"list \""<<m1<<"\" ";
-delete [] m1;
-						   }
-//																	   else if(itype>= -9 && itype <0){ltoa(-itype,longo1,10);outfile<<"list \"weldpass"<<longo1<<"\" ";}
-//																	   else if(itype>= -99 && itype < -9){ltoa(-itype,longo2,10);outfile<<"list \"weldpass"<<longo2<<"\" ";}
-//																	   else if(itype>= -999 && itype < -99){ltoa(-itype,longo3,10);outfile<<"list \"weldpass"<<longo3<<"\" ";}
-else if(itype>= -999 && itype <0){
-buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,NULL,0,NULL,NULL);
-char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,m1,buffersize,NULL,NULL);
-outfile<<"list \""<<m1<<"\" ";
-delete [] m1;
-								 }
-																	   else {
-//																	         honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
-extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Too many nonWeld/Weld entities in exportCTSP4_public()",L"Terminate",MB_OK);exit(0);
-																			}
-															 }
-													 if(ilast==js)outfile<<(istart+1)<<"-"<<ir<<"\n";
-													 else {icount++;if(icount<limlist)outfile<<(istart+1)<<"-"<<ir<<",";
-																	else {icount=0;outfile<<(istart+1)<<"-"<<ir<<",\n      ";}
-														  }
+	swstart=1;tot=swactive=icount=icountlist=0;
+	for(ir=0;ir<base.nelt;ir++){if(base.matno[ir]>=0){iELSETtype=base.matno[istart]-t3*(base.matno[istart]/t3);
+													  if(iELSETtype==iELSETarr[icycle]){tot++;ilast=ir;if(!swactive){icountlist++;swactive=1;}
+																						if(swstart){istart=ir;swstart=0;}
+																					   }
+													  else if(swactive){icount++;swactive=0;swstart=1;
+																		if(icountlist<ncountlist)
+																		  {if(icount<limlist)outfile<<(istart+1)<<"-"<<(ilast+1)<<",";
+																		   else {icount=0;outfile<<(istart+1)<<"-"<<(ilast+1)<<",\n      ";}
+																		  }
+																		else {icount=0;outfile<<(istart+1)<<"-"<<(ilast+1)<<"\n";}
+																	   }
+													 }
+
+								else if(swactive){icount++;swactive=0;swstart=1;
+												  if(icountlist<ncountlist)
+													{if(icount<limlist)outfile<<(istart+1)<<"-"<<(ilast+1)<<",";
+													 else {icount=0;outfile<<(istart+1)<<"-"<<(ilast+1)<<",\n      ";}
 													}
-						}
+												  else {icount=0;outfile<<(istart+1)<<"-"<<(ilast+1)<<"\n";}
+												 }
+							   }
+
+	  }
+	if(swactive){icount++;swactive=0;swstart=1;
+				 outfile<<(istart+1)<<"-"<<(ilast+1)<<"\n";
+				}
    }
+		  }
+//
+//
+ if(wp.nWeldPass){
+ for(icycle=0;icycle<wp.nWeldPass;icycle++)
+   {tot=0;
+	for(ir=0;ir<wp.memWGa;ir++){if(wp.eles[wp.memWGa*icycle+ir]<0)break;
+								else tot++;
+							   }
+
+
+	if(tot)
+	  {wpelORDER=new long[tot];for(ir=0;ir<tot;ir++)wpelORDER[ir]=wp.eles[wp.memWGa*icycle+ir];
+	   sortLArr_by_bubble(wpelORDER,0,tot-1);
+	   buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,NULL,0,NULL,NULL);
+	   char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,m1,buffersize,NULL,NULL);
+	   for(ic=buffersize-2;ic>=0;ic--)if( *(m1+ic) != chb[0]){ *(m1+ic+1)=chendl[0];break;}
+	   outfile<<"list \""<<m1<<"\" ";
+	   delete [] m1;m1=NULL;
+	   istart=ilast=wpelORDER[0];icount=0; //Assume at least one elem
+	   for(ir=1;ir<tot;ir++){if(ilast+1 != wpelORDER[ir]){icount++;
+														  if(icount<limlist)outfile<<(istart+1)<<"-"<<(ilast+1)<<",";
+														  else {icount=0;outfile<<(istart+1)<<"-"<<(ilast+1)<<",\n      ";}
+														  istart=wpelORDER[ir];
+														 }
+							 ilast=wpelORDER[ir];
+							}
+	   outfile<<(istart+1)<<"-"<<(ilast+1)<<"\n";
+	   delete [] wpelORDER;wpelORDER=NULL;
+	  }
+
+
+   }
+				 }
+
+
+
+
+
 // Nodes & elements moved after lists, per BobD request
 outfile<<"*input from \'"<<m<<".coordinates\'\n"; //Properly name (e.g.) 'Tee2.coordinates'
 outfile<<"c\nc\n";
 outfile<<"elements\n";
 outfile<<"c   for config number   0\n";
 //
- js=0;
- for(icycle=0;icycle< nlist+wp.nWeldPass;icycle++)
-   {itype=iELSETorder[icycle]/t3;
-//	if(itype>=0 && itype <10){ltoa(itype,longo1,10);
-//							  TStringDynArray DynStrings=SplitString(sArr[itype-1],L"."); //How to delete DynStrings after this?
-//							  bufferSize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
-//							  char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize,NULL,NULL);
-//							  outfile<<"\"nonWeldPassEntity"<<longo1<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
-//							  delete [] m1;
-//							 }
-//	else if(itype>=10 && itype <100){ltoa(itype,longo2,10);
-//									 TStringDynArray DynStrings=SplitString(sArr[itype-1],L"."); //How to delete DynStrings after this?
-//									 bufferSize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
-//									 char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize,NULL,NULL);
-//									 outfile<<"\"nonWeldPassEntity"<<longo2<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
-//									 delete [] m1;
-//									}
-//	else if(itype>=100 && itype <1000){ltoa(itype,longo3,10);
-//									   TStringDynArray DynStrings=SplitString(sArr[itype-1],L"."); //How to delete DynStrings after this?
-//									   bufferSize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
-//									   char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize,NULL,NULL);
-//									   outfile<<"\"nonWeldPassEntity"<<longo3<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
-//									   delete [] m1;
-//									  }
-	if(itype>=0 && itype <1000){
-
-//////bufferSize=WideCharToMultiByte(CP_UTF8,0,sArr[icycle].w_str(), -1,NULL,0,NULL,NULL);
-//////char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,sArr[icycle].w_str(), -1,m1,bufferSize,NULL,NULL);
-//////fnsplit(m1,NULL,NULL,nameMat,NULL);
-//////honk<<nameMat<<" nameMat\n";
 
 
 
-////TStringDynArray DynStrings=SplitString(sArr[icycle],L"."); //How to delete DynStrings after this?
+
+
+
+
+
+
+
+// js=0;
+// for(icycle=0;icycle< nlist+wp.nWeldPass;icycle++)
+//   {itype=iELSETorder[icycle]/t3;
+////	if(itype>=0 && itype <10){ltoa(itype,longo1,10);
+////							  TStringDynArray DynStrings=SplitString(sArr[itype-1],L"."); //How to delete DynStrings after this?
+////							  bufferSize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
+////							  char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize,NULL,NULL);
+////							  outfile<<"\"nonWeldPassEntity"<<longo1<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
+////							  delete [] m1;
+////							 }
+////	else if(itype>=10 && itype <100){ltoa(itype,longo2,10);
+////									 TStringDynArray DynStrings=SplitString(sArr[itype-1],L"."); //How to delete DynStrings after this?
+////									 bufferSize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
+////									 char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize,NULL,NULL);
+////									 outfile<<"\"nonWeldPassEntity"<<longo2<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
+////									 delete [] m1;
+////									}
+////	else if(itype>=100 && itype <1000){ltoa(itype,longo3,10);
+////									   TStringDynArray DynStrings=SplitString(sArr[itype-1],L"."); //How to delete DynStrings after this?
+////									   bufferSize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
+////									   char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize,NULL,NULL);
+////									   outfile<<"\"nonWeldPassEntity"<<longo3<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
+////									   delete [] m1;
+////									  }
+//	if(itype>=0 && itype <1000){
+//
+////////bufferSize=WideCharToMultiByte(CP_UTF8,0,sArr[icycle].w_str(), -1,NULL,0,NULL,NULL);
+////////char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,sArr[icycle].w_str(), -1,m1,bufferSize,NULL,NULL);
+////////fnsplit(m1,NULL,NULL,nameMat,NULL);
+////////honk<<nameMat<<" nameMat\n";
+//
+//
+//
+//////TStringDynArray DynStrings=SplitString(sArr[icycle],L"."); //How to delete DynStrings after this?
+//////buffersize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
+//////char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,buffersize,NULL,NULL);
+////buffersize=WideCharToMultiByte(CP_UTF8,0,sArr[icycle].w_str(), -1,NULL,0,NULL,NULL);
+////char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,sArr[icycle].w_str(), -1,m1,buffersize,NULL,NULL);
+//
+//buffersize=WideCharToMultiByte(CP_UTF8,0,sArr[js].w_str(), -1,NULL,0,NULL,NULL);
+//char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,sArr[js].w_str(), -1,m1,buffersize,NULL,NULL);
+//
+////honk<<buffersize<<" "<<strlen(m1)<<" MMM111 "<<m1<<"\n";
+////////for(ic=0;ic<buffersize-1;ic++)if( *(m1+ic)==" "){honk<<ic<<" RIPA\n";break;}
+////for(ic=0;ic<buffersize-1;ic++)honk<<ic<<" RIPA "<<m1[ic]<<"\n";
+////fnsplit(m1,NULL,NULL,nameMat,NULL);//if(1==1)exit(0);
+////char* m3=new char[buffersize-4+5];StringCchCopyA(m3,buffersize-4+5,nameMat);StringCchCatA(m3,buffersize-4+5,umat);
+//char* m3=new char[buffersize-4];
+//for(ic=0;ic<buffersize-4-1;ic++)m3[ic]=m1[ic];
+//m3[buffersize-4-1]=chendl[0];
+//
+//buffersize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,NULL,0,NULL,NULL);
+//char* m2=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,m2,buffersize,NULL,NULL);
+//
+////honk<<buffersize<<" "<<strlen(m2)<<" MMM222 "<<m2<<"\n";
+////for(ic=0;ic<buffersize-1;ic++){if(m2[ic]==chb[0])honk<<ic<<" CHBb2 "<<m2[ic]<<"\n";
+////							   else              honk<<ic<<" RIPA2 "<<m2[ic]<<"\n";
+////							  }
+//
+////for(ic=0;ic<buffersize-1;ic++)if( *(m2+ic)==chb[0]){m2[ic]=chendl[0];break;}
+//for(ic=buffersize-2;ic>=0;ic--)if( *(m2+ic) != chb[0]){ *(m2+ic+1)=chendl[0];break;}
+//
+//////outfile<<"\""<<m2<<"\" type l3disop material "<<m1<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+////////outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+////outfile<<"\""<<m2<<"\" type l3disop material "<<m1<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+//outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+//outfile<<" 2x2x2 center_output short\n"; //Correction from BobD & allow for long line   EFP 1/27/2015
+//delete [] m3;delete [] m2;delete [] m1;js++;
+//
+////if(1==1)exit(0);
+//							   }
+////	else if(itype>= -9 && itype <0){ltoa(-itype,longo1,10);for(ic=0;ic<wms.nMatPropSet;ic++)if(wms.name[ic]==wp.matName[-itype-1]){irec=ic;break;}
+////									TStringDynArray DynStrings=SplitString(wms.matFileName[irec],L"."); //How to delete DynStrings after this?
+////									bufferSize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
+////									char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize,NULL,NULL);
+////									outfile<<"\"weldpass"<<longo1<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
+////									delete [] m1;
+////								   }
+////	else if(itype>= -99 && itype < -9){ltoa(-itype,longo2,10);for(ic=0;ic<wms.nMatPropSet;ic++)if(wms.name[ic]==wp.matName[-itype-1]){irec=ic;break;}
+////									   TStringDynArray DynStrings=SplitString(wms.matFileName[irec],L"."); //How to delete DynStrings after this?
+////									   int bufferSize7=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
+////									   char* m1=new char[bufferSize7];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize7,NULL,NULL);
+//// 									   outfile<<"\"weldpass"<<longo2<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
+////									   delete [] m1;
+////									  }
+////	else if(itype>= -999 && itype < -99){ltoa(-itype,longo3,10);for(ic=0;ic<wms.nMatPropSet;ic++)if(wms.name[ic]==wp.matName[-itype-1]){irec=ic;break;}
+////										 TStringDynArray DynStrings=SplitString(wms.matFileName[irec],L"."); //How to delete DynStrings after this?
+////										 bufferSize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
+////										 char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize,NULL,NULL);
+////										 outfile<<"\"weldpass"<<longo3<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
+////										 delete [] m1;
+////										}
+//	else if(itype>= -999 && itype <0){
+////ltoa(-itype,longo3,10);
+//for(ic=0;ic<wms.nMatPropSet;ic++)if(wms.name[ic]==wp.matName[-itype-1]){irec=ic;break;}
+////TStringDynArray DynStrings=SplitString(wms.matFileName[irec],L"."); //How to delete DynStrings after this?
 ////buffersize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
 ////char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,buffersize,NULL,NULL);
-//buffersize=WideCharToMultiByte(CP_UTF8,0,sArr[icycle].w_str(), -1,NULL,0,NULL,NULL);
-//char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,sArr[icycle].w_str(), -1,m1,buffersize,NULL,NULL);
+//buffersize=WideCharToMultiByte(CP_UTF8,0,wms.matFileName[irec].w_str(), -1,NULL,0,NULL,NULL);
+//char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wms.matFileName[irec].w_str(), -1,m1,buffersize,NULL,NULL);
+//
+//char* m3=new char[buffersize-4];
+//for(ic=0;ic<buffersize-4-1;ic++)m3[ic]=m1[ic];
+//m3[buffersize-4-1]=chendl[0];
+//
+////fnsplit(m1,NULL,NULL,nameMat,NULL);
+////char* m3=new char[buffersize-4+5];StringCchCopyA(m3,buffersize-4+5,nameMat);
+////StringCchCatA(m3,buffersize-4+5,umat);
+//
+//buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,NULL,0,NULL,NULL);
+//char* m2=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,m2,buffersize,NULL,NULL);
+//////outfile<<"\""<<m2<<"\" type l3disop material "<<m1<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+////////outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+////outfile<<"\""<<m2<<"\" type l3disop material "<<m1<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+//outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+//outfile<<" 2x2x2 center_output short\n"; //Correction from BobD & allow for long line   EFP 1/27/2015
+//delete [] m3;delete [] m2;delete [] m1;
+//									 }
+//	else {
+////	      honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
+//		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Too many nonWeld/Weld entities in exportCTSP4_public()",L"Terminate",MB_OK);exit(0);
+//		 }
+//   }
+//// delete [] iELSETorder;delete [] sArr;
 
-buffersize=WideCharToMultiByte(CP_UTF8,0,sArr[js].w_str(), -1,NULL,0,NULL,NULL);
-char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,sArr[js].w_str(), -1,m1,buffersize,NULL,NULL);
 
-//honk<<buffersize<<" "<<strlen(m1)<<" MMM111 "<<m1<<"\n";
-//////for(ic=0;ic<buffersize-1;ic++)if( *(m1+ic)==" "){honk<<ic<<" RIPA\n";break;}
-//for(ic=0;ic<buffersize-1;ic++)honk<<ic<<" RIPA "<<m1[ic]<<"\n";
-//fnsplit(m1,NULL,NULL,nameMat,NULL);//if(1==1)exit(0);
-//char* m3=new char[buffersize-4+5];StringCchCopyA(m3,buffersize-4+5,nameMat);StringCchCatA(m3,buffersize-4+5,umat);
+
+
+ for(icycle=0;icycle<nlist;icycle++){
+buffersize=WideCharToMultiByte(CP_UTF8,0,sArr[icycle].w_str(), -1,NULL,0,NULL,NULL);
+char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,sArr[icycle].w_str(), -1,m1,buffersize,NULL,NULL);
 char* m3=new char[buffersize-4];
 for(ic=0;ic<buffersize-4-1;ic++)m3[ic]=m1[ic];
 m3[buffersize-4-1]=chendl[0];
-
-buffersize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,NULL,0,NULL,NULL);
-char* m2=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[itype].w_str(), -1,m2,buffersize,NULL,NULL);
-
-//honk<<buffersize<<" "<<strlen(m2)<<" MMM222 "<<m2<<"\n";
-//for(ic=0;ic<buffersize-1;ic++){if(m2[ic]==chb[0])honk<<ic<<" CHBb2 "<<m2[ic]<<"\n";
-//							   else              honk<<ic<<" RIPA2 "<<m2[ic]<<"\n";
-//							  }
-
-//for(ic=0;ic<buffersize-1;ic++)if( *(m2+ic)==chb[0]){m2[ic]=chendl[0];break;}
+buffersize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[icycle].w_str(), -1,NULL,0,NULL,NULL);
+char* m2=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[icycle].w_str(), -1,m2,buffersize,NULL,NULL);
 for(ic=buffersize-2;ic>=0;ic--)if( *(m2+ic) != chb[0]){ *(m2+ic+1)=chendl[0];break;}
-
-////outfile<<"\""<<m2<<"\" type l3disop material "<<m1<<" order,\n"; //Correction from BobD   EFP 1/27/2015
-//////outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<" order,\n"; //Correction from BobD   EFP 1/27/2015
-//outfile<<"\""<<m2<<"\" type l3disop material "<<m1<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
 outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
 outfile<<" 2x2x2 center_output short\n"; //Correction from BobD & allow for long line   EFP 1/27/2015
-delete [] m3;delete [] m2;delete [] m1;js++;
-
-//if(1==1)exit(0);
-							   }
-//	else if(itype>= -9 && itype <0){ltoa(-itype,longo1,10);for(ic=0;ic<wms.nMatPropSet;ic++)if(wms.name[ic]==wp.matName[-itype-1]){irec=ic;break;}
-//									TStringDynArray DynStrings=SplitString(wms.matFileName[irec],L"."); //How to delete DynStrings after this?
-//									bufferSize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
-//									char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize,NULL,NULL);
-//									outfile<<"\"weldpass"<<longo1<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
-//									delete [] m1;
-//								   }
-//	else if(itype>= -99 && itype < -9){ltoa(-itype,longo2,10);for(ic=0;ic<wms.nMatPropSet;ic++)if(wms.name[ic]==wp.matName[-itype-1]){irec=ic;break;}
-//									   TStringDynArray DynStrings=SplitString(wms.matFileName[irec],L"."); //How to delete DynStrings after this?
-//									   int bufferSize7=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
-//									   char* m1=new char[bufferSize7];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize7,NULL,NULL);
-// 									   outfile<<"\"weldpass"<<longo2<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
-//									   delete [] m1;
-//									  }
-//	else if(itype>= -999 && itype < -99){ltoa(-itype,longo3,10);for(ic=0;ic<wms.nMatPropSet;ic++)if(wms.name[ic]==wp.matName[-itype-1]){irec=ic;break;}
-//										 TStringDynArray DynStrings=SplitString(wms.matFileName[irec],L"."); //How to delete DynStrings after this?
-//										 bufferSize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
-//										 char* m1=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,bufferSize,NULL,NULL);
-//										 outfile<<"\"weldpass"<<longo3<<"\" type l3disop material "<<m1<<" order 2x2x2 center output short\n";
-//										 delete [] m1;
-//										}
-	else if(itype>= -999 && itype <0){
-//ltoa(-itype,longo3,10);
-for(ic=0;ic<wms.nMatPropSet;ic++)if(wms.name[ic]==wp.matName[-itype-1]){irec=ic;break;}
-//TStringDynArray DynStrings=SplitString(wms.matFileName[irec],L"."); //How to delete DynStrings after this?
-//buffersize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
-//char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,buffersize,NULL,NULL);
-buffersize=WideCharToMultiByte(CP_UTF8,0,wms.matFileName[irec].w_str(), -1,NULL,0,NULL,NULL);
-char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wms.matFileName[irec].w_str(), -1,m1,buffersize,NULL,NULL);
-
-char* m3=new char[buffersize-4];
-for(ic=0;ic<buffersize-4-1;ic++)m3[ic]=m1[ic];
-m3[buffersize-4-1]=chendl[0];
-
-//fnsplit(m1,NULL,NULL,nameMat,NULL);
-//char* m3=new char[buffersize-4+5];StringCchCopyA(m3,buffersize-4+5,nameMat);
-//StringCchCatA(m3,buffersize-4+5,umat);
-
-buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,NULL,0,NULL,NULL);
-char* m2=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[-itype-1].w_str(), -1,m2,buffersize,NULL,NULL);
-////outfile<<"\""<<m2<<"\" type l3disop material "<<m1<<" order,\n"; //Correction from BobD   EFP 1/27/2015
-//////outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<" order,\n"; //Correction from BobD   EFP 1/27/2015
-//outfile<<"\""<<m2<<"\" type l3disop material "<<m1<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
-outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+delete [] m3;delete [] m2;delete [] m1;m1=m2=m3=NULL;
+									}
+ for(icycle=0;icycle<wp.nWeldPass;icycle++){
+buffersize=WideCharToMultiByte(CP_UTF8,0,wp.matName[icycle].w_str(), -1,NULL,0,NULL,NULL);
+char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.matName[icycle].w_str(), -1,m1,buffersize,NULL,NULL);
+buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,NULL,0,NULL,NULL);
+char* m2=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,m2,buffersize,NULL,NULL);
+outfile<<"\""<<m2<<"\" type l3disop material "<<m1<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
 outfile<<" 2x2x2 center_output short\n"; //Correction from BobD & allow for long line   EFP 1/27/2015
-delete [] m3;delete [] m2;delete [] m1;
-									 }
-	else {
-//	      honk<<itype<<" Terminate: Too many nonWeld/Weld entities in exportCTSP4_public()\n";
-		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Too many nonWeld/Weld entities in exportCTSP4_public()",L"Terminate",MB_OK);exit(0);
-		 }
-   }
-// delete [] iELSETorder;delete [] sArr;
+delete [] m2;delete [] m1;m1=m2=NULL;
+										   }
+
+
+
 ////////////////// Restore base.matno[] to positive
 for(ir=0;ir<base.nelt;ir++)if(base.matno[ir]<0)base.matno[ir]= -base.matno[ir];
 //////////////////
@@ -20531,7 +20712,7 @@ outfile<<"   extrapolate off\n";
 				  outfile<<"stop\n";
 				  outfile.close();
 //xxxxxxxxxx
- delete[] m;
+ delete[] m;m=NULL;
 //xxxxxxxxxx
 /////////////////////////////				  delete [] timeSeries;
  ofstream outfile1("compute_commands_all_profiles.inp");
@@ -20571,10 +20752,10 @@ outfile<<"   extrapolate off\n";
 buffersize=WideCharToMultiByte(CP_UTF8,0,wms.matFileName[ir].w_str(), -1,NULL,0,NULL,NULL);
 char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wms.matFileName[ir].w_str(), -1,m1,buffersize,NULL,NULL);
 outfile4<<"./"<<m1<<"\n";// EFP 12/10/2014
-delete[] m1;
+delete[] m1;m1=NULL;
 //												   break;//EMERGENCY return for single-material
 												  }
- delete [] rollcall;
+ delete [] rollcall;rollcall=NULL;
  outfile4<<"./VED.dat\n";
  outfile4<<"./warp_temp_2_files\n";
  outfile4<<"!\n";
@@ -20623,7 +20804,7 @@ delete[] m1;
 // outfile4<<"  1\n";
  outfile4<<"  2\n";
  outfile4.close();
- delete [] iELSETorder;delete [] sArr;
+ delete [] iELSETorder;delete [] sArr;iELSETorder=NULL;sArr=NULL;
 // ofstream outfile5("output_commands.inp");
 //// outfile5<<"!  Put WARP3D output commands here. These will be executed after\n";
 //// outfile5<<"!  solution for a profile completes at the profile frequency \n";
@@ -20694,13 +20875,23 @@ delete[] m1;
 	   Form9->CheckListBox1->Checked[i]=true;
 	   Form9->CheckListBox1->ItemIndex=0;
 	   Form9->ShowModal();
-	   delete Form9;// *Form9=NULL; (not in Unit1, remember, but perhaps we should not "delete"?)
+	   delete Form9;Form9=NULL; //(not in Unit1, remember, but perhaps we should not "delete"?)
 
 
 												 }
 								else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"WARP3D is for solid models only (shell detected)",L"Failure: ",MB_OK);}
 							   }
 				  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Missing param.in file",L"Failure",MB_OK);}
+}
+//---------------------------------------------------------------------------
+void TForm1::sortLArr_by_bubble(long *facetmap,const long lwFace,const long upFace)
+{int isw=0;long ic=0,ip=0,is0=0,is1=0; // Inefficient pair-by-pair bubble sort
+ for(ic=lwFace;ic<upFace;ic++){isw=0;for(ip=lwFace;ip<upFace+lwFace-ic;ip++)
+									   {is0= *(facetmap+ip);is1= *(facetmap+ip+1);
+										if(is0>is1){ *(facetmap+ip)=is1; *(facetmap+ip+1)=is0;isw=1;}
+									   }
+							   if(!isw)break;
+							  }
 }
 //---------------------------------------------------------------------------
 void TForm1::exportWARP3D5_public()
