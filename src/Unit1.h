@@ -511,6 +511,7 @@ public:		// User declarations
 		 exportWARP3D_public(),exportWARP3D1a_public(),exportWARP3D5_public();
 	void Form28_public(),Form28Close_public(),
 		 tshiftCTSP_public(),tshiftCTSP3_public(),tshiftCTSP1_public();
+    void parse_cdmQ_public(const char [],int*,int*,long [],float []); //Also called in Unit21 (Material properties)
 	__fastcall TForm1(TComponent* Owner);
 };
 //---------------------------------------------------------------------------

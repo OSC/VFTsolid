@@ -1419,6 +1419,10 @@ honk<<sumlim<<" ImpAbq MEM\n";
 	  } //CLOSE02
 } //CLOSE01
 */
+
+
+
+/*
 //---------------------------------------------------------------------------
 void TForm1::ImportAba_prog(int iswtype)
 {  //OPEN01
@@ -1445,7 +1449,7 @@ void TForm1::ImportAba_prog(int iswtype)
 // *SYSTEM
 // *TIE, etc
 //
- int nic=0,nic1=0,nrc=0,jsw=0,iswNode=0,iswElem=0;
+ int nic=0,nic1=0,nrc=0,jsw=0,psw=0,iswNode=0,iswElem=0;
  long
 // itype=0,
 in=0,kn=0,klim=0,
@@ -1475,7 +1479,7 @@ i=0,j=0,k=0,kk=0,kp=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1
 
  if(base.nop1){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"First, close current file->FileClose",L"Halt",MB_OK);}
  else {  //OPEN02
- base.matsteps=base.ncoorf=1;
+ base.matsteps=base.ncoorf=1;inadmissible=0;
  base.npoin=base.nelt=base.nvfix=base.nedge=base.pload=base.mat=base.nblod=0;
  base.allGrp=1; //Try insisting on a base group???
  base.ELSETelsum=MXNPEL=wp.nWeldGroup=0; //Establish MXNPEL
@@ -1492,8 +1496,8 @@ i=0,j=0,k=0,kk=0,kp=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1
 /////////////////////////////////////
  if(OpenDialog1->Execute())
 //   {ifstream ntape2(OpenDialog1->FileName.t_str(),ios::nocreate|ios::binary,0); //OPEN03
-   {ifstream ntape2(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0); //OPEN03
-	if(ntape2)
+   {ifstream ntape(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0); //OPEN03
+	if(ntape)
 	  { //OPEN04
 
 GeomFileName=OpenDialog1->FileName;
@@ -2580,8 +2584,1324 @@ Form1->Caption=GeomFileName;
 // else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not create FileOpen selector",L"Failure",MB_OK);}
 	  } //CLOSE02
 } //CLOSE01
+*/
 
 
+//---------------------------------------------------------------------------
+void TForm1::ImportAba_prog(int iswtype)
+{  //OPEN01
+// Note#1: When reading XXX_ABA.inp files, this subroutine does NOT read "INCLUDEd" XXX_bc.inp files below
+//********** Boundary Condition Definition **********
+//*INCLUDE, INPUT=testingVFT_bc.inp
+//
+// Note#2: Node cards must precede element cards in this version
+//*NODE, SYSTEM=R, NSET=NDALL, INPUT=testingVDT_node.inp
+//*ELEMENT,TYPE=C3D8R,ELSET=ALLEL, INPUT=testingVDT_element.inp
+//
+// Note#3: iswtype=0->Abaqus *.inp;1->Abaqus *.abq
+// Multiple node & element INCLUDEs are accommodated.
+// nodelolim,nodeuplim,eluplim begin with 1 (not 0)
+// DIRE WARNING: "Node Prin/Node Out/etc" cards MUST PRECEDE "Node" card below, because of "No" detection
+//               Ditto for Ele & Material, etc
+// Note current convention: *.msh & Simulia/Abaqus *.inp/*.abq files contain weld groups (never weld passes), regardless of name
+//     Hence wp.nWeldGroup is incremented but not wp.nWeldPass.
+//
+// ProcessAllWG() above was an attempt to accommodate "multiple base metal material ELSETS" but
+//   it crashes large Abaqus models??? EFP 6/19/2014
+//
+// *MATERIAL datacard must NOT have .dat suffix, or else temp2odb.py will fail.  EFP 11/16/2015
+// *MATERIAL datacard must NOT have number in first place (e.g. 1e650new.dat) so use material650.dat EFP 3/13/2016
+//
+// FRANTIC NOTE: Cartesian frame only. This version does NOT currently support Abaqus datacards
+// *SYSTEM
+// *TIE, etc
+//
+// FRANTIC NOTE: User must not have ELSET of ALL WPs (or must not name it WP,WD,WG,WELD)
+// Indicator of this condition: All WPs have same color !!!!!
+//
+//##############################################################
+// Simulia ABAQUS issues
+//
+// File can end with anything now (not necessarily *END or *END STEP).
+//
+// Policy: Only first *PART (if present) is read.
+//
+// Convention for acceptability of Abaqus datacards:
+//   totPART<2  Only one *PART supported
+//   "inadmissible" first column>0 => presence of unsupported *TIE
+//   "inadmissible" 2nd column>0 => presence of conflicting *STEP/End STEP
+//   "inadmissible" 3rd column>0 => presence of unsupported *ELGEN
+//   "inadmissible" 4th column>0 => presence of unsupported *NGEN
+//   "inadmissible" 5th column>0 => presence of unsupported *SYSTEM (i.e. cartesian coordinate frame only)
+//##############################################################
+// Flag to indicate model input from Abaqus *.inp/abq: glABAflag=totELEMcard+1000*totELSETcard+1000000*totSOLIDScard;
+ int nic=0,nic1=0,nrc=0,jsw=0,psw=0,iswNode=0,iswElem=0
+ ;
+ long in=0,kn=0,klim=0,totNODEcard=0,totELEMcard=0,iumNODEset=0,iumELEMset=0,iumELSETset=0,
+n8=0,dummy=0,
+i=0,j=0,k=0,kk=0,kp=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1000,larr[10],larr1[10]
+,nodeuplim=0,nodelolim=0,totNnum=0,eluplim=0,ellolim=0,totEnum=0,sumWG=0,sumlim=0
+,sumELSETel=0,totBMG=0,totWG=0,totELSETcard=0,totPART=0,totSOLIDScard=0
+  ,inadmissible=0,iallGrp=0, *revnode_map=NULL;
+ float darr[10];
+ char cht[200],extensChar[]=".inp", *temp_cht=NULL, *temp_cht1=NULL, *fnNeed1=NULL,*fnNeed2=NULL,
+	  ch_I='I',ch_i='i',ch_N='N',ch_n='n',ch_P='P',ch_p='p',ch_U='U',ch_u='u',ch_T='T',ch_t='t',ch_eq='=';
+ wchar_t string0[11];
+ if(base.nop1){extern PACKAGE void __fastcall Beep(void);
+			   Application->MessageBox(L"First, close current file->FileClose",L"Halt",MB_OK);}
+ else {  //OPEN02
+ base.matsteps=base.ncoorf=1;inadmissible=0;
+ base.npoin=base.nelt=base.nvfix=base.nedge=base.pload=base.mat=base.nblod=0;
+ base.allGrp=1; //Try insisting on a base group???
+ base.ELSETelsum=MXNPEL=wp.nWeldGroup=0; //Establish MXNPEL
+ OpenDialog1->Filter= L"SIMULIA/ABAQ (*.abq/*.inp)|*.inp;*.ABQ";
+
+// // initialize file dialog in VFTHOME path if no previous file selected
+// // if VFTHOME is not set, it falls back to default behavior
+// if (OpenDialog1->FileName == "") {
+//   OpenDialog1->InitialDir = getenv("VFTHOME");
+// } else {
+//   OpenDialog1->InitialDir = "";
+// }
+
+ // initialize file dialog in VFTHOME path
+ // if VFTHOME is not set, it falls back to default behavior
+ OpenDialog1->InitialDir = getenv("VFTHOME");
+
+//// if(iswtype)OpenDialog1->Filter= "SIMULIA_Abq (*.abq)|*.abq;*.ABQ|SIMULIA_Abq (*.inp)|*.inp;*.INP";
+//// else       OpenDialog1->Filter= "SIMULIA_Abq (*.inp)|*.inp;*.INP|SIMULIA_Abq (*.abq)|*.abq;*.ABQ";
+// if(iswtype)OpenDialog1->Filter= "SIMULIA_Abq (*.abq)|*.abq;*.ABQ";
+// else       OpenDialog1->Filter= "SIMULIA_Abq (*.inp)|*.inp;*.INP";
+/////////////////////////////////////
+ if(OpenDialog1->Execute())
+   {ifstream ntape(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0); //OPEN03
+	if(ntape)
+	  { //startOPEN04
+
+GeomFileName=OpenDialog1->FileName;
+SetCurrentDir(ExtractFilePath(GeomFileName));
+
+gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
+//////////////////////////////////////////////////////////////
+TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+//////////////////////////////////////////////////////////////
+	   nodeuplim=totNnum=eluplim=totEnum=totNODEcard=totELEMcard=totELSETcard=totSOLIDScard=totPART=0;//glABAflag=0;
+	   nodelolim=ellolim=LONG_INT;
+	   do {ntape.getline(cht,200-1);  //START_DO01
+		   if(cht[0]=='*' && cht[1]=='*')continue; //Comment ** & ***include & ***ORIENTATION
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+								  (cht[6]=='O' || cht[6]=='o') && (cht[7]=='U' || cht[7]=='u') && (cht[8]=='T' || cht[8]=='t') && (cht[9]=='P' || cht[9]=='p'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *NODE OUTP
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+								  (cht[6]=='F' || cht[6]=='f') && (cht[7]=='I' || cht[7]=='i') && (cht[8]=='L' || cht[8]=='l') && (cht[9]=='E' || cht[9]=='e'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *NODE FILE
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+								  (cht[6]=='P' || cht[6]=='p') && (cht[7]=='R' || cht[7]=='r') && (cht[8]=='I' || cht[8]=='i') && (cht[9]=='N' || cht[9]=='n'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *NODE PRIN
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+								  (cht[6]=='R' || cht[6]=='r') && (cht[7]=='E' || cht[7]=='e') && (cht[8]=='S' || cht[8]=='s') && (cht[9]=='P' || cht[9]=='p'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *NODE RESP
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e')) //comma unnecessary because of above NODE XXXX
+				  {iswNode=0;totNODEcard++;
+int ck_INPUT=0;
+for(j=8;j<int(strlen(cht))-4;j++){
+
+
+							 ck_INPUT=0;
+							 if(cht[j-5]==ch_I || cht[j-5]==ch_i)ck_INPUT++;
+							 if(cht[j-4]==ch_N || cht[j-4]==ch_n)ck_INPUT++;
+							 if(cht[j-3]==ch_P || cht[j-3]==ch_p)ck_INPUT++;
+							 if(cht[j-2]==ch_U || cht[j-2]==ch_u)ck_INPUT++;
+							 if(cht[j-1]==ch_T || cht[j-1]==ch_t)ck_INPUT++;
+							 if(cht[j]==ch_eq)ck_INPUT++;
+							 if(ck_INPUT==6)
+											{iswNode=1;
+											 for(in=j+1;in<int(strlen(cht))-1;in++)if(cht[in]=='.')break;
+											 fnNeed1=new char[in-j-1+strlen(extensChar)+1];
+											 for(kk=j+1;kk<in;kk++)fnNeed1[kk-j-1]=cht[kk];
+//											 StringCchCat(fnNeed1,in-j-1+strlen(extensChar)+1,extensChar);
+											 fnNeed1[in+0-j-1]='.';fnNeed1[in+1-j-1]='i';fnNeed1[in+2-j-1]='n';fnNeed1[in+3-j-1]='p';fnNeed1[in+4-j-1]='\0';
+											 ifstream viewfile1(fnNeed1,ios::nocreate);
+											 if(viewfile1){do {viewfile1.getline(cht,200-1);
+//															   parse_cdm(cht,4,&nic,&nrc,larr,darr); // *NODE
+															   if(strlen(cht))
+																 {parse_cdm3ff(cht,4,&nic,&nrc,larr,darr);
+																  if(nodeuplim<larr[0])nodeuplim=larr[0];
+																  if(nodelolim>larr[0])nodelolim=larr[0];
+																  totNnum++;
+																 }
+															  }
+														   while (!viewfile1.eof());
+														   viewfile1.close();
+														  }
+											 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Node *.inp file not found",L"Terminate",MB_OK);exit(0);}
+											 delete [] fnNeed1;fnNeed1=NULL; // NODE, stored in fnNeed1 file
+											 break;
+											}
+							}
+				   if(!iswNode)
+					 {do {ntape.getline(cht,200-1);if(ntape.eof())break;
+////						  parse_cdm(cht,4,&nic,&nrc,larr,darr); // *NODE
+//						  parse_cdm3f(cht,4,&nic,&nrc,larr,darr);
+						  parse_cdm3ff(cht,4,&nic,&nrc,larr,darr);
+						  if(nodeuplim<larr[0])nodeuplim=larr[0];
+						  if(nodelolim>larr[0])nodelolim=larr[0];
+						  totNnum++; // This totNum might be +1 wrong.
+						 }
+					  while (ntape.peek()!= '*');
+					 }
+				  }
+
+
+		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+								   (cht[ 9]=='M' || cht[ 9]=='m') && (cht[10]=='A' || cht[10]=='a') && (cht[11]=='T' || cht[11]=='t') && (cht[12]=='R' || cht[12]=='r') && (cht[13]=='I' || cht[13]=='i') && (cht[14]=='X' || cht[14]=='x'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *ELEMENT MATRIX
+		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+								   (cht[ 9]=='O' || cht[ 9]=='o') && (cht[10]=='P' || cht[10]=='p') && (cht[11]=='E' || cht[11]=='e') && (cht[12]=='R' || cht[12]=='r') && (cht[13]=='A' || cht[13]=='a') && (cht[14]=='T' || cht[14]=='t'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *ELEMENT OPERATOR OUTPUT
+		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+								   (cht[ 9]=='O' || cht[ 9]=='o') && (cht[10]=='U' || cht[10]=='u') && (cht[11]=='T' || cht[11]=='t') && (cht[12]=='P' || cht[12]=='p') && (cht[13]=='U' || cht[13]=='u') && (cht[14]=='T' || cht[14]=='t'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *ELEMENT OUTPUT
+		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+								   (cht[ 9]=='R' || cht[ 9]=='r') && (cht[10]=='E' || cht[10]=='e') && (cht[11]=='S' || cht[11]=='s') && (cht[12]=='P' || cht[12]=='p') && (cht[13]=='O' || cht[13]=='o') && (cht[14]=='N' || cht[14]=='n'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *ELEMENT RESPON
+		   else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='L' || cht[2]=='l') && (cht[3]=='E' || cht[3]=='e') && (cht[4]=='M' || cht[4]=='m') && (cht[5]=='E' || cht[5]=='e') && (cht[6]=='N' || cht[6]=='n') && (cht[7]=='T' || cht[7]=='t'))//comma not necessary
+																			{iswElem=0;totELEMcard++;
+for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
+							   (cht[j-4]=='N' || cht[j-4]=='n') &&
+							   (cht[j-3]=='P' || cht[j-3]=='p') &&
+							   (cht[j-2]=='U' || cht[j-2]=='u') &&
+							   (cht[j-1]=='T' || cht[j-1]=='t') &&
+								cht[j]=='='){
+											 iswElem=1;
+											 for(in=j+1;in<int(strlen(cht))-1;in++)if(cht[in]=='.')break;
+											 fnNeed2=new char[in-j-1+strlen(extensChar)+1];
+											 for(kk=j+1;kk<in;kk++)fnNeed2[kk-j-1]=cht[kk]; //StringCchCat(fnNeed2,in-j-1+strlen(extensChar)+1,extensChar);
+											 fnNeed2[in+0-j-1]='.';fnNeed2[in+1-j-1]='i';fnNeed2[in+2-j-1]='n';fnNeed2[in+3-j-1]='p';fnNeed2[in+4-j-1]='\0';
+											 ifstream viewfile2(fnNeed2,ios::nocreate);
+											 if(viewfile2){do {viewfile2.getline(cht,200-1);
+															   for(i=0;i<10;i++)larr[i]=0;
+															   parse_cdmQ_public(cht,&nic,&nrc,larr,darr); // *ELEMENT, stored in fnNeed2 file
+															   if(nic-1==4) //Caution: eluplim & ellolim begin with 1
+																 {totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Correction EFP 6/28/2011
+																 }
+															   else if(nic-1==5)
+																 {nic=5;totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Allow for possible trailing comma EFP 6/28/2011
+																 }
+															   else if(nic-1==6)
+																 {totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Allow for possible trailing comma EFP 6/28/2011
+																 }
+															   else if(nic-1==7)
+																 {nic=7;totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Allow for possible trailing comma EFP 6/28/2011
+																 }
+															   else if(nic-1==8)
+																 {totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(!larr[8])viewfile2.getline(cht,200-1); //Read extra line but assume NX 8-n  EFP 4/05/2012
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Allow for possible trailing comma EFP 6/28/2011
+																 }
+															   else if(nic-1==9)
+																 {nic=9;totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Allow for possible trailing comma EFP 6/28/2011
+																 }
+															   else break; //Preceding abort does not work???
+															  }
+														   while (!viewfile2.eof());
+														   viewfile2.close();
+														  }
+											 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Element *.inp file not found",L"Terminate",MB_OK);exit(0);}
+											 delete [] fnNeed2;fnNeed2=NULL; // NODE, stored in fnNeed2 file
+											 break;
+											}
+//////////
+																			 if(!iswElem)
+																			   {do {ntape.getline(cht,200-1);if(ntape.eof())break; // This might be +1 wrong
+																					for(i=0;i<10;i++)larr[i]=0;
+																					parse_cdmQ_public(cht,&nic,&nrc,larr,darr); // *ELEMENT
+															   if(nic-1==4)
+																 {totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Correction EFP 6/28/2011
+																 }
+															   else if(nic-1==5)
+																 {nic=5;totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Allow for possible trailing comma EFP 6/28/2011
+																 }
+															   else if(nic-1==6)
+																 {totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Allow for possible trailing comma EFP 6/28/2011
+																 }
+															   else if(nic-1==7)
+																 {nic=7;totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Allow for possible trailing comma EFP 6/28/2011
+																 }
+															   else if(nic-1==8)
+																 {totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(!larr[8]){ntape.getline(cht,200-1);if(ntape.eof())break;} //Read extra line but assume NX 8-n  EFP 4/05/2012
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Allow for possible trailing comma EFP 6/28/2011
+																 }
+															   else if(nic-1==9)
+																 {nic=9;totEnum++;if(eluplim<larr[0])eluplim=larr[0];
+																  if(ellolim>larr[0])ellolim=larr[0];
+																  if(MXNPEL<nic-1)MXNPEL=nic-1;//Allow for possible trailing comma EFP 6/28/2011
+																 }
+//															   else {honk<<"Halt1: Unsupported element with #nodes "<<nic-1<<"\n";
+//																	 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(_ltow(nic-1,string0,10),L"Halt1: Unsupported element with #nodes",MB_OK);
+//																	 exit(0);
+//																	}
+															   else break; //Preceding abort does not work???
+
+
+
+																				   }
+																				while (ntape.peek()!= '*');
+																			   }
+																			}
+		   else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='L' || cht[2]=='l') && (cht[3]=='S' || cht[3]=='s'))
+//Caution: ELSET of ELSETs unsupported
+//Caution: Remember that "GENERATE & SYSTEM & other" can occur in any order
+//Caution: Remember that strlen() already excludes end-of-line, so check that the following is correct. EFP 6/19/2014
+				  {totELSETcard++;
+				   for(i=7;i<int(strlen(cht))-1;i++)if(cht[i]=='=')break;
+				   for(jrec=i+1;jrec<int(strlen(cht))-1;jrec++)if(cht[jrec]!=' ')break;
+				   k=0;
+///////////////////
+				   for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='A' || cht[i  ]=='a')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='W' || cht[i+3]=='w') &&
+																		  (cht[i+4]=='D' || cht[i+4]=='d')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject AllWD
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='A' || cht[i  ]=='a')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='W' || cht[i+3]=='w') &&
+																		  (cht[i+4]=='E' || cht[i+4]=='e') &&
+																		  (cht[i+5]=='L' || cht[i+5]=='l') &&
+																		  (cht[i+6]=='D' || cht[i+6]=='d')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject AllWELD
+						 }
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='E' || cht[i  ]=='e')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='A' || cht[i+2]=='a') &&
+																		  (cht[i+3]=='L' || cht[i+3]=='l') &&
+																		  (cht[i+4]=='L' || cht[i+4]=='l')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject ElAll
+						 }
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='A' || cht[i  ]=='a')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='E' || cht[i+3]=='e') &&
+																		  (cht[i+4]=='L' || cht[i+4]=='l')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject AllEl
+						 }
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='E' || cht[i  ]=='e')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='A' || cht[i+1]=='a') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='L' || cht[i+3]=='l')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject EAll  EFP 4/08/2012
+						 }
+///////////////////
+				   jsw=0;
+				   if(k==0){base.allGrp=base.allGrp+1;nGID=nGID+1;
+							for(i=jrec;i<int(strlen(cht))-1;i++){if(cht[i  ]=='W' || cht[i  ]=='w')
+														   {if(i+1<int(strlen(cht))){if(cht[i+1]=='D' || cht[i+1]=='d'){jsw=1;break;}
+																				else if(cht[i+1]=='P' || cht[i+1]=='p'){jsw=1;break;}
+																				else if(cht[i+1]=='G' || cht[i+1]=='g'){jsw=1;break;}
+																				else if(cht[i+1]=='E' || cht[i+1]=='e')
+																					   {if(i+3<int(strlen(cht)))
+																						  {if((cht[i+2]=='L' || cht[i+2]=='l') &&
+																							  (cht[i+3]=='D' || cht[i+3]=='d')){jsw=1;break;}
+																						  }
+																						else break;
+																					   }
+																				else break;
+																			   }
+															else break;
+														   }  // Accept WD, WP, WG and WELD
+																}
+							if(jsw)wp.nWeldGroup=wp.nWeldGroup+1;
+						   }
+////////////////////////
+				   do {ntape.getline(cht,200-1);if(ntape.eof())break;
+///////////////// Start EMERGENCY check to exclude ELSET alphabetic data  EFP 4/23/2011
+					   for(i=0;i<int(strlen(cht))-1;i++)
+						 {if(cht[i]==',' || cht[i]==' ' || cht[i]=='0' || cht[i]=='1' || cht[i]=='2' || cht[i]=='3' || cht[i]=='4' ||
+														   cht[i]=='5' || cht[i]=='6' || cht[i]=='7' || cht[i]=='8' || cht[i]=='9')continue;
+						  else {
+								extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Please remove unsupported *ELSET card with non-numeric data from *.abq/*.inp",L"Terminate",MB_OK);exit(0);
+//honk<<"\n"<<cht<<" Warning: ELSET of ELSETs datacard found\n";break;
+							   }
+						 }
+///////////////// End
+					  } // *ELSET
+				   while (ntape.peek()!= '*');
+				  }
+		   else if(cht[0]=='*' && (cht[1]=='S' || cht[1]=='s') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='L' || cht[3]=='l') && (cht[4]=='I' || cht[4]=='i') && (cht[5]=='D' || cht[5]=='d') && cht[6]==' ' && (cht[7]=='S' || cht[7]=='s'))
+				  {totSOLIDScard++;
+				   while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}
+				  } // *SOLID SECTION
+		   else if(cht[0]=='*' && (cht[1]=='P' || cht[1]=='p') && (cht[2]=='A' || cht[2]=='a') && (cht[3]=='R' || cht[3]=='r') && (cht[4]=='T' || cht[4]=='t'))
+				  {totPART++;} // *PART (no extra lines)
+		   else if(cht[0]=='*' && (cht[1]=='T' || cht[1]=='t') && (cht[2]=='I' || cht[2]=='i') && (cht[3]=='E' || cht[3]=='e'))
+				  {if(!(inadmissible-10*(inadmissible/10)))inadmissible++;
+				   while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}
+				  } // *TIE
+		   else if(cht[0]=='*' && (cht[1]=='S' || cht[1]=='s') && (cht[2]=='T' || cht[2]=='t') && (cht[3]=='E' || cht[3]=='e') && (cht[4]=='P' || cht[4]=='p'))
+				  {if(!((inadmissible-100*(inadmissible/100))/10))inadmissible=inadmissible+10;
+				   while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}
+				  } // *STEP (This card is acceptable on input but is not written out.)
+		   else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='L' || cht[2]=='l') && (cht[3]=='G' || cht[3]=='g') && (cht[4]=='E' || cht[4]=='e') && (cht[4]=='N' || cht[4]=='n'))
+				  {if(!((inadmissible-1000*(inadmissible/1000))/100))inadmissible=inadmissible+100;
+				   while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}
+				  } // *ELGEN
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='G' || cht[2]=='g') && (cht[3]=='E' || cht[3]=='e') && (cht[4]=='N' || cht[4]=='n'))
+				  {if(!((inadmissible-10000*(inadmissible/10000))/1000))inadmissible=inadmissible+1000;
+				   while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}
+				  } // *NGEN
+		   else if(cht[0]=='*' && (cht[1]=='S' || cht[1]=='s') && (cht[2]=='Y' || cht[2]=='y') && (cht[3]=='S' || cht[3]=='s') && (cht[4]=='T' || cht[4]=='t') && (cht[5]=='E' || cht[5]=='e') && (cht[6]=='M' || cht[6]=='m'))
+				  {if(!((inadmissible-100000*(inadmissible/100000))/10000))inadmissible=inadmissible+10000;
+				   while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}
+				  } // *SYSTEM
+		   else if(cht[0]=='*' && (cht[1]=='T' || cht[1]=='t') && (cht[2]=='R' || cht[2]=='r') && (cht[3]=='A' || cht[3]=='a') && (cht[4]=='N' || cht[4]=='n') && (cht[5]=='S' || cht[5]=='s') && (cht[6]=='F' || cht[6]=='f'))
+				  {if(!((inadmissible-1000000*(inadmissible/1000000))/100000))inadmissible=inadmissible+100000;
+				   while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}
+				  } // *TRANSFORM
+
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='S' || cht[2]=='s') && (cht[3]=='E' || cht[3]=='e') && (cht[4]=='T' || cht[4]=='t'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *NSET
+		   else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='A' || cht[5]=='a'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Assembly
+		   else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='I' || cht[5]=='i'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Instance
+		   else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='P' || cht[5]=='p'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Part
+		   else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='S' || cht[5]=='s'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Step
+		   else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}}
+				   // *end step CORRECTED EFP 10/22/2010
+		   else   {//if(iswtype)honk<<"WARNING: The following ignored datacard found in *.abq\n";
+				   //else       honk<<"WARNING: The following ignored datacard found in *.inp\n";
+				   //honk<<cht[0]<<" "<<cht[1]<<" "<<cht[2]<<" "<<cht[3]<<"\n";
+				   while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}
+				  }
+		  }
+	   while (!ntape.eof()); //END_DO01
+///////////////////////////
+Screen->Cursor=Save_Cursor;
+///////////////////////////
+//	   base.matsteps=matstep;
+//honk<<nodeuplim<<" "<<nodelolim<<" "<<totNnum<<" Node/Elem "<<eluplim<<" "<<ellolim<<" "<<totEnum<<" "<<MXNPEL<<" DDDDDDDD\n";
+	   if(totPART>1){extern PACKAGE void __fastcall Beep(void);
+					 Application->MessageBox(L"Multiple *PART found in *.inp/abq",L"Terminate: only one PART allowed",MB_OK);exit(0);
+					}
+	   if(inadmissible-10*(inadmissible/10)){extern PACKAGE void __fastcall Beep(void);
+											 Application->MessageBox(L"*TIE found in *.inp/abq",L"Terminate: unsupported *TIE card",MB_OK);exit(0);
+											}
+	   if((inadmissible-100*(inadmissible/100))/10){extern PACKAGE void __fastcall Beep(void);
+Application->MessageBox(L"*STEP found in input *.inp/abq.\nThermal analysis *STEP datacards\nwill replace this\n*STEP-to-END STEP\ndatacard set in\nABAQUS output file\nto avoid conflict.",L"Notice: output file will omit existing *STEP datacards",MB_OK);
+												   }
+	   if((inadmissible-1000*(inadmissible/1000))/100){extern PACKAGE void __fastcall Beep(void);
+													   Application->MessageBox(L"*ELGEN found in *.inp/abq",L"Terminate: unsupported *ELGEN",MB_OK);exit(0);
+													  }
+	   if((inadmissible-10000*(inadmissible/10000))/1000){extern PACKAGE void __fastcall Beep(void);
+														  Application->MessageBox(L"*NGEN found in *.inp/abq",L"Terminate: unsupported *NGEN",MB_OK);exit(0);
+														 }
+	   if((inadmissible-100000*(inadmissible/100000))/10000){extern PACKAGE void __fastcall Beep(void);
+															 Application->MessageBox(L"*SYSTEM found in *.inp/abq",L"Terminate: cartesian frame only",MB_OK);exit(0);
+															}
+	   if((inadmissible-1000000*(inadmissible/1000000))/100000){extern PACKAGE void __fastcall Beep(void);
+																Application->MessageBox(L"*TRANSFORM found in *.inp/abq",L"Terminate: cartesian frame only",MB_OK);exit(0);
+															   }
+	   if(wp.nWeldGroup==0){extern PACKAGE void __fastcall Beep(void);
+							Application->MessageBox(L"Looking for WD,WG,WP,WELD. No weld groups (*ELSET, ELSET=...weld...) found in *.inp/abq",L"Terminate",MB_OK);exit(0);
+						   }
+//GeomFileName=OpenDialog1->FileName;
+
+//	   base.npoin=nodeuplim;
+	   base.npoin=totNnum;
+//	   base.nelt=eluplim;
+	   base.nelt=totEnum; //Policy: Reserve storage for #elements read-in, even if there is duplication  EFP 4/19/2012
+//	   glABAflag=totELEMcard+1000*totELSETcard+1000000*totSOLIDScard;
+
+//
+////
+////// Integrity test for WARP3D unitary-start consecutive numbering
+//	   if(nodeuplim != totNnum){honk<<nodeuplim<<"TERMINATE: Nonconsecutive node numbers in file "<<totNnum<<"\n";}
+//	   if(eluplim != totEnum){honk<<eluplim<<"TERMINATE: Nonconsecutive/duplicate element numbers in file "<<totEnum<<"\n";}
+//	   if(nodeuplim != totNnum){honk<<nodeuplim<<"ADVISORY: Nonconsecutive node numbers in file "<<totNnum<<"\n";}
+//	   if(eluplim != totEnum){honk<<eluplim<<"ADVISORY: Nonconsecutive/duplicate element numbers in file "<<totEnum<<"\n";}
+	   if(nodeuplim != totNnum && eluplim != totEnum) // The following presumes that CTSP accepts non-consecutive nodes/elements.
+		 {extern PACKAGE void __fastcall Beep(void);
+//		  Application->MessageBox(L"WARP3D-inadmissable: Nonconsecutive elements & nodes found. Please renumber.",L"Terminate",MB_OK);
+		  Application->MessageBox(L"Advisory: Nonconsecutive elements & nodes found.\nWARP3D-inadmissible. If using WARP3D, please renumber.",L"Warning",MB_OK);
+//		  exit(0);
+//		  glABAflag=0;
+		 }
+	   else if(nodeuplim != totNnum)
+		 {extern PACKAGE void __fastcall Beep(void);
+////		  Application->MessageBox(L"WARP3D-inadmissable: Nonconsecutive nodes found. Please renumber.",L"Terminate",MB_OK);
+//		  Application->MessageBox(L"Advisory: WARP3D-inadmissable. Nonconsecutive nodes found. Please renumber.",L"Warning",MB_OK);
+		  Application->MessageBox(L"Advisory: Nonconsecutive nodes found.\nWARP3D-inadmissible. If using WARP3D, please renumber.",L"Warning",MB_OK);
+//		  exit(0);
+//		  glABAflag=0;
+		 }
+	   else if(eluplim != totEnum)
+		 {extern PACKAGE void __fastcall Beep(void);
+////		  Application->MessageBox(L"WARP3D-inadmissable: Nonconsecutive elements found. Please renumber.",L"Terminate",MB_OK);
+//		  Application->MessageBox(L"Advisory: WARP3D-inadmissable. Nonconsecutive elements found. Please renumber.",L"Warning",MB_OK);
+		  Application->MessageBox(L"Advisory: Nonconsecutive elements found.\nWARP3D-inadmissible. If using WARP3D, please renumber.",L"Warning",MB_OK);
+//		  exit(0);
+//		  glABAflag=0;
+		 }
+//////
+////
+//
+	   if(base.nelt> LONG_INT/t3){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Excessive #elements in geometry file",L"Terminate",MB_OK);exit(0);}
+	   if(base.npoin>0 && base.nelt>0) //StartNPOIN/NELT
+		 {FDdynmem_manage(1,base.npoin,base.nelt,dummy,dummy,dummy,base.npoin,dummy,dummy,dummy,dummy,dummy,dummy,MXNPEL);
+//		  FDdynmem_manage(13,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy);
+		  FDdynmem_manage(13,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,wp.nWeldGroup+1);
+		  FDdynmem_manage(15,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.nelt);//EFP 8/07/2011
+//		  base.groupsname[0]=L"ElAll"; //EFP 10/23/2011
+//		  base.groupsname[base.allGrp-wp.nWeldGroup-1]=L"AllWeld"; //EFP 10/23/2011
+////		  ifstream ntape1(OpenDialog1->FileName.t_str(),ios::nocreate|ios::binary,0);
+		  FDdynmem_manage(20,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.allGrp);//EFP 8/07/2011
+		  base.ELSETinputnames[0]=L"ALLEL";
+//////////////////////////////////////////////////////////////
+TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+//////////////////////////////////////////////////////////////
+//			 ipid=nGID=1;  //Assumption: All elements start with GID=1
+			 nGID=iallGrp=1;
+//			 wp.nWeldGroup=0;
+			 totNnum=totEnum=sumELSETel=sumlim=iumNODEset=iumELEMset=iumELSETset=psw=0;
+//			 totBMG=0;totWG= -1;//EFP 10/22/2011
+			 totBMG=0;totWG=0;//EFP 10/22/2011
+			 for(in=0;in<NDF*base.npoin;in++)base.c1[in]=0.f;
+//vvvvvvvvvvvvvvvvvvv
+			 for(in=0;in<2*base.npoin;in++)base.nofix[in]=0;
+			 for(in=0;in<base.npoin;in++)base.nrfix[in]=0;
+			 for(in=0;in<NDF*base.npoin;in++)base.presc[in]=0.f;
+//vvvvvvvvvvvvvvvvvvv
+			 for(in=0;in<base.nelt;in++)base.arELEM[in]=1;
+//			 for(in=0;in<base.nelt;in++)base.el_map[in]= -1;
+//			 for(in=0;in<base.npoin;in++)base.node_map[in]= -1;
+//////////// EFP 4/01/2011
+//revnode_map=new long[nodeuplim-nodelolim+1];
+//			 temp_allGID=new int[base.allGrp*base.nelt]; //No WP in ImportAba()
+////			   temp_orgGID=new int[base.allGrp]; //EFP 3/11/2012
+//			 for(in=0;in<base.allGrp*base.nelt;in++)temp_allGID[in]=0;
+//			 for(in=0;in<base.nelt;in++)temp_allGID[in]=1;
+////			   for(in=0;in<base.allGrp;in++)temp_orgGID[in]=0;
+
+//			 attendEl=new int[eluplim-ellolim+1];
+//			 for(in=0;in<eluplim-ellolim+1;in++)attendEl[in]=0;
+
+//			 for(in=0;in<base.npoin;in++)base.arrELSET[in]=0;
+			 for(in=0;in<base.nelt;in++)base.arrELSET[in]=0; //Correction EFP 1/14/2015
+
+			 revnode_map=new long[nodeuplim-nodelolim+1];
+			 if(ntape.fail())ntape.clear();
+			 ntape.seekg(0,ios::beg);
+			 do {ntape.getline(cht,200-1); //StartDO02
+				 if(cht[0]=='*' && cht[1]=='*')continue; //Comment ** & ***include & ***ORIENTATION
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+								  (cht[6]=='O' || cht[6]=='o') && (cht[7]=='U' || cht[7]=='u') && (cht[8]=='T' || cht[8]=='t') && (cht[9]=='P' || cht[9]=='p'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *NODE OUTP
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+								  (cht[6]=='F' || cht[6]=='f') && (cht[7]=='I' || cht[7]=='i') && (cht[8]=='L' || cht[8]=='l') && (cht[9]=='E' || cht[9]=='e'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *NODE FILE
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+								  (cht[6]=='P' || cht[6]=='p') && (cht[7]=='R' || cht[7]=='r') && (cht[8]=='I' || cht[8]=='i') && (cht[9]=='N' || cht[9]=='n'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *NODE PRIN
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+								  (cht[6]=='R' || cht[6]=='r') && (cht[7]=='E' || cht[7]=='e') && (cht[8]=='S' || cht[8]=='s') && (cht[9]=='P' || cht[9]=='p'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *NODE RESP
+		   else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e'))
+//// Dire warning: Never have a space between number & trailing comma, or an extra 0. will be inferred, as follows:
+//*NODE,
+//           1,   0.0000000E+00,   0.0000000E+00,   0.0000000E+00
+//           2,   0.5000000    ,   0.0000000E+00,   0.0000000E+00
+//           3,    1.000000    ,   0.0000000E+00,   0.0000000E+00
+//           4,    1.500000    ,   0.0000000E+00,   0.0000000E+00
+//           5,    2.000000    ,   0.0000000E+00,   0.0000000E+00
+//// This must be corrected to
+//*NODE,
+//           1,   0.0000000E+00,   0.0000000E+00,   0.0000000E+00
+//           2,   0.5000000,   0.0000000E+00,   0.0000000E+00
+//           3,    1.000000,   0.0000000E+00,   0.0000000E+00
+//           4,    1.500000,   0.0000000E+00,   0.0000000E+00
+//           5,    2.000000,   0.0000000E+00,   0.0000000E+00
+						{iswNode=0;iumNODEset++;
+int ck_INPUT=0;
+for(j=8;j<int(strlen(cht))-4;j++){
+
+
+							 ck_INPUT=0;
+							 if(cht[j-5]==ch_I || cht[j-5]==ch_i)ck_INPUT++;
+							 if(cht[j-4]==ch_N || cht[j-4]==ch_n)ck_INPUT++;
+							 if(cht[j-3]==ch_P || cht[j-3]==ch_p)ck_INPUT++;
+							 if(cht[j-2]==ch_U || cht[j-2]==ch_u)ck_INPUT++;
+							 if(cht[j-1]==ch_T || cht[j-1]==ch_t)ck_INPUT++;
+							 if(cht[j]==ch_eq)ck_INPUT++;
+							 if(ck_INPUT==6)
+											{iswNode=1;
+											 for(in=j+1;in<int(strlen(cht))-1;in++)if(cht[in]=='.')break;
+											 fnNeed1=new char[in-j-1+strlen(extensChar)+1];
+											 for(kk=j+1;kk<in;kk++)fnNeed1[kk-j-1]=cht[kk]; //StringCchCat(fnNeed1,in-j-1+strlen(extensChar)+1,extensChar);
+											 fnNeed1[in+0-j-1]='.';fnNeed1[in+1-j-1]='i';fnNeed1[in+2-j-1]='n';fnNeed1[in+3-j-1]='p';fnNeed1[in+4-j-1]='\0';
+											 ifstream viewfile3(fnNeed1,ios::nocreate);
+											 if(viewfile3){do {viewfile3.getline(cht,200-1); //parse_cdm(cht,4,&nic,&nrc,larr,darr); // *NODE
+															   if(strlen(cht))
+																{parse_cdm3ff(cht,4,&nic,&nrc,larr,darr);
+																 in=larr[0]-1;base.c1[NDF*totNnum]=darr[0];base.c1[NDF*totNnum+1]=darr[1];base.c1[NDF*totNnum+2]=darr[2];
+																 base.node_map[totNnum]=in;
+																 revnode_map[in-nodelolim+1]=totNnum;
+																 totNnum++;
+																}
+															   else break;
+															  }
+														   while (!viewfile3.eof());
+														   viewfile3.close();
+														  }
+											 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Node *.inp file not found",L"Terminate",MB_OK);exit(0);}
+											 delete [] fnNeed1;fnNeed1=NULL; // NODE, stored in fnNeed1 file
+											 break;
+											}
+							}
+				   if(!iswNode)
+					 {do {ntape.getline(cht,200-1);if(ntape.eof())break;
+//parse_cdm(cht,4,&nic,&nrc,larr,darr); // *NODE, stored in same file
+						  parse_cdm3ff(cht,4,&nic,&nrc,larr,darr);
+						  in=larr[0]-1;base.c1[NDF*totNnum]=darr[0];base.c1[NDF*totNnum+1]=darr[1];base.c1[NDF*totNnum+2]=darr[2];
+						  base.node_map[totNnum]=in;  // Check this
+						  revnode_map[in-nodelolim+1]=totNnum;
+						  totNnum++;
+						 }
+					  while (ntape.peek()!= '*');
+					 }
+						 if(iumNODEset==totNODEcard && iumELEMset==totELEMcard)psw=1;
+						}
+		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+								   (cht[ 9]=='M' || cht[ 9]=='m') && (cht[10]=='A' || cht[10]=='a') && (cht[11]=='T' || cht[11]=='t') && (cht[12]=='R' || cht[12]=='r') && (cht[13]=='I' || cht[13]=='i') && (cht[14]=='X' || cht[14]=='x'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *ELEMENT MATRIX
+		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+								   (cht[ 9]=='O' || cht[ 9]=='o') && (cht[10]=='P' || cht[10]=='p') && (cht[11]=='E' || cht[11]=='e') && (cht[12]=='R' || cht[12]=='r') && (cht[13]=='A' || cht[13]=='a') && (cht[14]=='T' || cht[14]=='t'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *ELEMENT OPERATOR OUTPUT
+		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+								   (cht[ 9]=='O' || cht[ 9]=='o') && (cht[10]=='U' || cht[10]=='u') && (cht[11]=='T' || cht[11]=='t') && (cht[12]=='P' || cht[12]=='p') && (cht[13]=='U' || cht[13]=='u') && (cht[14]=='T' || cht[14]=='t'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *ELEMENT OUTPUT
+		   else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+								   (cht[ 9]=='R' || cht[ 9]=='r') && (cht[10]=='E' || cht[10]=='e') && (cht[11]=='S' || cht[11]=='s') && (cht[12]=='P' || cht[12]=='p') && (cht[13]=='O' || cht[13]=='o') && (cht[14]=='N' || cht[14]=='n'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *ELEMENT RESPON
+		   else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='L' || cht[2]=='l') && (cht[3]=='E' || cht[3]=='e') && (cht[4]=='M' || cht[4]=='m') && (cht[5]=='E' || cht[5]=='e') && (cht[6]=='N' || cht[6]=='n') && (cht[7]=='T' || cht[7]=='t')) //comma not necessary
+						{
+						 iswElem=0;iumELEMset++;
+for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
+							   (cht[j-4]=='N' || cht[j-4]=='n') &&
+							   (cht[j-3]=='P' || cht[j-3]=='p') &&
+							   (cht[j-2]=='U' || cht[j-2]=='u') &&
+							   (cht[j-1]=='T' || cht[j-1]=='t') &&
+								cht[j]=='='){iswElem=1;
+											 for(in=j+1;in<int(strlen(cht))-1;in++)if(cht[in]=='.')break;
+											 fnNeed2=new char[in-j-1+strlen(extensChar)+1];
+											 for(kk=j+1;kk<in;kk++)fnNeed2[kk-j-1]=cht[kk]; //StringCchCat(fnNeed2,in-j-1+strlen(extensChar)+1,extensChar);
+											 fnNeed2[in+0-j-1]='.';fnNeed2[in+1-j-1]='i';fnNeed2[in+2-j-1]='n';fnNeed2[in+3-j-1]='p';fnNeed2[in+4-j-1]='\0';
+											 ifstream viewfile4(fnNeed2,ios::nocreate);
+											 if(viewfile4){do {viewfile4.getline(cht,200-1);
+															   if(strlen(cht))
+																{for(i=0;i<10;i++)larr[i]=0;
+//																 parse_cdmQ(cht,9,&nic,&nrc,larr,darr,strlen(cht)); // *ELEMENT, stored in fnNeed2 file
+																 parse_cdmQn(cht,25,&nic,&nrc,larr,darr);
+															   if(nic-1==4)eltype=5;
+															   else if(nic-1==5){nic=5;eltype=5;}
+															   else if(nic-1==6)eltype=7;
+															   else if(nic-1==7){nic=7;eltype=7;}
+															   else if(nic-1==8)
+																 {eltype=8;
+																  if(!larr[8]){viewfile4.getline(cht,200-1); //Read extra line but assume NX 8-n  EFP 4/05/2012
+																			   parse_cdmQn(cht,25,&nic1,&nrc,larr1,darr);
+																			   larr[8]=larr1[0];
+																			  }
+																 }
+															   else if(nic-1==9){nic=9;eltype=8;}
+															   else {//honk<<"Halt2: Unsupported element with #nodes "<<(nic-1)<<"\n";
+																	 extern PACKAGE void __fastcall Beep(void);Application->MessageBox(_ltow(nic-1,string0,10),L"Halt2: Unsupported element with #nodes in ImportAba_prog()",MB_OK);
+																	 exit(0);
+																	}
+																 n8=nic-1;in=larr[0]-1;
+///////////////// start New code to manage element duplication  EFP 4/19/2012
+//if(attendEl[in-ellolim+1])attendEl[in-ellolim+1]= -1;
+//else {attendEl[in-ellolim+1]=1;
+
+//if(n8==8) //EFP 12/19/2011
+//  {if(larr[0+1]==larr[4+1] && larr[3+1]==larr[7+1])
+///////////////////////////// Coding to accommodate "degenerate hex" wedges  EFP 4/14/2011
+////17619, 23561, 23562, 23592, 23591, 19210, 19211, 19241, 19240
+////17620, 23562, 22301, 22302, 23592, 19211, 17950, 17951, 19241
+////17621,   571, 23563, 22311,    82,   571, 19212, 17960,    82   This one in *.inp & *.abq
+////17622, 23563, 23564, 22310, 22311, 19212, 19213, 17959, 17960
+////17623, 23564, 23565, 22309, 22310, 19213, 19214, 17958, 17959
+//	{eltype=7;n8=6;
+//	 larr[4+1]=larr[6+1];i=larr[1+1];larr[1+1]=larr[5+1];larr[5+1]=larr[2+1];larr[2+1]=i;//larr[6+1]=larr[7+1]=0;
+//honk<<in+1<<" degenerate hex as wedge\n";
+//	}
+//   else if(larr[4+1]==larr[5+1] && larr[4+1]==larr[6+1] && larr[4+1]==larr[7+1])
+///////////////////////////// Coding to accommodate tetras presented as 8-n  EFP 12/19/2011
+////20000,20259,20260,20261,20262,1,1,1,1
+////20001,20263,20264,20265,20266,1,1,1,1
+////20002,20265,20267,20266,20268,1,1,1,1
+//	{eltype=5;n8=4;//for(i=4+1;i<8+1;i++)larr[i]=0;
+//honk<<in+1<<" tetra presented as 8-n\n";
+//	}
+//  }
+if(n8==8)degen8_test(&eltype,&n8,larr);
+																 for(i=0;i<n8;i++)base.nop1[MXNPEL*totEnum+i]=larr[i+1]-1;
+//if(n8==8)
+//  {if(larr[0+1]==larr[4+1] && larr[3+1]==larr[7+1])
+///////////////////////////// Coding to accommodate "degenerate hex" wedges  EFP 4/14/2011
+////17619, 23561, 23562, 23592, 23591, 19210, 19211, 19241, 19240
+////17620, 23562, 22301, 22302, 23592, 19211, 17950, 17951, 19241
+////17621,   571, 23563, 22311,    82,   571, 19212, 17960,    82   This one in *.inp & *.abq
+////17622, 23563, 23564, 22310, 22311, 19212, 19213, 17959, 17960
+////17623, 23564, 23565, 22309, 22310, 19213, 19214, 17958, 17959
+//	{eltype=7;n8=6;
+//	 base.nop1[MXNPEL*totEnum+0]=larr[0+1]-1;
+//	 base.nop1[MXNPEL*totEnum+1]=larr[5+1]-1;
+//	 base.nop1[MXNPEL*totEnum+2]=larr[1+1]-1;
+//	 base.nop1[MXNPEL*totEnum+3]=larr[3+1]-1;
+//	 base.nop1[MXNPEL*totEnum+4]=larr[6+1]-1;
+//	 base.nop1[MXNPEL*totEnum+5]=larr[2+1]-1;
+//	 base.nop1[MXNPEL*totEnum+6]=base.nop1[MXNPEL*totEnum+7]= -1;
+//	}
+//   else if(larr[4+1]==larr[5+1] && larr[4+1]==larr[6+1] && larr[4+1]==larr[7+1] && larr[4+1]==larr[8+1])
+///////////////////////////// Coding to accommodate tetras presented as 8-n  EFP 12/19/2011
+////20000,20259,20260,20261,20262,1,1,1,1
+////20001,20263,20264,20265,20266,1,1,1,1
+////20002,20265,20267,20266,20268,1,1,1,1
+//	{eltype=5;n8=4;for(i=4;i<8;i++)base.nop1[MXNPEL*totEnum+i]= -1;
+//	}
+//  }
+/////////////////////////////
+//																 base.matno[totEnum]=eltype*t7+n8*t3+ipid-1;
+//honk<<totEnum<<" "<<eltype<<" Mondello1 "<<n8<<"\n";
+																 base.matno[totEnum]=eltype*t7+n8*t3;
+																 base.el_map[totEnum]=in;
+//////////// EFP 1/30/2011
+//base.orig_matno[totEnum]=eltype*t7+n8*t3+ipid-1;
+base.orig_matno[totEnum]=eltype*t7+n8*t3;
+////////////
+																 totEnum++;
+//	 }  //Thrown out with attendEl[]
+/////////////// end
+																}
+															   else break;
+															  }
+														   while (!viewfile4.eof());
+														   viewfile4.close();
+														  }
+											 else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Element *.inp file not found",L"Terminate",MB_OK);exit(0);}
+											 delete [] fnNeed2;fnNeed2=NULL; // NODE, stored in fnNeed2 file
+											 break;
+											}
+//////////
+																			 if(!iswElem)
+																			   {
+							do {ntape.getline(cht,200-1);if(ntape.eof())break;
+								for(i=0;i<10;i++)larr[i]=0;
+								parse_cdmQ_public(cht,&nic,&nrc,larr,darr); // *ELEMENT, stored in same file
+															   if(nic-1==4)eltype=5;
+															   else if(nic-1==5){nic=5;eltype=5;}
+															   else if(nic-1==6)eltype=7;
+															   else if(nic-1==7){nic=7;eltype=7;}
+															   else if(nic-1==8)
+																 {eltype=8;
+																  if(!larr[8]){ntape.getline(cht,200-1);if(ntape.eof())break; //Read extra line but assume NX 8-n  EFP 4/05/2012
+																			   parse_cdmQn(cht,25,&nic1,&nrc,larr1,darr);
+																			   larr[8]=larr1[0];
+																			  }
+																 }
+															   else if(nic-1==9){nic=9;eltype=8;}
+															   else {//honk<<"Halt3: Unsupported element with #nodes "<<(nic-1)<<"\n";
+																	 extern PACKAGE void __fastcall Beep(void);
+//																	 Application->MessageBox(_ltow(nic-1,string0,10),L"Halt3: Unsupported element with #nodes in ImportAba_prog()",MB_OK);
+																	 Application->MessageBox(_ltow(nic-1,string0,10),L"Halt3: Unsupported elem",MB_OK);
+																	 exit(0);
+																	}
+								n8=nic-1;in=larr[0]-1;
+/////////////// start New code to manage element duplication  EFP 4/19/2012
+//if(attendEl[in-ellolim+1])attendEl[in-ellolim+1]= -1;
+//else {attendEl[in-ellolim+1]=1;
+
+//if(n8==8) //EFP 12/19/2011
+//  {if(larr[0+1]==larr[4+1] && larr[3+1]==larr[7+1])
+///////////////////////////// Coding to accommodate "degenerate hex" wedges  EFP 4/14/2011
+////17619, 23561, 23562, 23592, 23591, 19210, 19211, 19241, 19240
+////17620, 23562, 22301, 22302, 23592, 19211, 17950, 17951, 19241
+////17621,   571, 23563, 22311,    82,   571, 19212, 17960,    82   This one in *.inp & *.abq
+////17622, 23563, 23564, 22310, 22311, 19212, 19213, 17959, 17960
+////17623, 23564, 23565, 22309, 22310, 19213, 19214, 17958, 17959
+//	{eltype=7;n8=6;
+//	 larr[4+1]=larr[6+1];i=larr[1+1];larr[1+1]=larr[5+1];larr[5+1]=larr[2+1];larr[2+1]=i;//larr[6+1]=larr[7+1]=0;
+//	}
+//   else if(larr[4+1]==larr[5+1] && larr[4+1]==larr[6+1] && larr[4+1]==larr[7+1] && larr[4+1]==larr[8+1])
+///////////////////////////// Coding to accommodate tetras presented as 8-n  EFP 12/19/2011
+////20000,20259,20260,20261,20262,1,1,1,1
+////20001,20263,20264,20265,20266,1,1,1,1
+////20002,20265,20267,20266,20268,1,1,1,1
+//	{
+////honk<<totEnum+1<<" "<<in+1<<" bingoB "<<larr[4+1]<<" "<<larr[5+1]<<" "<<larr[6+1]<<" "<<larr[7+1]<<"\n";
+//	 eltype=5;n8=4;//for(i=4+1;i<8+1;i++)larr[i]=0;
+//	}
+//  }
+if(n8==8){degen8_test(&eltype,&n8,larr);
+//		  if(n8!=8)honk<<totEnum+1<<" degen "<<eltype<<" "<<n8<<"\n";
+		 }
+								for(i=0;i<n8;i++)base.nop1[MXNPEL*totEnum+i]=larr[i+1]-1;
+//								base.matno[totEnum]=eltype*t7+n8*t3+ipid-1;
+								base.matno[totEnum]=eltype*t7+n8*t3;
+								base.el_map[totEnum]=in;
+//////////// EFP 1/30/2011
+//base.orig_matno[totEnum]=eltype*t7+n8*t3+ipid-1;
+base.orig_matno[totEnum]=eltype*t7+n8*t3;
+////////////
+//honk<<totEnum+1<<" "<<in+1<<" ElemB "<<n8<<" "<<ipid<<"\n";
+								totEnum++;
+//	 }  //Thrown out with attendEl[]
+/////////////// end
+							   }
+							while (ntape.peek()!= '*');
+																			   }
+						 if(iumNODEset==totNODEcard && iumELEMset==totELEMcard)psw=1;
+						}
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='L' || cht[2]=='l') && (cht[3]=='S' || cht[3]=='s')) // *ELSET
+				   {iumELSETset++;in=jsw=kn=0;
+					for(i=0;i<int(strlen(cht))-1;i++)if(cht[i]==','){kn++;jrec=i;break;}  //Find first comma. Code to handle "generate" EFP 4/22/2011
+//					if(kn>1 && int(strlen(cht))-1-jrec >=8)
+					if(kn>0 && int(strlen(cht))-1-jrec >=3)
+//					  {for(i=jrec+1;i<int(strlen(cht))-8;i++)
+					  {for(i=jrec+1;i<int(strlen(cht))-3;i++)
+						 {if((cht[i  ]=='G' || cht[i  ]=='g') &&
+							 (cht[i+1]=='E' || cht[i+1]=='e') &&
+							 (cht[i+2]=='N' || cht[i+2]=='n')  //GENERATE can be shortened to GEN
+															 ){in=2;break;} //Note:in=2 signifies GENERATE, not #commas
+						 }
+					  }
+				   for(i=7;i<int(strlen(cht))-1;i++)if(cht[i]=='=')break; //Coding to accommodate *ELSET,ELSET= & *ELSET, ELSET=
+				   for(jrec=i+1;jrec<int(strlen(cht))-1;jrec++)if(cht[jrec]!=' ')break;
+				   klim=int(strlen(cht))-1;
+				   for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i]==','){klim=i;break;}
+				   k=0;
+///////////////////
+				   for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='A' || cht[i  ]=='a')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='W' || cht[i+3]=='w') &&
+																		  (cht[i+4]=='D' || cht[i+4]=='d')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject AllWD
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='A' || cht[i  ]=='a')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='W' || cht[i+3]=='w') &&
+																		  (cht[i+4]=='E' || cht[i+4]=='e') &&
+																		  (cht[i+5]=='L' || cht[i+5]=='l') &&
+																		  (cht[i+6]=='D' || cht[i+6]=='d')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject AllWELD
+						 }
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='E' || cht[i  ]=='e')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='A' || cht[i+2]=='a') &&
+																		  (cht[i+3]=='L' || cht[i+3]=='l') &&
+																		  (cht[i+4]=='L' || cht[i+4]=='l')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject ElAll
+						 }
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='A' || cht[i  ]=='a')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='E' || cht[i+3]=='e') &&
+																		  (cht[i+4]=='L' || cht[i+4]=='l')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject AllEl
+						 }
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='E' || cht[i  ]=='e')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='A' || cht[i+1]=='a') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='L' || cht[i+3]=='l')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject EAll  EFP 4/08/2012
+						 }
+///////////////////
+				   jsw=0;
+				   if(k==0){for(i=jrec;i<klim;i++){if(cht[i  ]=='W' || cht[i  ]=='w')
+														   {if(i+1<klim+1){if(cht[i+1]=='D' || cht[i+1]=='d'){jsw=1;break;}
+																		   else if(cht[i+1]=='P' || cht[i+1]=='p'){jsw=1;break;}
+																		   else if(cht[i+1]=='G' || cht[i+1]=='g'){jsw=1;break;}
+																		   else if(cht[i+1]=='E' || cht[i+1]=='e')
+																					   {if(i+3<klim+1)
+																						  {if((cht[i+2]=='L' || cht[i+2]=='l') &&
+																							  (cht[i+3]=='D' || cht[i+3]=='d')){jsw=1;break;}
+																						  }
+																						else break;
+																					   }
+																		   else break;
+																		  }
+															else break;
+														   }  // Accept WDx, WPx, WGx and WELDx
+												  }
+////							if(jsw)totWG++;
+////							else totBMG++;
+kp=0;for(i=jrec;i<int(strlen(cht))-1;i++){if(cht[i]==',')break;
+										  else kp++;
+										 }
+temp_cht1=new char[kp+1];
+for(i=0;i<kp;i++){temp_cht1[i]=cht[i+jrec];
+				   }
+temp_cht1[kp]='\0';
+					base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht1); //This creates a UnicodeString of 80 characters but how to "trim"?
+					// Something like base.groupsname[j].SetLength(base.groupsname[j].Length()-1);  ???
+					iallGrp++;delete [] temp_cht1;temp_cht1=NULL;
+nGID++;
+
+//if(jsw){
+//		temp_cht=new char[kp+1];
+//		for(i=0;i<kp;i++)temp_cht[i]=cht[i+jrec];
+//		temp_cht[kp]='\0';
+//		base.groupsname[totWG]=temp_cht; //EFP 3/25/2011
+//		delete [] temp_cht; *temp_cht=NULL;
+//		totWG++;nGID++;sumWG=0;
+//					if(in==2){
+////*ELSET, ELSET=PTBOT, GENERATE
+////   33049,   33057,       1
+////   33085,   33093,       1
+////   33121,   33129,       1
+//							  do {ntape1.getline(cht,200-1);  // ELSET.... GENERATE
+//								  if( kp){parse_cdm(cht,3,&nic,&nrc,larr,darr); //TBD: Unnecessary test??
+//										  if(larr[1]-larr[0]+1<base.nelt){for(i=larr[0]-1;i<larr[1];i=i+larr[2])
+//																		   {
+//j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==i){j=kk;break;}
+//if(j== -1){honk<<"TERMINATE: GENERATED WG el_map crash in *.abq/*.inp\n";exit(0);}
+//else {base.arrELSET[j]=totWG;sumWG++;}
+//																		   }
+//																		 }
+//										 }
+//								 }
+//							  while (ntape1.peek()!= '*');
+//							 }
+//					else {
+////*ELSET, ELSET=PTTOP
+////   52369,   52370,   52371,   52372,   52373,   52374,   52375,   52376,
+////   52401,   52402,   52403,   52404,   52405,   52406,   52407,   52408,
+////   52433,   52434,   52435,   52436,   52437,   52438,   52439,   52440,
+//					do {ntape1.getline(cht,200-1);
+//						parse_cdmQ_public(cht,&nic,&nrc,larr,darr); //This accommodates comma-end or no-comma EFP 4/15/2011
+//						for(i=0;i<nic;i++){if(larr[i]) //This accommodates comma-end or no-comma EFOP 4/15/2011
+//											 {
+//j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
+//if(j== -1){honk<<"TERMINATE: WG el_map crash in *.abq/*.inp\n";exit(0);}
+//else {base.arrELSET[j]=totWG;sumWG++;}
+//											 }
+//										  }
+//					   }
+//					while (ntape1.peek()!= '*');
+//						 }
+//					if(sumlim<sumWG)sumlim=sumWG;
+//	   }
+//else {do {ntape1.getline(cht,200-1);
+//		 }
+//	  while (ntape1.peek()!= '*');
+//	  totBMG++;
+//	 }
+
+if(jsw){temp_cht=new char[kp+1];
+		for(i=0;i<kp;i++)temp_cht[i]=cht[i+jrec];
+		temp_cht[kp]='\0';
+		base.groupsname[totWG]=temp_cht; //EFP 3/25/2011
+		delete [] temp_cht;temp_cht=NULL;
+		totWG++;sumWG=0;
+	   }
+					if(in==2){
+//*ELSET, ELSET=PTBOT, GENERATE
+//   33049,   33057,       1
+//   33085,   33093,       1
+//   33121,   33129,       1
+							  do {ntape.getline(cht,200-1);if(ntape.eof())break;  // ELSET.... GENERATE
+								  if( kp){parse_cdm(cht,3,&nic,&nrc,larr,darr); //TBD: Unnecessary test??
+										  if(larr[1]-larr[0]+1<base.nelt){for(i=larr[0]-1;i<larr[1];i=i+larr[2])
+																		   {
+j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==i){j=kk;break;}
+if(j== -1){//honk<<"TERMINATE: GENERATED WG el_map crash in *.abq/*.inp\n";
+		   exit(0);}
+else {if(jsw){base.arrELSET[j]=totWG;sumWG++;}
+	  k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
+	 }
+																		   }
+																		 }
+										 }
+								 }
+							  while (ntape.peek()!= '*');
+							 }
+					else {
+//*ELSET, ELSET=PTTOP
+//   52369,   52370,   52371,   52372,   52373,   52374,   52375,   52376,
+//   52401,   52402,   52403,   52404,   52405,   52406,   52407,   52408,
+//   52433,   52434,   52435,   52436,   52437,   52438,   52439,   52440,
+					do {ntape.getline(cht,200-1);if(ntape.eof())break;
+						parse_cdmQ_public(cht,&nic,&nrc,larr,darr); //This accommodates comma-end or no-comma EFP 4/15/2011
+						for(i=0;i<nic;i++){if(larr[i]) //This accommodates comma-end or no-comma EFOP 4/15/2011
+											 {
+j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
+if(j== -1){//honk<<"TERMINATE: WG el_map crash in *.abq/*.inp\n";
+		   exit(0);}
+else {if(jsw){base.arrELSET[j]=totWG;sumWG++;}
+	  k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
+	 }
+											 }
+										  }
+					   }
+					while (ntape.peek()!= '*');
+						 }
+					if(sumlim<sumWG)sumlim=sumWG;
+						   }
+					if(iumNODEset==totNODEcard && iumELEMset==totELEMcard && iumELSETset==totELSETcard)psw=2;
+				   }
+				 else if(cht[ 0]=='*' && (cht[ 1]=='M' || cht[ 1]=='m') && (cht[ 2]=='A' || cht[ 2]=='a') && (cht[ 3]=='T' || cht[ 3]=='t') && (cht[ 4]=='E' || cht[ 4]=='e') &&
+										 (cht[ 5]=='R' || cht[ 5]=='r') && (cht[ 6]=='I' || cht[ 6]=='i') && (cht[ 7]=='A' || cht[ 7]=='a') && (cht[ 8]=='L' || cht[ 8]=='l'))
+				  {psw=3;
+//				   if(psw==1)tmpfile01<<cht<<"\n";
+//				   else if(psw==2)tmpfile02<<cht<<"\n";
+//				   else if(psw==3)tmpfile03<<cht<<"\n";
+//				   while (ntape1.peek()!= '*'){ntape1.getline(cht,200-1);
+//											   if(psw==1)tmpfile01<<cht<<"\n";
+//											   else if(psw==2)tmpfile02<<cht<<"\n";
+//											   else if(psw==3)tmpfile03<<cht<<"\n";
+//											  }
+				  } // *MATERIAL
+				 else if(cht[0]=='*' && (cht[1]=='P' || cht[1]=='p') && (cht[2]=='A' || cht[2]=='a') && (cht[3]=='R' || cht[3]=='r') && (cht[4]=='T' || cht[4]=='t'))
+				  {continue;}
+				 else if(cht[0]=='*' && (cht[1]=='S' || cht[1]=='s') && (cht[2]=='T' || cht[2]=='t') && (cht[3]=='E' || cht[3]=='e') && (cht[4]=='P' || cht[4]=='p'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *Step
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='A' || cht[5]=='a'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Assembly
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='I' || cht[5]=='i'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Instance
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='P' || cht[5]=='p'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Part
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='S' || cht[5]=='s'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Step
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}}
+							// *end step CORRECTED EFP 10/22/2010
+				 else
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}}
+				}
+			 while (!ntape.eof()); //EndDO02
+////////
+//////////
+//////////// Nodal coincidence coding with original numbering  EFP 8/26/2015
+//long *track_coincid=NULL;float TOLCOINCID=1.e-3f,xx=0.f,yy=0.f,zz=0.f;
+//track_coincid=new long[nodeuplim]; //Huge memory, even for nonexistent nodes
+//for(in=0;in<nodeuplim;in++)track_coincid[in]= -2;
+//for(j=0;j<totEnum;j++)
+// {if(base.arrELSET[j]>0)
+//  {eltype=base.matno[j]/t7;bscode=(base.matno[j]-eltype*t7)/t5;node=(base.matno[j]-eltype*t7-bscode*t5)/t3;
+//   for(in=0;in<node;in++)track_coincid[base.nop1[MXNPEL*j+in]]= -1;
+//  }
+// }
+//for(in=0;in<nodeuplim-1;in++)
+//  {if(track_coincid[in]== -1){xx=base.c1[NDF*in+0];yy=base.c1[NDF*in+1];zz=base.c1[NDF*in+2];
+//							  for(kn=in+1;kn<nodeuplim;kn++)
+//								{if(base.c1[NDF*kn+0]>xx-TOLCOINCID && base.c1[NDF*kn+0]<xx+TOLCOINCID)
+//								   {if(base.c1[NDF*kn+1]>yy-TOLCOINCID && base.c1[NDF*kn+1]<yy+TOLCOINCID)
+//									  {if(base.c1[NDF*kn+2]>zz-TOLCOINCID && base.c1[NDF*kn+2]<zz+TOLCOINCID)
+//										 {track_coincid[in]=in;
+//										  track_coincid[kn]=in;
+//                                         }
+//									  }
+//								   }
+//								}
+//							 }
+//  }
+//j=0;
+//for(in=0;in<nodeuplim;in++)
+//  {if(track_coincid[in]> -1 && track_coincid[in]!=in){j++;
+//honk<<(track_coincid[in]+1)<<" COINCID "<<(in+1)<<" "<<base.c1[NDF*in+0]<<" "<<base.c1[NDF*in+1]<<" "<<base.c1[NDF*in+2]<<"\n";
+//													 }
+//  }
+//delete [] track_coincid;
+//if(j)exit(0);
+//for(j=0;j<totEnum;j++)
+// {if(base.arrELSET[j]==1)
+//  {eltype=base.matno[j]/t7;bscode=(base.matno[j]-eltype*t7)/t5;node=(base.matno[j]-eltype*t7-bscode*t5)/t3;
+//   xx=yy=zz=0.f;
+//   for(in=0;in<node;in++){xx=xx+base.c1[NDF*base.nop1[MXNPEL*j+in]+0];
+//						  yy=yy+base.c1[NDF*base.nop1[MXNPEL*j+in]+1];
+//						  zz=zz+base.c1[NDF*base.nop1[MXNPEL*j+in]+2];
+//						 }
+//   xx=xx/float(node);yy=yy/float(node);zz=zz/float(node);
+////honk<<(j+1)<<" "<<base.arrELSET[j]<<" GID "<<xx<<" "<<yy<<" "<<zz<<"\n";
+//honk<<(j+1)<<" "<<base.arrELSET[j]<<" GID "<<sqrt(xx*xx+zz*zz)<<" "<<yy<<" "<<(atan2(zz,xx)*180.f/3.141592653f)<<"\n";
+//  }
+// }
+////////////
+//////////
+////////
+
+
+
+/////////////////////////// Check for non-hex in welds  EFP 3/22/2016
+//honk<<"\n";
+int bufferSize=0;
+for(j=0;j<base.allGrp;j++){bufferSize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,NULL,0,NULL,NULL);
+						   char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,m,bufferSize,NULL,NULL);
+//honk<<(j+1)<<" ABAQ base.ELSETinputnames[j]= "<<m<<"\n";
+						   delete m;m=NULL;
+						  }
+//honk<<"\n";
+psw=0;
+for(j=0;j<wp.nWeldGroup;j++){bufferSize=WideCharToMultiByte(CP_UTF8,0,base.groupsname[j].w_str(), -1,NULL,0,NULL,NULL);
+							 char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,base.groupsname[j].w_str(), -1,m,bufferSize,NULL,NULL);
+//honk<<(j+1)<<" ABAQ base.groupsname[j]= "<<m<<"\n";
+							 delete m;m=NULL;
+							 for(in=0;in<base.nelt;in++)if(j+1==base.arrELSET[in]){
+eltype=base.matno[in]/t7;bscode=(base.matno[in]-eltype*t7)/t5;node=(base.matno[in]-eltype*t7-bscode*t5)/t3;
+if(node != 8 && node != 20){psw=1;//honk<<(in+1)<<" non-hex "<<base.el_map[in]<<" "<<base.arrELSET[in]<<"\n";
+						   }
+																				  }
+							}
+//honk<<"\n";
+//for(j=0;j<base.nelt;j++){
+//eltype=base.matno[j]/t7;bscode=(base.matno[j]-eltype*t7)/t5;node=(base.matno[j]-eltype*t7-bscode*t5)/t3;
+//honk<<(j+1)<<" "<<(base.el_map[j]+1)<<" elm "<<eltype<<" "<<node<<" "<<base.arrELSET[j]<<"\n";
+//						}
+if(psw){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Non-hex elements found in weld group.",L"Warning: Unacceptable model",MB_OK);}
+
+
+
+
+
+
+//////////////////////////////////////////
+// This did not work for *.msh so maybe it should be revised for *.inp/*.abq  EFP 4/06/2011
+			 for(j=0;j<totEnum;j++)
+			   {eltype=base.matno[j]/t7;bscode=(base.matno[j]-eltype*t7)/t5;node=(base.matno[j]-eltype*t7-bscode*t5)/t3;
+				for(in=0;in<node;in++)base.nop1[MXNPEL*j+in]=revnode_map[base.nop1[MXNPEL*j+in]-nodelolim+1];
+			   }
+//for(in=0;in<base.nelt;in++)honk<<(in+1)<<" next0MATNO "<<base.matno[in]<<"\n";
+
+
+			 delete [] revnode_map;revnode_map=NULL;
+
+//			   } //Extra
+//base.allGrp=nGID; //Special restriction to 1 basemetal + WGs
+
+			 old_npoin=new_npoin=base.npoin;new_nelt=base.nelt;new_mat=base.mat;new_ncoorf=base.ncoorf;nGID=wp.nWeldGroup+1;
+//			 ntape1.close();DeleteFile("record.tmp");
+
+////aaaaaaaaaaaaa
+////aaaaaaaaaaaaaaa
+////aaaaaaaaaaaaaaaaa
+//int skip=0;char s_bc[]="_bc.inp",s_ic[]="*INITIAL CONDITIONS",s_re[]="*RESTART",
+//				s_bcd[]="Boundary Condition Definition",
+//				s_mpd[]="Material Property Definition",
+//				s_icd[]="Initial Condition Definition";
+//ifstream ntape3(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
+//if(ntape3){
+//////		   ofstream tmpfile1("omnibusAba.inp",ios::binary,0);
+//		   ofstream tmpfile0("scratchAba0.tmp");
+////		   ofstream tmpfile1("omnibusAba.inp");
+//		   ofstream tmpfile1("scratchAba1.tmp");
+//////		   ofstream tmpfile3("scratchAba3.tmp",ios::binary,0);
+//////		   ofstream tmpfile4("scratchAba4.tmp",ios::binary,0);
+//		   ofstream tmpfile3("scratchAba3.tmp");
+//		   ofstream tmpfile4("scratchAba4.tmp");
+//////		   ofstream tmpfile3("scratchAba3.out",ios::binary,0);
+//////		   ofstream tmpfile4("scratchAba4.out",ios::binary,0);
+//		   if(tmpfile0 && tmpfile1 && tmpfile3 && tmpfile4)
+//			 {
+////			  jsw=0;
+//			  jsw= -1;
+//			  iumNODEset=iumELEMset=0;
+//			  do {ntape3.getline(cht,200-1);
+//
+//				  if(cht[0]=='*' &&
+//(((cht[1]=='e' || cht[1]=='E') && (cht[2]=='n' || cht[2]=='N') && (cht[3]=='d' || cht[3]=='D')) ||
+// ((cht[1]=='s' || cht[1]=='S') && (cht[2]=='t' || cht[2]=='T') && (cht[3]=='e' || cht[3]=='E') && (cht[3]=='p' || cht[3]=='P')))
+//					){if(jsw==2)tmpfile4.close();break;} //Read+write until *STEP or *END is encountered  EFP 7/31/2015
+//				  else if(cht[0]=='*' &&
+//(cht[1]=='m' || cht[1]=='M') && (cht[2]=='a' || cht[2]=='A') && (cht[3]=='t' || cht[3]=='T') &&
+//(cht[4]=='e' || cht[4]=='E') && (cht[5]=='r' || cht[5]=='R') && (cht[6]=='i' || cht[6]=='I') &&
+//(cht[7]=='a' || cht[7]=='A') && (cht[8]=='l' || cht[8]=='L'))
+////					 {if(jsw==1)tmpfile3.close();jsw=2;} //Read+write until *MATERIAL is encountered  EFP 7/31/2015
+//					 {if(jsw==1){tmpfile3.close();jsw=2;}} //Read+write until *MATERIAL is encountered  EFP 7/31/2015
+//				  else if(cht[0]=='*' &&
+//(cht[1]=='s' || cht[1]=='S') && (cht[2]=='o' || cht[2]=='O') && (cht[3]=='l' || cht[3]=='L') &&
+//(cht[4]=='i' || cht[4]=='I') && (cht[5]=='d' || cht[5]=='D') && cht[6]==' '                  &&
+//(cht[7]=='s' || cht[7]=='S')){if(jsw==0)tmpfile1.close();jsw=1;} //Read+write until *SOLID SECTION is encountered  EFP 7/31/2015
+//				  else if(cht[0]=='*' && iumNODEset==numNODEset && iumELEMset==numELEMset)
+////					{if(jsw== -1)tmpfile0.close();jsw=0;} //Read+write until all NODE & ELEMENT cards are encountered  EFP 8/19/2015
+//					{if(jsw== -1){tmpfile0.close();jsw=0;}} //Read+write until all NODE & ELEMENT cards are encountered  EFP 8/19/2015
+//
+//				  skip=0;
+//				  if(strstr(cht,s_bc)!=NULL || strstr(cht,s_re)!=NULL || strstr(cht,s_bcd)!=NULL ||
+//					 strstr(cht,s_icd)!=NULL || strstr(cht,s_mpd)!=NULL)skip=1;
+//				  else if(strstr(cht,s_ic)!=NULL){skip=1;ntape3.getline(cht,200-1);}
+////honk<<jsw<<" "<<skip<<" "<<cht<<"\n";
+//				  if(!skip){if(jsw==2)     {tmpfile4.write(cht,strlen(cht));tmpfile4.put('\n');
+//										   }
+//							else if(jsw==1){tmpfile3.write(cht,strlen(cht));tmpfile3.put('\n');
+//										   }
+////							else           {tmpfile1.write(cht,strlen(cht));tmpfile1.put('\n');
+////                                         }
+//							else if(jsw==0){tmpfile1.write(cht,strlen(cht));tmpfile1.put('\n');
+//										   }
+//							else           {tmpfile0.write(cht,strlen(cht));tmpfile0.put('\n');
+//										   }
+//						   }
+//
+//
+//				  if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+//									(cht[6]=='O' || cht[6]=='o') && (cht[7]=='U' || cht[7]=='u') && (cht[8]=='T' || cht[8]=='t') && (cht[9]=='P' || cht[9]=='p'))
+//					{while (ntape3.peek()!= '*')ntape3.getline(cht,200-1);} // *NODE OUTP
+//				  else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+//										 (cht[6]=='F' || cht[6]=='f') && (cht[7]=='I' || cht[7]=='i') && (cht[8]=='L' || cht[8]=='l') && (cht[9]=='E' || cht[9]=='e'))
+//					{while (ntape3.peek()!= '*')ntape3.getline(cht,200-1);} // *NODE FILE
+//				  else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+//										 (cht[6]=='P' || cht[6]=='p') && (cht[7]=='R' || cht[7]=='r') && (cht[8]=='I' || cht[8]=='i') && (cht[9]=='N' || cht[9]=='n'))
+//					{while (ntape3.peek()!= '*')ntape3.getline(cht,200-1);} // *NODE PRIN
+//				  else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e') && cht[5]==' ' &&
+//										 (cht[6]=='R' || cht[6]=='r') && (cht[7]=='E' || cht[7]=='e') && (cht[8]=='S' || cht[8]=='s') && (cht[9]=='P' || cht[9]=='p'))
+//					{while (ntape3.peek()!= '*')ntape3.getline(cht,200-1);} // *NODE RESP
+//				  else if(cht[0]=='*' && (cht[1]=='N' || cht[1]=='n') && (cht[2]=='O' || cht[2]=='o') && (cht[3]=='D' || cht[3]=='d') && (cht[4]=='E' || cht[4]=='e'))
+//					{iumNODEset++;}
+//				  else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+//										  (cht[ 9]=='O' || cht[ 9]=='o') && (cht[10]=='U' || cht[10]=='u') && (cht[11]=='T' || cht[11]=='t') && (cht[12]=='P' || cht[12]=='p') && (cht[13]=='U' || cht[13]=='u') && (cht[14]=='T' || cht[14]=='t'))
+//					{while (ntape3.peek()!= '*')ntape3.getline(cht,200-1);} // *ELEMENT OUTPUT
+//				  else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+//										  (cht[ 9]=='M' || cht[ 9]=='m') && (cht[10]=='A' || cht[10]=='a') && (cht[11]=='T' || cht[11]=='t') && (cht[12]=='R' || cht[12]=='r') && (cht[13]=='I' || cht[13]=='i') && (cht[14]=='X' || cht[14]=='x'))
+//					{while (ntape3.peek()!= '*')ntape3.getline(cht,200-1);} // *ELEMENT MATRIX
+//				  else if(cht[ 0]=='*' && (cht[ 1]=='E' || cht[ 1]=='e') && (cht[ 2]=='L' || cht[ 2]=='l') && (cht[ 3]=='E' || cht[ 3]=='e') && (cht[ 4]=='M' || cht[ 4]=='m') && (cht[ 5]=='E' || cht[ 5]=='e') && (cht[ 6]=='N' || cht[ 6]=='n') && (cht[ 7]=='T' || cht[ 7]=='t') && cht[ 8]==' ' &&
+//										  (cht[ 9]=='R' || cht[ 9]=='r') && (cht[10]=='E' || cht[10]=='e') && (cht[11]=='S' || cht[11]=='s') && (cht[12]=='P' || cht[12]=='p') && (cht[13]=='O' || cht[13]=='o') && (cht[14]=='N' || cht[14]=='n'))
+//					{while (ntape3.peek()!= '*')ntape3.getline(cht,200-1);} // *ELEMENT RESPON
+//				  else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='L' || cht[2]=='l') && (cht[3]=='E' || cht[3]=='e') && (cht[4]=='M' || cht[4]=='m') && (cht[5]=='E' || cht[5]=='e') && (cht[6]=='N' || cht[6]=='n') && (cht[7]=='T' || cht[7]=='t'))//comma not necessary
+//					{iumELEMset++;}
+//
+//
+//				 }
+//			  while (!ntape3.eof());
+///////////////////
+//DeleteFile("scratchAba0.tmp");
+///////////////////
+//			 }
+//		   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not open Aba scratch files",L"Terminate",MB_OK);exit(0);}
+//		   ntape3.close();
+//		  }
+//else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not reopen input file",L"Terminate",MB_OK);exit(0);}
+////bbbbbbbbbbbbbbbbb
+////bbbbbbbbbbbbbbb
+////bbbbbbbbbbbbb
+////numNODEset=0,numELEMset=0,
+
+
+
+//for(in=0;in<base.nelt;in++)honk<<(in+1)<<" next1MATNO "<<base.matno[in]<<"\n";
+
+			 FDbase_indat(1,shapecombo,iplotflag,nColRes);
+//			   FDdynmem_manage(-16,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy);
+			   FDdynmem_manage(-17,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy);
+////			   FDdynmem_manage(16,dummy,base.nelt,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy);//EFP 8/07/2011
+//			   FDdynmem_manage(17,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.nelt+2*sumELSETel);//EFP 8/07/2011
+			   FDdynmem_manage(17,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.nelt);//EFP 8/07/2011
+			   indat.GIDcol=base.GIDcol;
+////			   for(in=0;in<base.nelt+1;in++)indat.trackELSET[in]=base.trackELSET[in];
+//			   for(in=0;in<base.nelt+2*sumELSETel;in++)indat.arrELSET[in]=base.arrELSET[in];
+			   for(in=0;in<base.nelt;in++)indat.arrELSET[in]=base.arrELSET[in];
+////			   for(in=0;in<base.nelt+2*sumELSETel;in++)indat.orig_arrELSET[in]=base.arrELSET[in];
+////
+
+//////////////////////////////////////////////////////////////
+//TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+Screen->Cursor=Save_Cursor;
+	if(nGID<1){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No geometry IDs found",L"Halt",MB_OK);return;}
+	else {if(iPaintyesno/10==0){
+								if(iplotType==2)FDelemfacets_arE3(indat.npoin,indat.nelt,indat.nop1,indat.matno,base.arELEM);
+								else {
+FDcomp_nGID(indat.nelt,&nGID,arGID);
+							FDelemfacets3a(indat.npoin,indat.nelt,indat.nop1,indat.matno);
+									 }
+								iPaintyesno=10+1;iCullyesno=0;
+							   }
+
+			 stateVFT=2;FD_LButtonstatus=11;
+
+Form1->Caption=GeomFileName;
+////////// Cursor EFP 1/21/2011
+//Screen->Cursor=crSizeAll;
+//////////
+			 wp.memWGa=sumlim;
+//			 wp.memWGa=base.nelt; //Temporary assignment EFP 3/26/2011
+			 iplotflag=1;iCircleplot=1;
+			 Invalidate();
+		 }
+		 } //EndNPOIN/NELT
+	   else {extern PACKAGE void __fastcall Beep(void);
+			 if(iswtype)Application->MessageBox(L"Nodes/elements/GID missing from *.abq datafile",L"Failure",MB_OK);
+			 else       Application->MessageBox(L"Nodes/elements/GID missing from *.inp datafile",L"Failure",MB_OK);
+			}
+	   ntape.close();
+////
+//////
+////////
+//	   if(ImportAba_scratch(totELEMcard,totELSETcard,totSOLIDScard));
+//	   else {extern PACKAGE void __fastcall Beep(void);
+//			 if(iswtype)Application->MessageBox(L"Could not reopen *.abq/scratch files",L"Advisory: *_ABA.inp will be concise",MB_OK);
+//			 else       Application->MessageBox(L"Could not reopen *.inp/scratch files",L"Advisory: *_ABA.inp will be concise",MB_OK);
+//			}
+////////
+//////
+////
+	  } //endCLOSE04
+	else {extern PACKAGE void __fastcall Beep(void);
+		  if(iswtype)Application->MessageBox(L"Could not open *.abq file",L"Failure",MB_OK);
+		  else       Application->MessageBox(L"Could not open *.inp file",L"Failure",MB_OK);
+		 }
+   } //CLOSE03
+// else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not create FileOpen selector",L"Failure",MB_OK);}
+	  } //CLOSE02
+} //CLOSE01
 //---------------------------------------------------------------------------
 void TForm1::degen8_test(long* eltype,long* n8,long larr[])// Convert degenerate hex to wedge/tetra  EFP 8/30/2014
 {long n0=0,n1=0,n2=0,n3=0,n4=0,n5=0,n6=0,n7=0;
@@ -9634,6 +10954,141 @@ if(vexp>37)vexp=37;
  return vflag;
 }
 //---------------------------------------------------------------------------
+void TForm1::parse_cdmQ_public(const char descript[],int* nic,int* nrc,long iparse[],float parse[])
+// Integers and/or float(E)/double(D) numbers delimited by ' ' or ','
+// Read up to ncol "integer + real" or end of record (siza=record length without \n), whichever comes first.
+// Delimited by comma, except at end. There may or may not be a space before the comma. (i.e. 7543 , 7544 , etc)
+// CORRECTION: EFP 5/11/2010 for possible space before comma
+// BIG siza BUG HERE
+// Note: This routine can accommodate spaces befor/after commas. It can accommodate an extra comma at end.
+{int isel=0,inel=0,pre=0,ileft=0,nleft=0,nright=0,nexp=0,sign=0,esign=0,vexp=0,ist=0,irflag=0,isw=0;
+ long dii=0,lse=0;float div=0.f,rse=0.f;char stchar[18],cleft[25],cright[25],cexp[25];
+ stchar[0]='0';stchar[1]='1';stchar[2]='2';stchar[3]='3';stchar[4]='4';
+ stchar[5]='5';stchar[6]='6';stchar[7]='7';stchar[8]='8';stchar[9]='9';
+ stchar[10]='+';stchar[11]='-';stchar[12]='.';stchar[13]='E';stchar[14]='e';
+ stchar[15]='D';stchar[16]='d';stchar[17]=','; *nic=0;*nrc=0;isel= -1;
+//siza=sizeof(descript);
+//honk<<sizeof(descript)<<" SSSSSSS "<<sizb<<"\n";
+
+//for(ist=0;ist<100;ist++){//if(descript[isel]== \n)honk<<" LF\n";
+//						 honk<<ist<<" "<<descript[ist]<<" descrit\n";
+//						}
+ isw=1;
+ do {rse=0.f;lse=0;pre=nleft=nright=nexp=0;esign=1;sign=1;irflag=0;
+	 for(ist=0;ist<100;ist++){isel++;if(descript[isel] != ' '){isel--;break;}}
+////	 for(ist=0;ist<100;ist++){isel++;if(descript[isel]==stchar[17] || descript[isel]=='\n'){isel--;break;}
+////							 } //comma
+//	 for(ist=0;ist<100;ist++){isel++;if(descript[isel]==stchar[17]){isel--;break;}
+//							 } //comma
+	 for(ist=0;ist<25;ist++)
+		{isel++;
+		 if(descript[isel] == stchar[11]){if(pre == 0)sign= -1;else esign= -1;}
+		 else if(descript[isel] == stchar[12]){pre=1;irflag=1;}
+		 else if(descript[isel] == stchar[13] || descript[isel] == stchar[14] ||
+				 descript[isel] == stchar[15] || descript[isel] == stchar[16]){pre=2;irflag=1;}
+		 else if(descript[isel] == stchar[10])continue;
+		 else if(descript[isel] == stchar[0])
+			 {inel=0;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[1])
+			 {inel=1;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[2])
+			 {inel=2;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[3])
+			 {inel=3;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[4])
+			 {inel=4;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[5])
+			 {inel=5;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[6])
+			 {inel=6;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[7])
+			 {inel=7;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[8])
+			 {inel=8;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+		 else if(descript[isel] == stchar[9])
+			 {inel=9;if(pre == 0){nleft=nleft+1;cleft[nleft-1]=stchar[inel];}
+					 else if(pre == 1){nright=nright+1;cright[nright-1]=stchar[inel];}
+					 else if(pre == 2){nexp=nexp+1;cexp[nexp-1]=stchar[inel];}
+					 else exit(0);
+			 }
+//		 else break;
+		 else if(descript[isel] ==' ')continue;
+		 else if(descript[isel] == stchar[17])break;
+		 else {isw=0;break;}
+		}
+//if(isw){
+	 if(irflag){for(ileft=0;ileft<nleft;ileft++)
+				 {for(inel=0;inel<10;inel++)if(cleft[ileft] == stchar[inel]){rse=rse*10+float(inel);break;}
+				 }
+				div=1.f;for(ileft=0;ileft<nright;ileft++)
+						 {div=div*10.f;
+						  for(inel=1;inel<10;inel++)if(cright[ileft] == stchar[inel]){rse=rse+float(inel)/div;break;}
+						 }
+				vexp=0;for(ileft=0;ileft<nexp;ileft++)
+						 {for(inel=0;inel<10;inel++)if(cexp[ileft] == stchar[inel]){vexp=vexp*10+inel;break;}
+						 }
+				if(vexp>37)vexp=37; // Revision
+				div=1.f;if(vexp>0){for(ileft=0;ileft<vexp;ileft++)div=div*10.f;}
+				if(esign<0)rse=float(sign)*rse/div;else rse=float(sign)*rse*div;
+				parse[*nrc]=rse;*nrc=*nrc+1;
+			   }
+	 else {for(ileft=0;ileft<nleft;ileft++)
+			{for(inel=0;inel<10;inel++)if(cleft[ileft] == stchar[inel]){lse=lse*10+long(inel);break;}
+			}
+		   dii=1;for(ileft=0;ileft<nright;ileft++)
+				   {dii=dii*10;
+					for(inel=1;inel<10;inel++)if(cright[ileft] == stchar[inel]){lse=lse+long(inel)/dii;break;}
+				   }
+		   vexp=0;for(ileft=0;ileft<nexp;ileft++)
+				   {for(inel=0;inel<10;inel++)if(cexp[ileft] == stchar[inel]){vexp=vexp*10+inel;break;}
+				   }
+		   if(vexp>37)vexp=37; // Revision
+		   dii=1;if(vexp>0){for(ileft=0;ileft<vexp;ileft++)dii=dii*10;}
+		   if(esign<0)lse=long(sign)*lse/dii;else lse=long(sign)*lse*dii;
+		   iparse[*nic]=lse;*nic=*nic+1;
+		  }
+//	   }
+	}
+// while (isel+1<siza && (*nic+ *nrc)<ncol);
+ while (isw);
+}
+//---------------------------------------------------------------------------
 void TForm1::FDbase_indat(int isel,float shapeprod,int iplotflag,long nColRes)
 // base_XXX & indat_XXX variables/arrays NOT passed in argument list (i.e. global) due to memory-allocation (i.e. treat as __fastcall)
 // Global NDF,MXNPEL,MXNPEI,MAX_GID
@@ -16330,8 +17785,9 @@ mirrorfile<<(base.el_map[i]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i   ]]+1)<<
 									 (base.node_map[base.nop1[MXNPEL*i+16]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+17]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+18]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+19]]+1)<<"\n";
 													   }
 										  else if(eltype==7){if(node==6)
-mirrorfile<<(base.el_map[i]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i   ]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 1]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 2]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 3]]+1)<<","<<
-									 (base.node_map[base.nop1[MXNPEL*i+ 4]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 5]]+1)<<"\n";
+// New policy: write 6-n wedge as 8-n hex only (by Abaqus 0-1-2-0-3-4-5-3), to match WARP3D limitation  EFP 3/23/2016
+mirrorfile<<(base.el_map[i]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 0]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 1]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 2]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 0]]+1)<<","<<
+									 (base.node_map[base.nop1[MXNPEL*i+ 3]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 4]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 5]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 3]]+1)<<"\n";
 															 else
 mirrorfile<<(base.el_map[i]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i   ]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 1]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 2]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 3]]+1)<<","<<
 									 (base.node_map[base.nop1[MXNPEL*i+ 4]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 5]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 6]]+1)<<","<<(base.node_map[base.nop1[MXNPEL*i+ 7]]+1)<<","<<
@@ -17171,8 +18627,9 @@ viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[
 									(base.nop1[MXNPEL*i+16]+1)<<" "<<(base.nop1[MXNPEL*i+17]+1)<<" "<<(base.nop1[MXNPEL*i+18]+1)<<" "<<(base.nop1[MXNPEL*i+19]+1)<<"\n";
 													   }
 										  else if(eltype==7){if(node==6)
-viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[MXNPEL*i+ 1]+1)<<" "<<(base.nop1[MXNPEL*i+ 2]+1)<<" "<<(base.nop1[MXNPEL*i+ 3]+1)<<" "<<
-									(base.nop1[MXNPEL*i+ 4]+1)<<" "<<(base.nop1[MXNPEL*i+ 5]+1)<<"\n";
+//CORRECTION: Write 6-n wedge as degenerate WARP3D 8-n hex with order  1,2,3,1,5,6,7,5
+viewfile2<<(base.el_map[i]+1)<<","<<(base.nop1[MXNPEL*i+ 0]+1)<<","<<(base.nop1[MXNPEL*i+ 1]+1)<<","<<(base.nop1[MXNPEL*i+ 2]+1)<<","<<(base.nop1[MXNPEL*i+ 0]+1)<<","<<
+									(base.nop1[MXNPEL*i+ 3]+1)<<","<<(base.nop1[MXNPEL*i+ 4]+1)<<","<<(base.nop1[MXNPEL*i+ 5]+1)<<","<<(base.nop1[MXNPEL*i+ 3]+1)<<"\n";
 															 else
 viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[MXNPEL*i+ 1]+1)<<" "<<(base.nop1[MXNPEL*i+ 2]+1)<<" "<<(base.nop1[MXNPEL*i+ 3]+1)<<" "<<
 									(base.nop1[MXNPEL*i+ 4]+1)<<" "<<(base.nop1[MXNPEL*i+ 5]+1)<<" "<<(base.nop1[MXNPEL*i+ 6]+1)<<" "<<(base.nop1[MXNPEL*i+ 7]+1)<<" "<<
