@@ -405,8 +405,15 @@ object Form1: TForm1
         Caption = 'Delete weld pass...'
       end
       object WeldPassEditingandSequencing11: TMenuItem
-        Action = WeldPassEditingandSequencing1
-        Caption = 'Weld pass sequence...'
+        Caption = 'Weld pass sequence'
+        object WeldPassEditingandSequencing12: TMenuItem
+          Action = WeldPassEditingandSequencing1
+          Caption = 'By Move Up/Down...'
+        end
+        object WeldPassEditingandSequencing21: TMenuItem
+          Action = WeldPassEditingandSequencing2
+          Caption = 'By CheckListBox...'
+        end
       end
       object Changeall1: TMenuItem
         Caption = 'Change all'
@@ -912,6 +919,11 @@ object Form1: TForm1
       Category = 'Mesh'
       Caption = 'BCsNclick7'
       OnExecute = BCsNclick7Execute
+    end
+    object WeldPassEditingandSequencing2: TAction
+      Category = 'Weld'
+      Caption = 'WeldPassEditingandSequencing2'
+      OnExecute = WeldPassEditingandSequencing2Execute
     end
   end
 end

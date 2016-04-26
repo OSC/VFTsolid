@@ -10,16 +10,18 @@
 #pragma resource "*.dfm"
 TForm30 *Form30;
 //---------------------------------------------------------------------------
-//__fastcall TForm30::TForm30(long nWeldPass,String name[],TColor WeldColor[],int seqNum[],TComponent* Owner)
-__fastcall TForm30::TForm30(long nWeldPass,String name[],TColor WeldColor[],int seqNum[],long reset[],TComponent* Owner) : TForm(Owner)
-{long i=0,j=0;
+__fastcall TForm30::TForm30(int isel,long nWeldPass,const String name[],const TColor WeldColor[],const int seqNum[],const long reset[],TComponent* Owner) : TForm(Owner)
+{long i=0,j=0;local_isel=isel;
  for(i=0;i<nWeldPass;i++) //Each order
    {for(j=0;j<nWeldPass;j++)if(seqNum[j]-1==i)break;   // Note that seqNum is numbered 1 to...
-	CheckListBox1->Items->Add(name[j].w_str());CheckListBox2->Items->Add(name[j].w_str());
+	CheckListBox1->Items->Add(name[j].w_str());
+	if(local_isel)CheckListBox2->Items->Add(IntToStr(seqNum[i]).w_str());
+	else          CheckListBox2->Items->Add(name[j].w_str());
 	if(reset[j]-10*(reset[j]/10)){CheckListBox1->Checked[j]=true;CheckListBox2->Checked[j]=true;}
 	invColor[i]=invorigColor[i]=WeldColor[j];localseqInv[i]=origseqInv[i]=j;
    }
- CheckListBox1->Enabled=false;CheckListBox2->ItemIndex=0;seqIndex=0;
+ if(local_isel)CheckListBox1->ItemIndex=0;
+ CheckListBox2->ItemIndex=0;seqIndex=0;
 }
 ////---------------------------------------------------------------------------
 //long TForm30::getEdit1(){
@@ -33,7 +35,32 @@ __fastcall TForm30::TForm30(long nWeldPass,String name[],TColor WeldColor[],int 
 ////---------------------------------------------------------------------------
 //void TForm30::setEdit1(long x){Edit1->Text=IntToStr(__int64(x));}
 //---------------------------------------------------------------------------
-void __fastcall TForm30::Button1Click(TObject *Sender){Form1->WeldPassEditSeqn2_public();} //Enter
+long TForm30::getEdit1(){return StrToInt(Edit1->Text);}
+void TForm30::setEdit1(long x){Edit1->Text=IntToStr(__int64(x));}
+//---------------------------------------------------------------------------
+int TForm30::getISEL(){return local_isel;}
+void TForm30::setISEL(int x){local_isel=x;}
+//---------------------------------------------------------------------------
+void __fastcall TForm30::Button1Click(TObject *Sender) //Remember that seq (1,...)
+{if(local_isel){long in=0,ip=0,sum=0,lastabsent=0,lastduplicate=0,*occur=NULL;occur=new long[CheckListBox2->Count];
+				for(in=0;in<CheckListBox2->Count;in++)
+				  {sum=0;for(ip=0;ip<CheckListBox2->Count;ip++)if(in+1== StrToInt(CheckListBox2->Items->Strings[ip]))sum++;
+				   occur[in]=sum;
+				  }
+				lastabsent=lastduplicate=0;
+				for(in=0;in<CheckListBox2->Count;in++){if(occur[in]==0)lastabsent=in+1;
+													   else if(occur[in]>1)lastduplicate=in+1;
+													  }
+				delete [] occur;
+				if(lastabsent==0 && lastduplicate==0)Form1->WeldPassEditSeqn4_public();
+				else if(lastabsent!=0 && lastduplicate!=0){extern PACKAGE void __fastcall Beep(void);
+														   ShowMessage(L"Repeat: Order# "+IntToStr(__int64(lastabsent))+L" missing but Order# "+IntToStr(__int64(lastduplicate))+L" duplicated.");
+														  }
+				else if(lastabsent!=0){extern PACKAGE void __fastcall Beep(void);ShowMessage(L"Repeat: Order# "+IntToStr(__int64(lastabsent))+L" missing.");}
+				else if(lastduplicate!=0){extern PACKAGE void __fastcall Beep(void);ShowMessage(L"Repeat: Order# "+IntToStr(__int64(lastduplicate))+L" duplicated.");}
+			   }
+ else Form1->WeldPassEditSeqn2_public();
+} //Enter
 ////---------------------------------------------------------------------------
 //void __fastcall TForm30::Button2Click(TObject *Sender)//Animate seq
 ////{Form1->WeldPassEditSeqn2_public();
@@ -92,16 +119,27 @@ void __fastcall TForm30::Button6Click(TObject *Sender)//restore current seq+dir
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm30::Button7Click(TObject *Sender)//Reverse all directions EFP 12/31/2011
-{for(long i=0;i<CheckListBox2->Items->Count;i++)CheckListBox2->Checked[i]=1-CheckListBox2->Checked[i];
+{if(local_isel){CheckListBox2->Items->Delete(local_index);
+				CheckListBox2->Items->Insert(local_index,Edit1->Text);
+			   }
+ else for(long i=0;i<CheckListBox2->Items->Count;i++)CheckListBox2->Checked[i]=1-CheckListBox2->Checked[i];
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm30::CheckListBox2Click(TObject *Sender){setWColor1(invColor[CheckListBox2->ItemIndex]);}
+void __fastcall TForm30::CheckListBox2Click(TObject *Sender)
+{if(local_isel){extern PACKAGE void __fastcall Beep(void);
+Application->MessageBox(L"Click this checkbox to reverse direction.\nClick other listbox to select weldpass for reordering.",L"Caution",MB_OK);
+			   }
+ else {if(CheckListBox2->ItemIndex> -1 && CheckListBox2->ItemIndex <CheckListBox2->Items->Count)setWColor1(invColor[CheckListBox2->ItemIndex]);
+	   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click right checklistbox item",L"Selection unknown",MB_OK);}
+	  }
+}
 //---------------------------------------------------------------------------
 TColor TForm30::getWColor1(){return Shape1->Brush->Color;}
 void TForm30::setWColor1(TColor s){Shape1->Brush->Color=s;}
 //---------------------------------------------------------------------------
-//int TForm30::getSeq(){return localseqInv[seqIndex]+1;}
-int TForm30::getSeq(){return seqIndex+1;}
+int TForm30::getSeq(){if(local_isel)return StrToInt(CheckListBox2->Items->Strings[seqIndex]);
+					  else return seqIndex+1;
+					 }
 bool TForm30::getDir(){return CheckListBox2->Checked[seqIndex];}
 //---------------------------------------------------------------------------
 //void TForm23::setSeqIndex(int s){seqIndex=s;}
@@ -111,5 +149,15 @@ void TForm30::setSeqIndex(int s){long j=0;    //Receive WP# s and convert to ass
 								}
 //---------------------------------------------------------------------------
 void __fastcall TForm30::Button8Click(TObject *Sender){Form1->WeldPassEditSeqn3_public();}
+//---------------------------------------------------------------------------
+void __fastcall TForm30::CheckListBox1Click(TObject *Sender)
+{if(local_isel){if(CheckListBox1->ItemIndex> -1 && CheckListBox1->ItemIndex <CheckListBox1->Items->Count)
+				  {CheckListBox2->ItemIndex=local_index=CheckListBox1->ItemIndex;
+				   setWColor1(invColor[CheckListBox1->ItemIndex]);
+				  }
+				else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click left checklistbox item",L"Selection unknown",MB_OK);}
+			   }
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click on other checklistbox",L"Halt",MB_OK);}
+}
 //---------------------------------------------------------------------------
 

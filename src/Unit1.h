@@ -238,6 +238,9 @@ __published:	// IDE-managed Components
 	TMenuItem *BCsNclick41;
 	TMenuItem *BCsNclick51;
 	TMenuItem *BCsNclick61;
+	TAction *WeldPassEditingandSequencing2;
+	TMenuItem *WeldPassEditingandSequencing12;
+	TMenuItem *WeldPassEditingandSequencing21;
 	void __fastcall ImportAbaExecute(TObject *Sender);
 	void __fastcall ImportMshExecute(TObject *Sender);
 	void __fastcall FileCloseExecute(TObject *Sender);
@@ -334,6 +337,7 @@ __published:	// IDE-managed Components
 	void __fastcall BCsNclick5Execute(TObject *Sender);
 	void __fastcall BCsNclick6Execute(TObject *Sender);
 	void __fastcall BCsNclick7Execute(TObject *Sender);
+	void __fastcall WeldPassEditingandSequencing2Execute(TObject *Sender);
 
 private:	// User declarations
 ///////////////////////////////////////////////////////////
@@ -486,7 +490,7 @@ char *comboCWD;
 	   void export_CTSP_NODE(), // Identical to ABAQUS-format ASCII nodal geometry file *.inp (or *.in), delimited by ","
 	        export_CTSP_ELEMENT8(), // Identical to ABAQUS format ASCII element (8n only, with element mapping) connectivity file *.inp (or *.in), delimited by ","
 			export_CTSP_INPUTp1(float),
-			export_CTSP_INPUTp_mcm(long,long,int,float);
+			export_CTSP_INPUTp_mcm(long,long,int,float),WeldPassEditSeqn0(int);
 //	   void export_VED(char [],float *); // VED= virtual element detection  (based on WSIExportABA.java export_VED)
 	   void export_VED(String,float *,int); // VED= virtual element detection  (based on WSIExportABA.java export_VED)
 //aaaaaaaaaaaaaa
@@ -507,7 +511,7 @@ public:		// User declarations
 		 EditMatProp_public(),
 		 wpCreate_public(),wpCreate1_public(),wpCreate2_public(),
 		 wpEdit_public(),wpEdit2_public(),
-		 WeldPassEditSeqn1_public(),WeldPassEditSeqn2_public(),WeldPassEditSeqn3_public(),
+		 WeldPassEditSeqn1_public(),WeldPassEditSeqn2_public(),WeldPassEditSeqn3_public(),WeldPassEditSeqn4_public(),
 		 exportCTSP2_public(),exportCTSP3_public(),exportWARP4_public(),
 		 exportWARP3D_public(),exportWARP3D1a_public(),exportWARP3D5_public();
 	void Form28_public(),Form28Close_public(),

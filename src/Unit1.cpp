@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59f_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59g_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -4528,7 +4528,7 @@ nodeuplim=0,nodelolim=0,totNnum=0,eluplim=0,ellolim=0,totEnum=0,sumWG=0,sumlim=0
 totWG=0,ELSETmobsize=0,exALLEL=0,exALLWD=0,iallGrp=0, *revnode_map;
  float //fval=0.f,
  darr[10];
- char cht[200], *temp_cht, *temp_cht1//,extensChar[]=".msh",chELSET[78+1], *fnNeed1=NULL,*fnNeed2=NULL
+ char cht[200], *temp_cht=NULL, *temp_cht1=NULL//,extensChar[]=".msh",chELSET[78+1], *fnNeed1=NULL,*fnNeed2=NULL
  ;
  wchar_t string0[11];
 ////////////////
@@ -4552,8 +4552,8 @@ totWG=0,ELSETmobsize=0,exALLEL=0,exALLWD=0,iallGrp=0, *revnode_map;
 /////////////////////////////////////
  if(OpenDialog1->Execute())
 //   {ifstream ntape2(OpenDialog1->FileName.t_str(),ios::nocreate|ios::binary,0);
-   {ifstream ntape2(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
-	if(ntape2)
+   {ifstream ntape(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
+	if(ntape)
 	  {
 
 GeomFileName=OpenDialog1->FileName;
@@ -4563,18 +4563,18 @@ gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
 // Perhaps the above should be moved within   if(ntape){  ??? EFP 2/27/2012
 ///////////////////////////// end
 
-	   ofstream tmpfile("record.tmp",ios::binary,0); //Sanitize by writing file without comment/blank lines
-	   if(tmpfile)
-		 {do {ntape2.getline(cht,200-1);
-			  if(cht[0]=='c')continue; // Vague assumption: *.msh comment card begins with c
-			  else tmpfile<<cht<<"\n";
-			 }
-		  while (!ntape2.eof());
-		  tmpfile.close();
-		  ifstream ntape("record.tmp",ios::nocreate|ios::binary,0);
-		  if(ntape)
-//
-	  {
+//	   ofstream tmpfile("record.tmp",ios::binary,0); //Sanitize by writing file without comment/blank lines
+//	   if(tmpfile)
+//		 {do {ntape2.getline(cht,200-1);
+//			  if(cht[0]=='c')continue; // Vague assumption: *.msh comment card begins with c
+//			  else tmpfile<<cht<<"\n";
+//			 }
+//		  while (!ntape2.eof());
+//		  tmpfile.close();
+//		  ifstream ntape("record.tmp",ios::nocreate|ios::binary,0);
+//		  if(ntape)
+////
+//	  {
 //////////////////////////////////////////////////////////////
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //////////////////////////////////////////////////////////////
@@ -4597,7 +4597,7 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 																			{
 																			   do {ntape.getline(cht,200-1); // This might be +1 wrong
 																					for(i=0;i<10;i++)larr[i]=0;
-																					parse_cdmQ(cht,&nic,&nrc,larr,darr); // *ELEMENT
+																					parse_cdmQ_public(cht,&nic,&nrc,larr,darr); // *ELEMENT
 															   if(nic-1==8)
 																 {totEnum++;if(eluplim<larr[0])eluplim=larr[0];
 																  if(ellolim>larr[0])ellolim=larr[0];
@@ -4702,14 +4702,14 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 							 }  //CAUTION: This can handle only one ALLEL/ELALL/EALL/ALLWD/ALLWELD exclusion
 		  }
 	   while (!ntape.eof());
-	   ntape.close();
+//	   ntape.close();
 //////////////////////////////////////////////////////////////
 Screen->Cursor=Save_Cursor;
 //////////////////////////////////////////////////////////////
 //honk<<nodeuplim<<" "<<nodelolim<<" "<<totNnum<<" "<<eluplim<<" "<<ellolim<<" "<<totEnum<<" "<<MXNPEL<<" DDDDDDDD\n";
 //honk<<ELSETmobsize<<" "<<totEnum<<" "<<exALLEL<<" "<<base.allGrp<<" zoot suit\n";
 	   if(wp.nWeldGroup==0){extern PACKAGE void __fastcall Beep(void);
-							Application->MessageBox(L"No weld groups (*ELSET=WD,WG,WP,WELD,GROUP) found in *.msh",L"Terminate: ",MB_OK);exit(0);
+							Application->MessageBox(L"Looking for WD,WG,WP,WELD,GROUP: No weld groups (*ELSET, ELSET=...weld...) found in *.msh",L"Terminate",MB_OK);exit(0);
 						   }
 //honk<<base.allGrp<<" "<<wp.nWeldGroup<<" Early A & WG\n";
 //GeomFileName=OpenDialog1->FileName;
@@ -4746,9 +4746,9 @@ Screen->Cursor=Save_Cursor;
 		  FDdynmem_manage(15,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.nelt);//EFP 8/07/2011
 		  FDdynmem_manage(20,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.allGrp);//EFP 8/07/2011
 		  base.ELSETinputnames[0]=L"ALLEL";
-		  ifstream ntape1("record.tmp",ios::nocreate|ios::binary,0);
-		  if(ntape1) //seek() can be used with binary-opened files (NOT ascii) so close & reopen file  EFP 12/18/2011
-			{
+//		  ifstream ntape1("record.tmp",ios::nocreate|ios::binary,0);
+//		  if(ntape1) //seek() can be used with binary-opened files (NOT ascii) so close & reopen file  EFP 12/18/2011
+//			{
 //////////////////////////////////////////////////////////////
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //////////////////////////////////////////////////////////////
@@ -4771,26 +4771,28 @@ revnode_map=new long[nodeuplim-nodelolim+1];
 //honk<<base.allGrp<<" "<<wp.nWeldGroup<<" EEELate A & WG\n";
 //honk<<base.npoin<<" "<<base.nelt<<" npoin/nelt\n";
 ////////////
-			 do {ntape1.getline(cht,200-1);
+			 if(ntape.fail())ntape.clear();
+			 ntape.seekg(0,ios::beg);
+			 do {ntape.getline(cht,200-1);
 				 if(cht[0]=='*' && cht[1]=='*' && (cht[2]=='E' || cht[2]=='e') && (cht[3]=='N' || cht[3]=='n') && (cht[4]=='D' || cht[4]=='d'))break;
 				 else if(cht[0]=='*' && cht[1]=='*' && cht[2]==' ' && (cht[3]=='E' || cht[3]=='e') && (cht[4]=='N' || cht[4]=='n') && (cht[5]=='D' || cht[5]=='d'))break;
 				 else if((cht[0]=='*' && cht[1]=='*' &&                (cht[2]=='N' || cht[2]=='n') && (cht[3]=='O' || cht[3]=='o') && (cht[4]=='D' || cht[4]=='d') && (cht[5]=='E' || cht[5]=='e')) ||
 						 (cht[0]=='*' && cht[1]=='*' && cht[2]==' ' && (cht[3]=='N' || cht[3]=='n') && (cht[4]=='O' || cht[4]=='o') && (cht[5]=='D' || cht[5]=='d') && (cht[6]=='E' || cht[6]=='e')))
-					 {do {ntape1.getline(cht,200-1); //parse_cdm(cht,4,&nic,&nrc,larr,darr); // *NODE, stored in same file
+					 {do {ntape.getline(cht,200-1); //parse_cdm(cht,4,&nic,&nrc,larr,darr); // *NODE, stored in same file
 						  parse_cdm3ff(cht,4,&nic,&nrc,larr,darr);
 						  in=larr[0]-1;base.c1[NDF*totNnum]=darr[0];base.c1[NDF*totNnum+1]=darr[1];base.c1[NDF*totNnum+2]=darr[2];
 						  base.node_map[totNnum]=in;  // Check this
 						  revnode_map[in-nodelolim+1]=totNnum;
 						  totNnum++;
 						 }
-					  while (ntape1.peek()!= '*');
+					  while (ntape.peek()!= '*');
 					 }
 		   else if((cht[0]=='*' && cht[1]=='*' &&                (cht[2]=='E' || cht[2]=='e') && (cht[3]=='L' || cht[3]=='l') && (cht[4]=='E' || cht[4]=='e') && (cht[5]=='M' || cht[5]=='m') && (cht[6]=='E' || cht[6]=='e') && (cht[7]=='N' || cht[7]=='n') && (cht[8]=='T' || cht[8]=='t')) ||
 				   (cht[0]=='*' && cht[1]=='*' && cht[2]==' ' && (cht[3]=='E' || cht[3]=='e') && (cht[4]=='L' || cht[4]=='l') && (cht[5]=='E' || cht[5]=='e') && (cht[6]=='M' || cht[6]=='m') && (cht[7]=='E' || cht[7]=='e') && (cht[8]=='N' || cht[8]=='n') && (cht[9]=='T' || cht[9]=='t')))
 						{
-							do {ntape1.getline(cht,200-1);
+							do {ntape.getline(cht,200-1);
 								for(i=0;i<10;i++)larr[i]=0;
-								parse_cdmQ(cht,&nic,&nrc,larr,darr); // *ELEMENT, stored in same file
+								parse_cdmQ_public(cht,&nic,&nrc,larr,darr); // *ELEMENT, stored in same file
 								if(nic-1==8)eltype=8;
 								else {
 //								      honk<<"Halt3: Unsupported element with #nodes "<<(nic-1)<<"\n";
@@ -4804,7 +4806,7 @@ revnode_map=new long[nodeuplim-nodelolim+1];
 								base.orig_matno[totEnum]=eltype*t7+n8*t3;
 								totEnum++;
 							   }
-							while (ntape1.peek()!= '*');
+							while (ntape.peek()!= '*');
 						}
 ///////////////////////
 /////////////////////////
@@ -4905,8 +4907,8 @@ temp_cht1[kp-1]='\0';
 
 					iallGrp++;delete [] temp_cht1;temp_cht1=NULL;delete [] temp_cht;temp_cht=NULL;
 					totWG++;nGID++;sumWG=0;
-					do {ntape1.getline(cht,200-1);
-						parse_cdmQ(cht,&nic,&nrc,larr,darr); //This accommodates comma-end or no-comma EFP 4/15/2011
+					do {ntape.getline(cht,200-1);
+						parse_cdmQ_public(cht,&nic,&nrc,larr,darr); //This accommodates comma-end or no-comma EFP 4/15/2011
 						for(i=0;i<nic;i++){if(larr[i]) //This accommodates comma-end or no-comma EFOP 4/15/2011
 											 {
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
@@ -4920,7 +4922,7 @@ else {base.arrELSET[j]=totWG;sumWG++;
 											 }
 										  }
 					   }
-					while (ntape1.peek()!= '*');
+					while (ntape.peek()!= '*');
 					if(sumlim<sumWG)sumlim=sumWG;
 ////
 								   }
@@ -4940,10 +4942,10 @@ temp_cht1[kp-1]='\0';
 							   iallGrp++;delete [] temp_cht1;temp_cht1=NULL;
 							  }
 		delete [] temp_cht;temp_cht=NULL;nGID++;
-				  do {ntape1.getline(cht,200-1);
+				  do {ntape.getline(cht,200-1);
 //					  if(iallGrp != exALLEL)
 					  if(iallGrp != exALLEL && iallGrp != exALLWD)
-					   {parse_cdmQ(cht,&nic,&nrc,larr,darr); //This accommodates comma-end or no-comma EFP 4/15/2011
+					   {parse_cdmQ_public(cht,&nic,&nrc,larr,darr); //This accommodates comma-end or no-comma EFP 4/15/2011
 						for(i=0;i<nic;i++){if(larr[i]) //This accommodates comma-end or no-comma EFOP 4/15/2011
 											 {
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
@@ -4957,11 +4959,11 @@ else {k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGr
 										  }
 					   }
 					 }
-				  while (ntape1.peek()!= '*');
+				  while (ntape.peek()!= '*');
 ////
 								 }
 						   }
-				   else {while (ntape1.peek()!= '*'){ntape1.getline(cht,200-1);} //Read+ignore unacceptable ELSET
+				   else {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);} //Read+ignore unacceptable ELSET
 						}
 				  }
 ///////////////////////////
@@ -4971,7 +4973,7 @@ else {k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGr
 
 
 				}
-			 while (!ntape1.eof());
+			 while (!ntape.eof());
 ////
 // Place integrity check here
 ////
@@ -4988,7 +4990,7 @@ base.allGrp=nGID; //Special restriction to 1 basemetal + WGs (not needed)
 //honk<<wp.nWeldGroup<<" Revised nWeldGroup "<<(base.nelt+sumELSETel)<<"\n";
 //honk<<base.nelt<<" nelt/allGrp "<<base.allGrp<<" "<<nGID<<"\n";
 			 old_npoin=new_npoin=base.npoin;new_nelt=base.nelt;new_mat=base.mat;new_ncoorf=base.ncoorf;nGID=wp.nWeldGroup+1;
-			 ntape1.close();DeleteFile("record.tmp");
+//			 ntape.close();DeleteFile("record.tmp");
 			 FDbase_indat(1,shapecombo,iplotflag,nColRes);
 			   FDdynmem_manage(-17,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy);
 			   FDdynmem_manage(17,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.nelt);//EFP 8/07/2011
@@ -5031,17 +5033,18 @@ Screen->Cursor=Save_Cursor;
 			 Invalidate();
 		 }
 
-			}
-		  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not reopen input file",L"Failure",MB_OK);}
+//			}
+//		  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not reopen input file",L"Failure",MB_OK);}
 		 }
 	   else {extern PACKAGE void __fastcall Beep(void);
 			 Application->MessageBox(L"Nodes/elements/GID missing from *.msh datafile",L"Failure",MB_OK);
 			}
-			}
-		  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not reopen *.tmp file",L"Failure",MB_OK);}
-		 }
-	   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not open *.tmp file",L"Failure",MB_OK);}
-	   ntape2.close();
+//			}
+//		  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not reopen *.tmp file",L"Failure",MB_OK);}
+//		 }
+//	   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not open *.tmp file",L"Failure",MB_OK);}
+//	   ntape2.close();
+	   ntape.close();
 	  }
 	else {extern PACKAGE void __fastcall Beep(void);
 		  Application->MessageBox(L"Could not open *.msh file",L"Failure",MB_OK);
@@ -5051,8 +5054,6 @@ Screen->Cursor=Save_Cursor;
 	  }
 //}
 }
-
-
 //---------------------------------------------------------------------------
 void __fastcall TForm1::ImportVFTrExecute(TObject *Sender)
 //void __fastcall TForm1::CAPgeomOpenExecute(TObject *Sender)
@@ -16926,6 +16927,7 @@ for(ir=0;ir<4;ir++)wp.snorm2[4*wp.nWeldPass+ir]= -1;
 												  wp.lstart[wp.nWeldPass]=double(60.f*60.f); //seconds We will just use wp.lstart[0] EFP9/02/2012
 												  wp.lend[wp.nWeldPass]=0.f;
 														  }
+												  for(ir=0;ir<3;ir++)wp.circEles[3*wp.nWeldPass+ir]= -1; //EFP 4/26/2016
 												  wp.reset[wp.nWeldPass]=0; //EFP 4/08/2013
 ///////////////////////////////////////////////////////////////////////
 												  FD_LButtonstatus=17;
@@ -17086,11 +17088,51 @@ void __fastcall TForm1::DeleteWeldPassExecute(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::WeldPassEditingandSequencing1Execute(TObject *Sender)
 {if(base.nop1)
+   {if(wp.nWeldPass>0)WeldPassEditSeqn0(0); //By MoveUp/Down
+	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Must create weld pass first.",L"Halt",MB_OK);}
+   }
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::WeldPassEditingandSequencing2Execute(TObject *Sender)
+{if(base.nop1)
    {if(wp.nWeldPass>0)
-//	  {WeldPassEditSeqn=new TForm18(wp.nWeldPass,wp.name,this);
 	  {Screen->Cursor=crDefault; //EFP 4/27/2013
-	   WeldPassEditSeqn=new TForm30(wp.nWeldPass,wp.name,wp.WeldColor,wp.seqNum,wp.reset,this);
-	   WeldPassEditSeqn->Caption=L"Weld Pass Sequencing";
+	   WeldPassEditSeqn0(1); //By CheckListBox
+	  }
+	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Must create weld pass first.",L"Halt",MB_OK);}
+   }
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
+}
+//---------------------------------------------------------------------------
+void TForm1::WeldPassEditSeqn0(int isel) //  EFP 2/26/2016
+{WeldPassEditSeqn=new TForm30(isel,wp.nWeldPass,wp.name,wp.WeldColor,wp.seqNum,wp.reset,this);
+	   if(isel){
+	   WeldPassEditSeqn->Caption=L"Weld Pass Sequencing by CheckListBox";
+	   WeldPassEditSeqn->Label1->Caption=L"Click on weldpass       Order";
+	   WeldPassEditSeqn->Label2->Caption=L"Reorder to e.g. 1st,9th";
+	   WeldPassEditSeqn->Label3->Caption=L"Check box to reverse";
+	   WeldPassEditSeqn->Label4->Caption=L"weldpass direction";
+//	   WeldPassEditSeqn->Label4->Caption=L"Animation time";
+	   WeldPassEditSeqn->Button1->Caption=L"Enter";
+//	   WeldPassEditSeqn->Button2->Caption=L"Animate seq.";
+	   WeldPassEditSeqn->Button3->Caption=L"unused";
+	   WeldPassEditSeqn->Button3->Visible=false;WeldPassEditSeqn->Button3->Enabled=false;
+	   WeldPassEditSeqn->Button4->Caption=L"unused";
+	   WeldPassEditSeqn->Button4->Visible=false;WeldPassEditSeqn->Button4->Enabled=false;
+	   WeldPassEditSeqn->Button5->Caption=L"unused";
+	   WeldPassEditSeqn->Button5->Visible=false;WeldPassEditSeqn->Button5->Enabled=false;
+	   WeldPassEditSeqn->Button6->Caption=L"unused"; //EFP 3/29/2012
+	   WeldPassEditSeqn->Button6->Visible=false;WeldPassEditSeqn->Button6->Enabled=false;
+	   WeldPassEditSeqn->Button7->Caption=L"Update seq";
+	   WeldPassEditSeqn->Button8->Caption=L"Cancel";
+	   WeldPassEditSeqn->Edit1->Visible=true;WeldPassEditSeqn->Edit1->Enabled=true;WeldPassEditSeqn->Edit1->Text=L"1";
+	   WeldPassEditSeqn->CheckListBox1->Enabled=true;
+//	   WeldPassEditSeqn->CheckEdit1=1000;
+//	   WeldPassEditSeqn->Button2->Enabled=false; //Temporary EFP 3/29/2012
+			   }
+	   else {
+	   WeldPassEditSeqn->Caption=L"Weld Pass Sequencing by MoveUp/MoveDown";
 	   WeldPassEditSeqn->Label1->Caption=L"Current direction/seq.";
 	   WeldPassEditSeqn->Label2->Caption=L"Proposed direction/seq.";
 	   WeldPassEditSeqn->Label3->Caption=L"Check box to reverse";
@@ -17104,13 +17146,12 @@ void __fastcall TForm1::WeldPassEditingandSequencing1Execute(TObject *Sender)
 	   WeldPassEditSeqn->Button6->Caption=L"Restore curr.seq+dir"; //EFP 3/29/2012
 	   WeldPassEditSeqn->Button7->Caption=L"Reverse direct. all";
 	   WeldPassEditSeqn->Button8->Caption=L"Cancel";
-// 	   WeldPassEditSeqn->CheckEdit1=1000;
+	   WeldPassEditSeqn->Edit1->Visible=false;WeldPassEditSeqn->Edit1->Enabled=false;
+	   WeldPassEditSeqn->CheckListBox1->Enabled=false;
+//	   WeldPassEditSeqn->CheckEdit1=1000;
 //	   WeldPassEditSeqn->Button2->Enabled=false; //Temporary EFP 3/29/2012
+			}
 	   WeldPassEditSeqn->Show();
-	  }
-	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Must create weld pass first.",L"Halt",MB_OK);}
-   }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open.",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void TForm1::WeldPassEditSeqn1_public() //Animate weld seq+dir  EFP 12/31/2011
@@ -17148,7 +17189,6 @@ void TForm1::WeldPassEditSeqn2_public() //Enter
 {long ip=0,ipp=0;
  for(ip=0;ip<wp.nWeldPass;ip++){WeldPassEditSeqn->CheckSeq=ip;
 								wp.seqNum[ip]=WeldPassEditSeqn->CheckSeq;
-//								if(!WeldPassEditSeqn->CheckDir)// Change direction of weld pass
 								if(WeldPassEditSeqn->CheckDir != wp.reset[ip]-10*(wp.reset[ip]/10))//EFP 3/28/2012 Change direction of weld pass
 								  {RevProg0(ip);
 								   ipp=wp.reset[ip]-10*(wp.reset[ip]/10);//EFP 3/28/2012
@@ -17163,6 +17203,23 @@ Screen->Cursor=crSizeAll;
 }
 //---------------------------------------------------------------------------
 void TForm1::WeldPassEditSeqn3_public(){Screen->Cursor=crSizeAll;delete WeldPassEditSeqn;WeldPassEditSeqn=NULL;}//Cancel EFP 3/29/2012
+//---------------------------------------------------------------------------
+void TForm1::WeldPassEditSeqn4_public() //Enter
+{long ip=0,iq=0,ipp=0; // Note: the returned value of WeldPassEditSeqn->CheckSeq is in the range [1,...] & WeldPassEditSeqn->CheckDir 0/1
+ for(ip=0;ip<wp.nWeldPass;ip++){WeldPassEditSeqn->CheckSeq=ip;iq=WeldPassEditSeqn->CheckSeq;
+								wp.seqNum[ip]=iq; //iq starts with 1
+								if(WeldPassEditSeqn->CheckDir != wp.reset[iq-1]-10*(wp.reset[iq-1]/10))//EFP 3/28/2012 Change direction of weld pass
+								  {RevProg0(iq-1); // Change direction of weld pass
+								   ipp=wp.reset[iq-1]-10*(wp.reset[iq-1]/10);//EFP 3/28/2012
+								   wp.reset[iq-1]=10*(wp.reset[iq-1]/10)+1-ipp;
+								  }
+							   }
+ delete WeldPassEditSeqn;WeldPassEditSeqn=NULL;
+/////////// Cursor EFP 1/21/2011
+Screen->Cursor=crSizeAll;
+///////////
+ Invalidate();
+}
 //---------------------------------------------------------------------------
 void TForm1::RevProg0(long iWP)
 {int opp_arr8[6]={2,3,0,1,5,4};
