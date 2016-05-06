@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59g_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59h_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -20511,7 +20511,7 @@ delete [] m1;m1=NULL;
 
 
 	if(tot)
-	  {wpelORDER=new long[tot];for(ir=0;ir<tot;ir++)wpelORDER[ir]=wp.eles[wp.memWGa*icycle+ir];
+	  {wpelORDER=new long[tot];for(ir=0;ir<tot;ir++)wpelORDER[ir]=wp.eles[wp.memWGa*icycle+ir]/10;
 	   sortLArr_by_bubble(wpelORDER,0,tot-1);
 	   buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,NULL,0,NULL,NULL);
 	   char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,m1,buffersize,NULL,NULL);
