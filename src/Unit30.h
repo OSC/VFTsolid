@@ -22,12 +22,12 @@ __published:	// IDE-managed Components
 	TButton *Button5;
 	TButton *Button6;
 	TButton *Button7;
-	TCheckListBox *CheckListBox1;
 	TCheckListBox *CheckListBox2;
 	TShape *Shape1;
 	TButton *Button8;
 	TLabel *Label4;
 	TEdit *Edit1;
+	TListBox *ListBox1;
 	void __fastcall Button1Click(TObject *Sender);
 //	void __fastcall Button2Click(TObject *Sender);
 	void __fastcall Button3Click(TObject *Sender);
@@ -37,7 +37,8 @@ __published:	// IDE-managed Components
 	void __fastcall Button7Click(TObject *Sender);
 	void __fastcall CheckListBox2Click(TObject *Sender);
 	void __fastcall Button8Click(TObject *Sender);
-	void __fastcall CheckListBox1Click(TObject *Sender);
+//	void __fastcall CheckListBox1Click(TObject *Sender);
+	void __fastcall ListBox1Click(TObject *Sender);
 private:	// User declarations
 	int local_isel,seqIndex,getISEL(),getSeq(),localseqInv[256],origseqInv[256];
 	long local_index,getEdit1();

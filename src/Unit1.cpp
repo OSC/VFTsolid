@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59h_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59i_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -13323,6 +13323,7 @@ Canvas->Polygon(ptDraw,4-1);
 											 {wp.sttEles[wp.memWGa*wp.PRECORD+wp.count_curr_sttEl]=10*ie+iside;
 											  for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*wp.PRECORD+4*wp.count_curr_sttEl+ip]=base.nop1[MXNPEL*ie+gdata8[4*iside+ip]];
 											  wp.count_curr_sttEl=wp.count_curr_sttEl+1;
+											  CreateLinWeldPass->CheckStartEndEl=1;
 											 }
 /////////
 																 }
@@ -13336,6 +13337,7 @@ Canvas->Polygon(ptDraw,4-1);
 											 {wp.sttEles[wp.memWGa*incognito+wp.count_curr_sttEl]=10*ie+iside;
 											  for(ip=0;ip<4;ip++)wp.sttEleNodes[wp.memWGa*4*incognito+4*wp.count_curr_sttEl+ip]=base.nop1[MXNPEL*ie+gdata8[4*iside+ip]];
 											  wp.count_curr_sttEl=wp.count_curr_sttEl+1;
+											  CreateLinWeldPass->CheckStartEndEl=1;
 											 }
 /////////
 												}
@@ -13373,6 +13375,7 @@ if(wp.count_curr_sttEl)
 				 for(ippp=4*(ip1+1);ippp<4*wp.count_curr_sttEl;ippp++)wp.sttEleNodes[wp.memWGa*4*incognito+ippp-4]=wp.sttEleNodes[wp.memWGa*4*incognito+ippp];
 				}
 			  wp.count_curr_sttEl=wp.count_curr_sttEl-1;
+			  CreateLinWeldPass->CheckStartEndEl=1;
 			 }
    else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"This element is not a start element of current WP.",L"Failure",MB_OK);}
   }
@@ -13912,6 +13915,7 @@ wp.lend[incognito]=dist/float(wp.count_curr_sttEl);
 //					   wp.n_curr_sttEl[wp.PRECORD]=wp.count_curr_sttEl;
 					   wp.n_curr_sttEl[incognito]=wp.count_curr_sttEl;
 					   delete [] dummap;delete [] dumarr;delete [] duminv;dummap=NULL;dumarr=NULL;duminv=NULL;
+			           CreateLinWeldPass->CheckStartEndEl=10;
 
 //vvvvvvvvvvvvvvvvv start Coding for circEles NODES  EFP 10/14/2010
 // Ensure that icount is unchanged from above
@@ -17111,9 +17115,8 @@ void TForm1::WeldPassEditSeqn0(int isel) //  EFP 2/26/2016
 	   WeldPassEditSeqn->Caption=L"Weld Pass Sequencing by CheckListBox";
 	   WeldPassEditSeqn->Label1->Caption=L"Click on weldpass       Order";
 	   WeldPassEditSeqn->Label2->Caption=L"Reorder to e.g. 1st,9th";
-	   WeldPassEditSeqn->Label3->Caption=L"Check box to reverse";
-	   WeldPassEditSeqn->Label4->Caption=L"weldpass direction";
-//	   WeldPassEditSeqn->Label4->Caption=L"Animation time";
+	   WeldPassEditSeqn->Label3->Caption=L"           Checkbox to";
+	   WeldPassEditSeqn->Label4->Caption=L"          reverse\n          weldpass\n          direction";
 	   WeldPassEditSeqn->Button1->Caption=L"Enter";
 //	   WeldPassEditSeqn->Button2->Caption=L"Animate seq.";
 	   WeldPassEditSeqn->Button3->Caption=L"unused";
@@ -17127,27 +17130,29 @@ void TForm1::WeldPassEditSeqn0(int isel) //  EFP 2/26/2016
 	   WeldPassEditSeqn->Button7->Caption=L"Update seq";
 	   WeldPassEditSeqn->Button8->Caption=L"Cancel";
 	   WeldPassEditSeqn->Edit1->Visible=true;WeldPassEditSeqn->Edit1->Enabled=true;WeldPassEditSeqn->Edit1->Text=L"1";
-	   WeldPassEditSeqn->CheckListBox1->Enabled=true;
+	   WeldPassEditSeqn->ListBox1->Enabled=true;
 //	   WeldPassEditSeqn->CheckEdit1=1000;
 //	   WeldPassEditSeqn->Button2->Enabled=false; //Temporary EFP 3/29/2012
 			   }
 	   else {
 	   WeldPassEditSeqn->Caption=L"Weld Pass Sequencing by MoveUp/MoveDown";
-	   WeldPassEditSeqn->Label1->Caption=L"Current direction/seq.";
+	   WeldPassEditSeqn->Label1->Caption=L"Current sequence";
 	   WeldPassEditSeqn->Label2->Caption=L"Proposed direction/seq.";
-	   WeldPassEditSeqn->Label3->Caption=L"Check box to reverse";
-	   WeldPassEditSeqn->Label4->Caption=L"weldpass direction";
-//	   WeldPassEditSeqn->Label4->Caption=L"Animation time";
+	   WeldPassEditSeqn->Label3->Caption=L"           Checkbox to";
+	   WeldPassEditSeqn->Label4->Caption=L"          reverse\n          weldpass\n          direction";
 	   WeldPassEditSeqn->Button1->Caption=L"Enter";
 //	   WeldPassEditSeqn->Button2->Caption=L"Animate seq.";
 	   WeldPassEditSeqn->Button3->Caption=L"Move up";
 	   WeldPassEditSeqn->Button4->Caption=L"Move down";
 	   WeldPassEditSeqn->Button5->Caption=L"Restore current dir.";
+	   WeldPassEditSeqn->Button5->Visible=false;WeldPassEditSeqn->Button5->Enabled=false;
 	   WeldPassEditSeqn->Button6->Caption=L"Restore curr.seq+dir"; //EFP 3/29/2012
+	   WeldPassEditSeqn->Button6->Visible=false;WeldPassEditSeqn->Button6->Enabled=false;
 	   WeldPassEditSeqn->Button7->Caption=L"Reverse direct. all";
+	   WeldPassEditSeqn->Button7->Visible=false;WeldPassEditSeqn->Button7->Enabled=false;
 	   WeldPassEditSeqn->Button8->Caption=L"Cancel";
 	   WeldPassEditSeqn->Edit1->Visible=false;WeldPassEditSeqn->Edit1->Enabled=false;
-	   WeldPassEditSeqn->CheckListBox1->Enabled=false;
+	   WeldPassEditSeqn->ListBox1->Enabled=false;
 //	   WeldPassEditSeqn->CheckEdit1=1000;
 //	   WeldPassEditSeqn->Button2->Enabled=false; //Temporary EFP 3/29/2012
 			}

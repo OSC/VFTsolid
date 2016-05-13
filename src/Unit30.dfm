@@ -51,7 +51,7 @@ object Form30: TForm30
   end
   object Button1: TButton
     Left = 160
-    Top = 83
+    Top = 147
     Width = 75
     Height = 25
     Caption = 'Button1'
@@ -96,21 +96,12 @@ object Form30: TForm30
   end
   object Button7: TButton
     Left = 151
-    Top = 161
+    Top = 217
     Width = 98
     Height = 25
     Caption = 'Button7'
     TabOrder = 5
     OnClick = Button7Click
-  end
-  object CheckListBox1: TCheckListBox
-    Left = 8
-    Top = 40
-    Width = 137
-    Height = 617
-    ItemHeight = 13
-    TabOrder = 6
-    OnClick = CheckListBox1Click
   end
   object CheckListBox2: TCheckListBox
     Left = 280
@@ -118,17 +109,17 @@ object Form30: TForm30
     Width = 122
     Height = 617
     ItemHeight = 13
-    TabOrder = 7
+    TabOrder = 6
     OnClick = CheckListBox2Click
   end
   object Button8: TButton
     Left = 160
-    Top = 114
+    Top = 178
     Width = 75
     Height = 25
     Caption = 'Button8'
     ModalResult = 11
-    TabOrder = 8
+    TabOrder = 7
     OnClick = Button8Click
   end
   object Edit1: TEdit
@@ -136,7 +127,16 @@ object Form30: TForm30
     Top = 8
     Width = 47
     Height = 21
-    TabOrder = 9
+    TabOrder = 8
     Text = 'Edit1'
+  end
+  object ListBox1: TListBox
+    Left = 8
+    Top = 40
+    Width = 137
+    Height = 617
+    ItemHeight = 13
+    TabOrder = 9
+    OnClick = ListBox1Click
   end
 end

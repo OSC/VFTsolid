@@ -14,13 +14,14 @@ __fastcall TForm30::TForm30(int isel,long nWeldPass,const String name[],const TC
 {long i=0,j=0;local_isel=isel;
  for(i=0;i<nWeldPass;i++) //Each order
    {for(j=0;j<nWeldPass;j++)if(seqNum[j]-1==i)break;   // Note that seqNum is numbered 1 to...
-	CheckListBox1->Items->Add(name[j].w_str());
+//	CheckListBox1->Items->Add(name[j].w_str());
+	ListBox1->Items->Add(name[j].w_str());
 	if(local_isel)CheckListBox2->Items->Add(IntToStr(seqNum[i]).w_str());
 	else          CheckListBox2->Items->Add(name[j].w_str());
-	if(reset[j]-10*(reset[j]/10)){CheckListBox1->Checked[j]=true;CheckListBox2->Checked[j]=true;}
+	if(reset[j]-10*(reset[j]/10))CheckListBox2->Checked[j]=true;
 	invColor[i]=invorigColor[i]=WeldColor[j];localseqInv[i]=origseqInv[i]=j;
    }
- if(local_isel)CheckListBox1->ItemIndex=0;
+ if(local_isel)ListBox1->ItemIndex=0;
  CheckListBox2->ItemIndex=0;seqIndex=0;
 }
 ////---------------------------------------------------------------------------
@@ -101,21 +102,23 @@ void __fastcall TForm30::Button4Click(TObject *Sender)//Move down
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm30::Button5Click(TObject *Sender)//restore current directions EFP 3/29/2012
-{long i=0,j=0;
- for(i=0;i<CheckListBox2->Items->Count;i++)
-   {for(j=0;j<CheckListBox1->Items->Count;j++)
-	   if(localseqInv[i]==origseqInv[j]){CheckListBox2->Checked[i]=CheckListBox1->Checked[j];
-										 break;
-										}
-   }
+//{long i=0,j=0;
+// for(i=0;i<CheckListBox2->Items->Count;i++)
+//   {for(j=0;j<CheckListBox1->Items->Count;j++)
+//	   if(localseqInv[i]==origseqInv[j]){CheckListBox2->Checked[i]=CheckListBox1->Checked[j];
+//										 break;
+//										}
+//   }
+{extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Inactive feature",L"Failure",MB_OK);
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm30::Button6Click(TObject *Sender)//restore current seq+dir
-{for(int i=0;i<CheckListBox1->Items->Count;i++)
-   {CheckListBox2->Items->Strings[i]=CheckListBox1->Items->Strings[i]; //TBD: allow for different incoming order
-	CheckListBox2->Checked[i]=CheckListBox1->Checked[i];
-	invColor[i]=invorigColor[i];localseqInv[i]=origseqInv[i];
-   }
+//{for(int i=0;i<CheckListBox1->Items->Count;i++)
+//   {CheckListBox2->Items->Strings[i]=CheckListBox1->Items->Strings[i]; //TBD: allow for different incoming order
+//	CheckListBox2->Checked[i]=CheckListBox1->Checked[i];
+//	invColor[i]=invorigColor[i];localseqInv[i]=origseqInv[i];
+//   }
+{extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Inactive feature",L"Failure",MB_OK);
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm30::Button7Click(TObject *Sender)//Reverse all directions EFP 12/31/2011
@@ -126,8 +129,10 @@ void __fastcall TForm30::Button7Click(TObject *Sender)//Reverse all directions E
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm30::CheckListBox2Click(TObject *Sender)
-{if(local_isel){extern PACKAGE void __fastcall Beep(void);
-Application->MessageBox(L"Click this checkbox to reverse direction.\nClick other listbox to select weldpass for reordering.",L"Caution",MB_OK);
+{if(local_isel){
+if(CheckListBox2->Checked[CheckListBox2->ItemIndex]==false){extern PACKAGE void __fastcall Beep(void);
+															Application->MessageBox(L"Must click precisely on checkbox to reverse direction.",L"Warning",MB_OK);
+														   }
 			   }
  else {if(CheckListBox2->ItemIndex> -1 && CheckListBox2->ItemIndex <CheckListBox2->Items->Count)setWColor1(invColor[CheckListBox2->ItemIndex]);
 	   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click right checklistbox item",L"Selection unknown",MB_OK);}
@@ -149,15 +154,25 @@ void TForm30::setSeqIndex(int s){long j=0;    //Receive WP# s and convert to ass
 								}
 //---------------------------------------------------------------------------
 void __fastcall TForm30::Button8Click(TObject *Sender){Form1->WeldPassEditSeqn3_public();}
+////---------------------------------------------------------------------------
+//void __fastcall TForm30::CheckListBox1Click(TObject *Sender)
+//{if(local_isel){if(CheckListBox1->ItemIndex> -1 && CheckListBox1->ItemIndex <CheckListBox1->Items->Count)
+//				  {CheckListBox2->ItemIndex=local_index=CheckListBox1->ItemIndex;
+//				   setWColor1(invColor[CheckListBox1->ItemIndex]);
+//				  }
+//				else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click left checklistbox item",L"Selection unknown",MB_OK);}
+//			   }
+// else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click on other checklistbox",L"Halt",MB_OK);}
+//}
 //---------------------------------------------------------------------------
-void __fastcall TForm30::CheckListBox1Click(TObject *Sender)
-{if(local_isel){if(CheckListBox1->ItemIndex> -1 && CheckListBox1->ItemIndex <CheckListBox1->Items->Count)
-				  {CheckListBox2->ItemIndex=local_index=CheckListBox1->ItemIndex;
-				   setWColor1(invColor[CheckListBox1->ItemIndex]);
+void __fastcall TForm30::ListBox1Click(TObject *Sender)
+{if(local_isel){if(ListBox1->ItemIndex> -1 && ListBox1->ItemIndex <ListBox1->Items->Count)
+				  {CheckListBox2->ItemIndex=local_index=ListBox1->ItemIndex;
+				   setWColor1(invColor[ListBox1->ItemIndex]);
 				  }
-				else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click left checklistbox item",L"Selection unknown",MB_OK);}
+				else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click left listbox item",L"Selection unknown",MB_OK);}
 			   }
- else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click on other checklistbox",L"Halt",MB_OK);}
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Click on right checklistbox",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
 

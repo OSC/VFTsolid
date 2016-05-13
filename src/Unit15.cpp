@@ -20,7 +20,7 @@ __fastcall TForm15::TForm15(int isel,long currWeldPass,long currSeq,long nStartE
 							long nMatPropSet,const String gMatPropName[],
 							long nWeldParSet,const String gWeldParName[],
    TComponent* Owner) : TForm(Owner) // All arguments start with 1 (not 0)
-{int i=0;F15_isel=isel;Pl1norm=Pl1normEl;Pl2norm=Pl2normEl;
+{int i=0;F15_isel=isel;Pl1norm=Pl1normEl;Pl2norm=Pl2normEl;confirmStartEndEl=0;
  kflagForm15=jflagForm15= -1;nMatPS=nMatPropSet;nWeldPS=nWeldParSet;
 // Edit1->Text=IntToStr(INT64(currWeldPass));
  Edit2->Text=IntToStr(__int64(currSeq));
@@ -434,6 +434,17 @@ else {if(kflagForm15<0){isw=0;extern PACKAGE void __fastcall Beep(void);ShowMess
  if(StrToFloat(Edit22->Text)<TOL){isw=0;extern PACKAGE void __fastcall Beep(void);
 								  ShowMessage(Label25->Caption +L" "+ Edit22->Text + L" thickness must be positive");
 								 }
+
+ if(confirmStartEndEl==0){isw=0;extern PACKAGE void __fastcall Beep(void); //EFP 5/10/2016
+						  ShowMessage(L"WP start & end elements missing.");
+						 }
+ else if(confirmStartEndEl==10){isw=0;extern PACKAGE void __fastcall Beep(void); //EFP 5/10/2016
+								ShowMessage(L"WP start elements missing.");
+							   }
+ else if(confirmStartEndEl==1){isw=0;extern PACKAGE void __fastcall Beep(void); //EFP 5/10/2016
+							   ShowMessage(L"WP end elements missing.");
+							  }
+
  if(Pl1norm<0 && Pl2norm<0){isw=0;extern PACKAGE void __fastcall Beep(void); //EFP 5/31/2011
 							ShowMessage(L"Plate normals #1 & #2 are missing.");
 						   }
@@ -504,5 +515,9 @@ else {F15_isel=4;
 	  Label4->Caption=L"Auto-gen to end run (click for direction)";
 	 }
 }
+//---------------------------------------------------------------------------
+void TForm15::setConfirmStartEndEl(int s){if(s==1)confirmStartEndEl=10*(confirmStartEndEl/10)+s; // 1st digit= StartEl flag (s=1) EFP 5/10/2016
+										  else confirmStartEndEl=confirmStartEndEl-10*(confirmStartEndEl/10)+s; // 2nd digit= EndEl flag (s=10)
+										 }
 //---------------------------------------------------------------------------
 

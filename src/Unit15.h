@@ -97,8 +97,7 @@ __published:	// IDE-managed Components
 	void __fastcall RadioGroup1Click(TObject *Sender);
 
 private:	// User declarations
-        int iflagForm15;
-		int F15_isel,kflagForm15,jflagForm15,nMatPS,nWeldPS,getRadioBstatus(),
+		int iflagForm15,confirmStartEndEl,F15_isel,kflagForm15,jflagForm15,nMatPS,nWeldPS,getRadioBstatus(),
 //			getCheckBstatus(),
 			getEdit19(),
 			getISEL(),getFunc(),getType(),getShape(),getMatName(),getWeldParName();
@@ -110,7 +109,7 @@ private:	// User declarations
 			 setEdit13(double),setEdit14(double),setEdit15(double),setEdit16(double),setEdit17(double),setEdit18(double),
 			 setEdit19(int),setEdit20(double),setEdit21(double),setEdit22(double),setEdit23(long),setEdit24(long),
 			 setFunc(int),setType(int),setShape(int),setWColor(TColor),setNorm1(long),setNorm2(long),
-			 setCheckBox1(bool)
+			 setCheckBox1(bool),setConfirmStartEndEl(int)
 			 ; //EFP 5/31/2011
 		bool getCheckBox1();
 		String getEdit1();
@@ -149,6 +148,7 @@ public:		// User declarations
 		__property TColor CheckWeldColor={read=getWColor,write=setWColor};
 		__property long CheckNorm1={write=setNorm1}; //EFP 5/31/2011
 		__property long CheckNorm2={write=setNorm2}; //EFP 5/31/2011
+		__property int CheckStartEndEl={write=setConfirmStartEndEl}; //EFP 5/10/2016
 		__fastcall TForm15(int,long,long,long,long,long,long,long,const String [],long,const String [],TComponent* Owner);
 };
 //---------------------------------------------------------------------------
