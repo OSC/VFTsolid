@@ -1,6 +1,6 @@
 // Dire warning about Abaqus datafiles:
 //  (i) Beware of missing GENERATEs
-//  (ii) *END or *END STEP required at end
+//  (ii) *END or *END STEP required at end (This is not true anymore)
 //  (iii) Only one PART/ASSEMBLY/INSTANCE can be read.
 //  (iv) Lots of cards are unsupported, especially *TIE, *NGEN
 //  (v) *TRANSFORM and SYSTEM unsupported.
@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59i_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59j_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -3558,7 +3558,7 @@ if(jsw){temp_cht=new char[kp+1];
 //   33121,   33129,       1
 							  do {ntape.getline(cht,200-1);if(ntape.eof())break;  // ELSET.... GENERATE
 								  if( kp){parse_cdm(cht,3,&nic,&nrc,larr,darr); //TBD: Unnecessary test??
-										  if(larr[1]-larr[0]+1<base.nelt){for(i=larr[0]-1;i<larr[1];i=i+larr[2])
+										  if(larr[1]-larr[0]+1<=base.nelt){for(i=larr[0]-1;i<larr[1];i=i+larr[2])
 																		   {
 j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==i){j=kk;break;}
 if(j== -1){//honk<<"TERMINATE: GENERATED WG el_map crash in *.abq/*.inp\n";
@@ -17340,7 +17340,7 @@ void __fastcall TForm1::exportCTSPExecute(TObject *Sender)
 	   CTSPnames->Label6->Caption="node.in";
 	   CTSPnames->Label7->Caption="element.in";
 	   CTSPnames->Label9->Caption="param.in";
-	   CTSPnames->Label10->Caption="Suggested core-to-core overlap time";
+	   CTSPnames->Label10->Caption="Suggested core-to-core overlap (max 3000s)";
 	   CTSPnames->Button1->Caption="OK";
 	   CTSPnames->Button2->Caption="Cancel";
 	   CTSPnames->Label2->Enabled=false;
@@ -17375,9 +17375,9 @@ void __fastcall TForm1::exportCTSPExecute(TObject *Sender)
 	   CTSPnames->CheckEdit1=gWsiAlias;
 	   CTSPnames->CheckEdit4=1;
 	   if(wp.nWeldPass>1){iptmax=0.f;for(in=0;in<wp.nWeldPass-1;in++)if(iptmax<wp.timeInterval[in])iptmax=wp.timeInterval[in];
-						  CTSPnames->CheckEdit6=3.5f*iptmax; // Policy: core-to-core default= 3.5x max IPtime interval
+						  CTSPnames->CheckEdit6=min(3.5f*iptmax,3000.f); // Policy: core-to-core default= 3.5x max IPtime interval
 						 }
-	   else CTSPnames->CheckEdit6=float(3600);
+	   else CTSPnames->CheckEdit6=float(3000);
 	   CTSPnames->ShowModal();
 	   delete CTSPnames;CTSPnames=NULL;
 
@@ -18820,7 +18820,7 @@ j=1;for(ir=1;ir<1000;ir++){for(i=0;i<base.nelt;i++){if(base.matno[i]> -1){k=base
 	   Form7->Button1->Caption=L"OK";
 	   for(ir=0;ir<ies;ir++)Form7->ListBox1->AddItem(base.ELSETinputnames[iELSETarr[ir]],this);
 	   delete [] iELSETarr;
-	   Form7->ListBox1->ItemIndex=0;
+	   Form7->ListBox1->ItemIndex=ies;
 	   for(i=0;i<wms.nMatPropSet;i++)Form7->ListBox3->AddItem(wms.matFileName[i],this);
 	   if(wms.nMatPropSet==1)for(i=0;i<ies;i++)Form7->ListBox2->AddItem(wms.matFileName[0],this);
 	   else                  for(i=0;i<ies;i++)Form7->ListBox2->AddItem(L"****",this);
@@ -20149,7 +20149,7 @@ delete[] m1;
 void TForm1::exportWARP4_public()
 //Routine to write *.wrp, compute_commands_all_profiles.inp, uexternal_data_file.inp, output_commands.inp
 //limlist= number of "a-b" pairs in WARP3D list output format, before writing next line
-{int solidshellsw=0,limlist=5,i=0,isw=0,mtype=0,icount=0,buffersize=0,nlist=Form7->CheckNlist, *rollcall;
+{int solidshellsw=0,limlist=5,i=0,isw=0,icount=0,buffersize=0,nlist=Form7->CheckNlist, *rollcall;
  long ic=0,hinode=0,hielem=0,lolim=0,uplim=0,mdummy=0,ir=0,j=0,js=0,k=0,ies=0,iesr=0,icycle=0,irec=0,
 	  itype=0,ilast=0,istart=0,iELSETtype=0,t3=1000,ibrsw=0, *iELSETorder=NULL,
 	  iELSETactive=0,swstart=0,tot=0,swactive=0,icountlist=0,ncountlist=0, *iELSETarr=NULL, *wpelORDER=NULL;
@@ -20304,20 +20304,20 @@ TStringDynArray DynStrings=SplitString(wms.matFileName[ir],L"."); //How to delet
 buffersize=WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,NULL,0,NULL,NULL);
 char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,(DynStrings[0]+umat).w_str(), -1,m1,buffersize,NULL,NULL);
 outfile<<m1<<"\n";// EFP 12/10/2014
-if     (ContainsStr(DynStrings[0],L"_iso_"))mtype=0; //Isotropic
-else if(ContainsStr(DynStrings[0],L"_kin_"))mtype=1; //Linear kinematic (not multi-linear)
-else if(ContainsStr(DynStrings[0],L"_mln_"))mtype=2; //Multi-inear kinematic
-else if(ContainsStr(DynStrings[0],L"_mix_"))mtype=3; //Post-weld mixed
-// No mtype=4 value
-else if(ContainsStr(DynStrings[0],L"_phs_"))mtype=5; //Simple phase-transformation (not full)
-else if(ContainsStr(DynStrings[0],L"_fph_"))mtype=6; //Full phase-transformation
-else {mtype=0;
-extern PACKAGE void __fastcall Beep(void);Application->MessageBox((L"Edit *.wrp um_7 for material# "+IntToStr(__int64(ir+1))).w_str(),L"Warning: ",MB_OK);
-	 }
+//if     (ContainsStr(DynStrings[0],L"_iso_"))mtype=0; //Isotropic
+//else if(ContainsStr(DynStrings[0],L"_kin_"))mtype=1; //Linear kinematic (not multi-linear)
+//else if(ContainsStr(DynStrings[0],L"_mln_"))mtype=2; //Multi-inear kinematic
+//else if(ContainsStr(DynStrings[0],L"_mix_"))mtype=3; //Post-weld mixed
+//// No mtype=4 value
+//else if(ContainsStr(DynStrings[0],L"_phs_"))mtype=5; //Simple phase-transformation (partial LeBlond)
+//else if(ContainsStr(DynStrings[0],L"_fph_"))mtype=6; //Full phase-transformation (Full LeBlond)
+//else {mtype=0;
+//extern PACKAGE void __fastcall Beep(void);Application->MessageBox((L"Edit *.wrp um_7 for material# "+IntToStr(__int64(ir+1))).w_str(),L"Warning: ",MB_OK);
+//	 }
 outfile<<"  properties umat  rho "<<wms.den[ir]<<"  alpha 0.0,\n";
 outfile<<"       um_1 "<<(ir+1)<<" um_2 "<<wms.Ti[ir]<<" um_3 "<<wms.Ta[ir]<<",\n";
 outfile<<"       um_4 "<<wms.Tm[ir]<<" um_5 -1.0,\n";
-outfile<<"       um_6 -1.0 um_7 "<<mtype<<" um_8 0\n";  //um_7=0 for isotropic
+outfile<<"       um_6 -1.0 um_7 "<<wms.mcr[ir]<<" um_8 0\n";  //um_7=0 for isotropic
  delete[] m1;m1=NULL;
 								 }
 //

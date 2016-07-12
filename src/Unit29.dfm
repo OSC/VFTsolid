@@ -80,7 +80,7 @@ object Form29: TForm29
     Caption = 'Label9'
   end
   object Label10: TLabel
-    Left = 24
+    Left = 8
     Top = 147
     Width = 37
     Height = 13

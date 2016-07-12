@@ -497,7 +497,8 @@ void __fastcall TForm21::Button1Click(TObject *Sender)
 // if(OpenDialog1->Execute())setEdit8(OpenDialog1->FileName);
 // else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unable to create MAT file-open dialog",L"Failure",MB_OK);}
  Form5=new TForm5(this);Form5->Caption=L"Available materials";
-
+ Form5->Height=298+75;
+ Form5->ListBox1->Height=241+75;
 // Form5->ListBox1->AddItem(L"Other",this);
  Form5->ListBox1->AddItem(L"Browse...",this);
 

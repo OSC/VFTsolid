@@ -54,7 +54,10 @@ void TForm29::setIsel(int s){loc_isel=s;}
 //---------------------------------------------------------------------------
 void __fastcall TForm29::Button1Click(TObject *Sender)
 {int isw=1,jsw=1;long max_core=999,mval=0;
- if(loc_isel){Form1->exportCTSP2_public();
+ if(loc_isel){
+			  if(StrToFloat(Edit6->Text)>3000.f)
+ {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Suggested max core-to-core overlap time 3000 exceeded.",L"Warning:",MB_OK);}
+			  Form1->exportCTSP2_public();
 			  Close(); //Emergency Close() EFP 4/19/2010
 			 }
  else {try {StrToInt(Edit4->Text);
