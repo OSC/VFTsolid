@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59k_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59m_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -3255,7 +3255,7 @@ kp=0;for(i=j+1;i<int(strlen(cht))-1;i++){if(cht[i]==' '){jrec++;continue;}
 										 else if(cht[i]==',')break;
 										 else kp++;
 										}
-temp_cht1=new char[kp];for(i=0;i<kp;i++)temp_cht1[i]=cht[i+jrec]; //temp_cht1[kp]='\0';
+temp_cht1=new char[kp+1];for(i=0;i<kp;i++)temp_cht1[i]=cht[i+jrec];temp_cht1[kp]='\0';
 base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht1); //This creates a UnicodeString of 80 characters but how to "trim"?
 											 iallGrp++;//delete [] temp_cht1;temp_cht1=NULL;
 											 listWARsw=1;for(i=0;i<eluplim-ellolim+1;i++)listWAR[i]=0;
@@ -20651,39 +20651,40 @@ outfile<<"c\n";
 //		  }
 //
 //
- if(wp.nWeldPass){
- for(icycle=0;icycle<wp.nWeldPass;icycle++)
-   {tot=0;
-	for(ir=0;ir<wp.memWGa;ir++){if(wp.eles[wp.memWGa*icycle+ir]<0)break;
-								else tot++;
-							   }
-	if(tot)
-	  {wpelORDER=new long[tot];for(ir=0;ir<tot;ir++)wpelORDER[ir]=wp.eles[wp.memWGa*icycle+ir]/10;
-	   sortLArr_by_bubble(wpelORDER,0,tot-1);
-	   buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,NULL,0,NULL,NULL);
-	   char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,m1,buffersize,NULL,NULL);
-	   for(ic=buffersize-2;ic>=0;ic--)if( *(m1+ic) != chb[0]){ *(m1+ic+1)=chendl[0];break;}
-//	   outfile<<"list \""<<m1<<"\" ";
-	   outfila<<"list \""<<m1<<"\" ";
-	   delete [] m1;m1=NULL;
-	   istart=ilast=wpelORDER[0];icount=0; //Assume at least one elem
-	   for(ir=1;ir<tot;ir++){if(ilast+1 != wpelORDER[ir]){icount++;
-//														  if(icount<limlist)outfile<<(istart+1)<<"-"<<(ilast+1)<<",";
-//														  else {icount=0;outfile<<(istart+1)<<"-"<<(ilast+1)<<",\n      ";}
-														  if(icount<limlist)outfila<<(istart+1)<<"-"<<(ilast+1)<<",";
-														  else {icount=0;outfila<<(istart+1)<<"-"<<(ilast+1)<<",\n      ";}
-														  istart=wpelORDER[ir];
-														 }
-							 ilast=wpelORDER[ir];
-							}
-//	   outfile<<(istart+1)<<"-"<<(ilast+1)<<"\n";
-	   outfila<<(istart+1)<<"-"<<(ilast+1)<<"\n";
-	   delete [] wpelORDER;wpelORDER=NULL;
-	  }
+
+// if(wp.nWeldPass){  //Commented out  EFP 8/01/2016
+// for(icycle=0;icycle<wp.nWeldPass;icycle++)
+//   {tot=0;
+//	for(ir=0;ir<wp.memWGa;ir++){if(wp.eles[wp.memWGa*icycle+ir]<0)break;
+//								else tot++;
+//							   }
+//	if(tot)
+//	  {wpelORDER=new long[tot];for(ir=0;ir<tot;ir++)wpelORDER[ir]=wp.eles[wp.memWGa*icycle+ir]/10;
+//	   sortLArr_by_bubble(wpelORDER,0,tot-1);
+//	   buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,NULL,0,NULL,NULL);
+//	   char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,m1,buffersize,NULL,NULL);
+//	   for(ic=buffersize-2;ic>=0;ic--)if( *(m1+ic) != chb[0]){ *(m1+ic+1)=chendl[0];break;}
+////	   outfile<<"list \""<<m1<<"\" ";
+//	   outfila<<"list \""<<m1<<"\" ";
+//	   delete [] m1;m1=NULL;
+//	   istart=ilast=wpelORDER[0];icount=0; //Assume at least one elem
+//	   for(ir=1;ir<tot;ir++){if(ilast+1 != wpelORDER[ir]){icount++;
+////														  if(icount<limlist)outfile<<(istart+1)<<"-"<<(ilast+1)<<",";
+////														  else {icount=0;outfile<<(istart+1)<<"-"<<(ilast+1)<<",\n      ";}
+//														  if(icount<limlist)outfila<<(istart+1)<<"-"<<(ilast+1)<<",";
+//														  else {icount=0;outfila<<(istart+1)<<"-"<<(ilast+1)<<",\n      ";}
+//														  istart=wpelORDER[ir];
+//														 }
+//							 ilast=wpelORDER[ir];
+//							}
+////	   outfile<<(istart+1)<<"-"<<(ilast+1)<<"\n";
+//	   outfila<<(istart+1)<<"-"<<(ilast+1)<<"\n";
+//	   delete [] wpelORDER;wpelORDER=NULL;
+//	  }
 
 
-   }
-				 }
+//   }
+//				 }
  outfila<<"c\n*echo on\n";outfila.close();
 
 
@@ -20852,15 +20853,15 @@ outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<umat<<" order,\n"; //Correct
 outfile<<" 2x2x2 center_output short\n"; //Correction from BobD & allow for long line   EFP 1/27/2015
 delete [] m3;delete [] m2;delete [] m1;m1=m2=m3=NULL;
 									}
- for(icycle=0;icycle<wp.nWeldPass;icycle++){
-buffersize=WideCharToMultiByte(CP_UTF8,0,wp.matName[icycle].w_str(), -1,NULL,0,NULL,NULL);
-char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.matName[icycle].w_str(), -1,m1,buffersize,NULL,NULL);
-buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,NULL,0,NULL,NULL);
-char* m2=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,m2,buffersize,NULL,NULL);
-outfile<<"\""<<m2<<"\" type l3disop material "<<m1<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
-outfile<<" 2x2x2 center_output short\n"; //Correction from BobD & allow for long line   EFP 1/27/2015
-delete [] m2;delete [] m1;m1=m2=NULL;
-										   }
+// for(icycle=0;icycle<wp.nWeldPass;icycle++){   //Commented out  EFP 8/01/2016
+//buffersize=WideCharToMultiByte(CP_UTF8,0,wp.matName[icycle].w_str(), -1,NULL,0,NULL,NULL);
+//char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.matName[icycle].w_str(), -1,m1,buffersize,NULL,NULL);
+//buffersize=WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,NULL,0,NULL,NULL);
+//char* m2=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,wp.name[icycle].w_str(), -1,m2,buffersize,NULL,NULL);
+//outfile<<"\""<<m2<<"\" type l3disop material "<<m1<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+//outfile<<" 2x2x2 center_output short\n"; //Correction from BobD & allow for long line   EFP 1/27/2015
+//delete [] m2;delete [] m1;m1=m2=NULL;
+//										   }
 
 
 
