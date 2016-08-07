@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59m_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59n_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -2639,11 +2639,11 @@ void TForm1::ImportAba_prog(int iswtype)
   listWARsw=0, *listWAR=NULL
  ;
  long in=0,kn=0,klim=0,totNODEcard=0,totELEMcard=0,iumNODEset=0,iumELEMset=0,iumELSETset=0,
-n8=0,dummy=0,
+n8=0,dummy=0,listAmbiguity=0,
 i=0,j=0,k=0,kk=0,kp=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1000,larr[10],larr1[10]
 ,nodeuplim=0,nodelolim=0,totNnum=0,eluplim=0,ellolim=0,totEnum=0,sumWG=0,sumlim=0
 ,sumELSETel=0,totBMG=0,totWG=0,totELSETcard=0,totPART=0,totSOLIDScard=0,istart=0,jstart=0,jlast=0
-  ,inadmissible=0,iallGrp=0, *revnode_map=NULL;
+  ,inadmissible=0,iallGrp=0, *revnode_map=NULL, *listWARbase=NULL;
  float darr[10];
  char cht[200],extensChar[]=".inp", *temp_cht=NULL, *temp_cht1=NULL, *fnNeed1=NULL,*fnNeed2=NULL,
 	  ch_I='I',ch_i='i',ch_N='N',ch_n='n',ch_P='P',ch_p='p',ch_U='U',ch_u='u',ch_T='T',ch_t='t',ch_eq='=';
@@ -2772,12 +2772,12 @@ for(j=8;j<int(strlen(cht))-4;j++){
 ////
 //////
 //////// count ELEMENT ELSETs to *.sets        TBD: test & discard ELSET=ALLEL
-for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='E' || cht[j-5]=='e') &&
-							   (cht[j-4]=='L' || cht[j-4]=='l') &&
-							   (cht[j-3]=='S' || cht[j-3]=='s') &&
-							   (cht[j-2]=='E' || cht[j-2]=='e') &&
-							   (cht[j-1]=='T' || cht[j-1]=='t') &&
-								cht[j]=='='){base.allGrp=base.allGrp+1;break;}
+//for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='E' || cht[j-5]=='e') &&
+//							   (cht[j-4]=='L' || cht[j-4]=='l') &&
+//							   (cht[j-3]=='S' || cht[j-3]=='s') &&
+//							   (cht[j-2]=='E' || cht[j-2]=='e') &&
+//							   (cht[j-1]=='T' || cht[j-1]=='t') &&
+//								cht[j]=='='){base.allGrp=base.allGrp+1;break;}
 ////////
 //////
 ////
@@ -3105,7 +3105,7 @@ Application->MessageBox(L"*STEP found in input *.inp/abq.\nThermal analysis *STE
 //		  base.groupsname[0]=L"ElAll"; //EFP 10/23/2011
 //		  base.groupsname[base.allGrp-wp.nWeldGroup-1]=L"AllWeld"; //EFP 10/23/2011
 ////		  ifstream ntape1(OpenDialog1->FileName.t_str(),ios::nocreate|ios::binary,0);
-		  FDdynmem_manage(20,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.allGrp);//EFP 8/07/2011
+		  FDdynmem_manage(20,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.allGrp+1);//EFP 8/07/2011
 //		  base.ELSETinputnames[0]=L"ALLEL";
 //////////////////////////////////////////////////////////////
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
@@ -3146,6 +3146,7 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 	   ofstream echoWARfile("MustIncludeThese.list");
 	   echoWARfile<<"c\n*echo off\n";
 	   listWARsw=0;listWAR=new int[eluplim-ellolim+1];
+	   listAmbiguity=0;listWARbase=new long[eluplim-ellolim+1];for(in=0;in< eluplim-ellolim+1;in++)listWARbase[in]=0;
 
 			 do {ntape.getline(cht,200-1); //StartDO02
 				 if(cht[0]=='*' && cht[1]=='*')continue; //Comment ** & ***include & ***ORIENTATION
@@ -3244,23 +3245,23 @@ for(j=8;j<int(strlen(cht))-4;j++){
 ////
 //////
 //////// write ELEMENT ELSETs to *.sets
-listWARsw=0;
-for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='E' || cht[j-5]=='e') &&
-							   (cht[j-4]=='L' || cht[j-4]=='l') &&
-							   (cht[j-3]=='S' || cht[j-3]=='s') &&
-							   (cht[j-2]=='E' || cht[j-2]=='e') &&
-							   (cht[j-1]=='T' || cht[j-1]=='t') &&
-								cht[j]=='='){jrec=j+1;
-kp=0;for(i=j+1;i<int(strlen(cht))-1;i++){if(cht[i]==' '){jrec++;continue;}
-										 else if(cht[i]==',')break;
-										 else kp++;
-										}
-temp_cht1=new char[kp+1];for(i=0;i<kp;i++)temp_cht1[i]=cht[i+jrec];temp_cht1[kp]='\0';
-base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht1); //This creates a UnicodeString of 80 characters but how to "trim"?
-											 iallGrp++;//delete [] temp_cht1;temp_cht1=NULL;
-											 listWARsw=1;for(i=0;i<eluplim-ellolim+1;i++)listWAR[i]=0;
-											 break;
-											}
+//listWARsw=0;
+//for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='E' || cht[j-5]=='e') &&
+//							   (cht[j-4]=='L' || cht[j-4]=='l') &&
+//							   (cht[j-3]=='S' || cht[j-3]=='s') &&
+//							   (cht[j-2]=='E' || cht[j-2]=='e') &&
+//							   (cht[j-1]=='T' || cht[j-1]=='t') &&
+//								cht[j]=='='){jrec=j+1;
+//kp=0;for(i=j+1;i<int(strlen(cht))-1;i++){if(cht[i]==' '){jrec++;continue;}
+//										 else if(cht[i]==',')break;
+//										 else kp++;
+//										}
+//temp_cht1=new char[kp+1];for(i=0;i<kp;i++)temp_cht1[i]=cht[i+jrec];temp_cht1[kp]='\0';
+//base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht1); //This creates a UnicodeString of 80 characters but how to "trim"?
+//											 iallGrp++;//delete [] temp_cht1;temp_cht1=NULL;
+//											 listWARsw=1;for(i=0;i<eluplim-ellolim+1;i++)listWAR[i]=0;
+//											 break;
+//											}
 ////////
 //////
 ////
@@ -3362,7 +3363,7 @@ base.orig_matno[totEnum]=eltype*t7+n8*t3;
 ////
 //////
 //////// write ELEMENT ELSETs to *.sets
-if(listWARsw)listWAR[in-ellolim+1]=1;
+//if(listWARsw)listWAR[in-ellolim+1]=1;
 ////////
 //////
 ////
@@ -3443,7 +3444,7 @@ base.orig_matno[totEnum]=eltype*t7+n8*t3;
 ////
 //////
 //////// write ELEMENT ELSETs to *.sets
-if(listWARsw)listWAR[in-ellolim+1]=1;
+//if(listWARsw)listWAR[in-ellolim+1]=1;
 ////////
 //////
 ////
@@ -3462,24 +3463,24 @@ if(listWARsw)listWAR[in-ellolim+1]=1;
 //////
 //////// write ELEMENT ELSETs to *.sets
 //aaaaaaaaaaaaaaaaaaaaa
-//list "PlateUpper" 1-24,141-164,717-764,1033-1080
-if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
-			  if(swstart){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No elements in an ELSET",L"Warning:",MB_OK);}
-			  else {echoWARfile<<"list \""<<temp_cht1<<"\" ";
-					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
-					for(i=jstart;i<jlast+1;i++)
-					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
-					   else if(swend){icountlim++;swend=0;swstart=1;
-									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
-									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
-									 }
-					  }
-					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
-				   }
-			  listWARsw=0;
-//			  delete [] temp_cht1;temp_cht1=NULL;
-			 }
-if(temp_cht1){delete [] temp_cht1;temp_cht1=NULL;} //Relocated by EFP 7/11/2016
+////list "PlateUpper" 1-24,141-164,717-764,1033-1080
+//if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
+//			  if(swstart){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No elements in an ELSET",L"Warning:",MB_OK);}
+//			  else {echoWARfile<<"list \""<<temp_cht1<<"\" ";
+//					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
+//					for(i=jstart;i<jlast+1;i++)
+//					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
+//					   else if(swend){icountlim++;swend=0;swstart=1;
+//									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
+//									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
+//									 }
+//					  }
+//					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
+//				   }
+//			  listWARsw=0;
+////			  delete [] temp_cht1;temp_cht1=NULL;
+//			 }
+//if(temp_cht1){delete [] temp_cht1;temp_cht1=NULL;} //Relocated by EFP 7/11/2016
 //bbbbbbbbbbbbbbbbbbbbb
 ////////
 //////
@@ -3656,6 +3657,10 @@ else {if(jsw){base.arrELSET[j]=totWG;sumWG++;}
 	  k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
 	 }
 listWAR[i-ellolim+1]=1;
+if(listWARbase[i-ellolim+1]>0)listAmbiguity++;
+listWARbase[i-ellolim+1]=iallGrp;
+
+
 																		   }
 																		 }
 										 }
@@ -3678,6 +3683,10 @@ else {if(jsw){base.arrELSET[j]=totWG;sumWG++;}
 	  k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
 	 }
 listWAR[larr[i]-ellolim]=1;
+if(listWARbase[larr[i]-ellolim]>0)listAmbiguity++;
+listWARbase[larr[i]-ellolim]=iallGrp;
+
+
 											 }
 										  }
 					   }
@@ -3739,7 +3748,49 @@ if(temp_cht1){delete [] temp_cht1;temp_cht1=NULL;} //Relocated by EFP 7/11/2016
 				}
 			 while (!ntape.eof()); //EndDO02
 
-			 echoWARfile.close();delete [] listWAR;listWAR=NULL;
+
+
+
+////
+//////
+//////// write unspecified elements to list "basemetal" in *.list
+//aaaaaaaaaaaaaaaaaaaaa
+//list "PlateUpper" 1-24,141-164,717-764,1033-1080
+//listWARsw=1;
+//if(listWARsw){
+			  for(kk=0;kk< eluplim-ellolim+1;kk++){
+//honk<<(kk+1)<<" "<<listWARbase[kk]<<"\n";
+												   if(listWARbase[kk])listWAR[kk]=0;
+												   else {listWAR[kk]=1;}
+												  }
+			  swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
+			  if(!swstart)
+				   {echoWARfile<<"list \"basemetal\" ";
+					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
+					for(i=jstart;i<jlast+1;i++)
+					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
+					   else if(swend){icountlim++;swend=0;swstart=1;
+									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
+									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
+									 }
+					  }
+					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
+				   }
+//			  listWARsw=0;
+//			  delete [] temp_cht1;temp_cht1=NULL;
+//			 }
+base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
+base.allGrp=base.allGrp+1;
+if(listAmbiguity){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Some elements in multiple lists",L"Warning:",MB_OK);}
+//bbbbbbbbbbbbbbbbbbbbb
+////////
+//////
+////
+
+
+
+
+			 echoWARfile.close();delete [] listWAR;listWAR=NULL;delete [] listWARbase;listWARbase=NULL;
 ////////
 //////////
 //////////// Nodal coincidence coding with original numbering  EFP 8/26/2015
@@ -18959,8 +19010,10 @@ j=1;for(ir=1;ir<1000;ir++){for(i=0;i<base.nelt;i++){if(base.matno[i]> -1){k=base
 	   for(i=0;i<wms.nMatPropSet;i++)Form7->ListBox3->AddItem(wms.matFileName[i],this);
 //	   if(wms.nMatPropSet==1)for(i=0;i<ies;i++)Form7->ListBox2->AddItem(wms.matFileName[0],this);
 //	   else                  for(i=0;i<ies;i++)Form7->ListBox2->AddItem(L"****",this);
-	   if(wms.nMatPropSet==1)for(i=0;i<base.allGrp;i++)Form7->ListBox2->AddItem(wms.matFileName[0],this);
-	   else                  for(i=0;i<base.allGrp;i++)Form7->ListBox2->AddItem(L"****",this);
+
+//	   if(wms.nMatPropSet==1)for(i=0;i<base.allGrp;i++)Form7->ListBox2->AddItem(wms.matFileName[0],this);
+//	   else                  for(i=0;i<base.allGrp;i++)Form7->ListBox2->AddItem(L"****",this);
+	   for(i=0;i<base.allGrp;i++)Form7->ListBox2->AddItem(wms.matFileName[0],this); // EFP 8/07/2016
 
 //Application->MessageBox(L"Biffo",L"Wriffo",MB_OK);
 //honk<<" STOP here X1\n";if(1==1)exit(0);
@@ -20431,6 +20484,7 @@ j=1;for(ir=1;ir<1000;ir++){for(i=0;i<base.nelt;i++){if(base.matno[i]> -1){k=base
 						   }
 
  sArr=new String[nlist];iELSETorder=new long[nlist+wp.nWeldPass];
+ for(i=0;i<nlist;i++)sArr[i]=wms.matFileName[0];  // EFP 8/07/2016
  for(i=0;i<nlist;i++){Form7->CheckLB2ItemIndex=i;sArr[i]=Form7->CheckLB2Item;}
 
 ////outfile<<"material steel_1e650_umat\n";  //Make name=defined material name & note that it is umat
