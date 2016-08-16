@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59n_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59o_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -2645,7 +2645,7 @@ i=0,j=0,k=0,kk=0,kp=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1
 ,sumELSETel=0,totBMG=0,totWG=0,totELSETcard=0,totPART=0,totSOLIDScard=0,istart=0,jstart=0,jlast=0
   ,inadmissible=0,iallGrp=0, *revnode_map=NULL, *listWARbase=NULL;
  float darr[10];
- char cht[200],extensChar[]=".inp", *temp_cht=NULL, *temp_cht1=NULL, *fnNeed1=NULL,*fnNeed2=NULL,
+ char cht[200],extensChar[]=".inp", *temp_cht=NULL, *temp_cht1=NULL, *temp_cht2=NULL, *fnNeed1=NULL,*fnNeed2=NULL,
 	  ch_I='I',ch_i='i',ch_N='N',ch_n='n',ch_P='P',ch_p='p',ch_U='U',ch_u='u',ch_T='T',ch_t='t',ch_eq='=';
  wchar_t string0[11];
  if(base.nop1){extern PACKAGE void __fastcall Beep(void);
@@ -3572,13 +3572,20 @@ base.orig_matno[totEnum]=eltype*t7+n8*t3;
 					listWARsw=1;for(i=0;i<eluplim-ellolim+1;i++)listWAR[i]=0;
 ////							if(jsw)totWG++;
 ////							else totBMG++;
-kp=0;for(i=jrec;i<int(strlen(cht))-1;i++){if(cht[i]==',')break;
+
+//kp=0;for(i=jrec;i<int(strlen(cht))-1;i++){if(cht[i]==',')break;
+//										  else kp++;
+//										 }
+kp=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break; //EFP 8/16/2016
 										  else kp++;
 										 }
-temp_cht1=new char[kp+1];
-for(i=0;i<kp;i++)temp_cht1[i]=cht[i+jrec];
-temp_cht1[kp]='\0';
-					base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht1); //This creates a UnicodeString of 80 characters but how to "trim"?
+temp_cht1=new char[kp+1];temp_cht2=new char[kp+1];
+for(i=0;i<kp;i++){temp_cht1[i]=cht[i+jrec];
+				  temp_cht2[i]=cht[i+jrec];
+				 }
+temp_cht1[kp]='\0';temp_cht2[kp]='\0';
+					base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht2); //This creates a UnicodeString of 80 characters but how to "trim"?
+					delete [] temp_cht2;temp_cht2=NULL;
 					// Something like base.groupsname[j].SetLength(base.groupsname[j].Length()-1);  ???
 					iallGrp++;
 //					delete [] temp_cht1;temp_cht1=NULL;
@@ -3775,12 +3782,14 @@ if(temp_cht1){delete [] temp_cht1;temp_cht1=NULL;} //Relocated by EFP 7/11/2016
 									 }
 					  }
 					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
-				   }
-//			  listWARsw=0;
-//			  delete [] temp_cht1;temp_cht1=NULL;
-//			 }
 base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
 base.allGrp=base.allGrp+1;
+				   }
+////			  listWARsw=0;
+////			  delete [] temp_cht1;temp_cht1=NULL;
+////			 }
+//base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
+//base.allGrp=base.allGrp+1;
 if(listAmbiguity){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Some elements in multiple lists",L"Warning:",MB_OK);}
 //bbbbbbbbbbbbbbbbbbbbb
 ////////
