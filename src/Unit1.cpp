@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59o_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59p_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -3063,6 +3063,7 @@ Application->MessageBox(L"*STEP found in input *.inp/abq.\nThermal analysis *STE
 	   base.nelt=totEnum; //Policy: Reserve storage for #elements read-in, even if there is duplication  EFP 4/19/2012
 //	   glABAflag=totELEMcard+1000*totELSETcard+1000000*totSOLIDScard;
 
+//honk<<base.npoin<<" "<<base.nelt<<" ImportAbaOSC\n";
 //
 ////
 ////// Integrity test for WARP3D unitary-start consecutive numbering
@@ -18464,7 +18465,8 @@ Screen->Cursor=Save_Cursor;
  mirror1file<<wp.tcuth[0]<<"\n"; //Pre-heat temperature for 1st WP  EFP 5/22/2012
  mirror1file.precision(6);
 // view1file<<base.el_map[base.nelt-1]+1<<"\n";
- mirror1file<<(base.el_map[base.nelt-1]+1)<<"\n"; //Global max element#  EFP 9/16/2012
+// mirror1file<<(base.el_map[base.nelt-1]+1)<<"\n"; //Global max element#  EFP 9/16/2012
+ mirror1file<<base.nelt<<"\n"; //Global max element#  Correction EFP 8/17/2016
 // view1file<<0<<"\n";
  mirror1file<<0<<"\n"; //(should be delt for multicore)extra  EFP 5/20/2012
 // view1file<<lasttimerec<<"\n";
@@ -18712,7 +18714,8 @@ delt=dist/(float(wp.n_curr_sttEl[k])*wp.speed[k]); //We require the last delt of
  mirror1file<<lasttimecom<<"\n"; //Core-to-core overlap  EFP 1/25/2013
  mirror1file<<wp.tcuth[0]<<"\n"; //Pre-heat temperature for 1st WP  EFP 5/22/2012
  mirror1file.precision(6);
- mirror1file<<(base.el_map[base.nelt-1]+1)<<"\n"; //Global max element#  EFP 9/16/2012
+// mirror1file<<(base.el_map[base.nelt-1]+1)<<"\n"; //Global max element#  EFP 9/16/2012
+ mirror1file<<base.nelt<<"\n"; //Global max element#  EFP 9/16/2012
  mirror1file.precision(8);
  mirror1file<<delt<<"\n"; //Data for standalone mergeCTSPcore  EFP 9/23/2012
  mirror1file<<lasttime<<"\n"; //user-spec IP cooling time on last WP per core (sec) EFP 9/23/2012
@@ -20911,7 +20914,9 @@ for(ic=0;ic<buffersize-4-1;ic++)m3[ic]=m1[ic];
 m3[buffersize-4-1]=chendl[0];
 buffersize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[icycle].w_str(), -1,NULL,0,NULL,NULL);
 char* m2=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[icycle].w_str(), -1,m2,buffersize,NULL,NULL);
-for(ic=buffersize-2;ic>=0;ic--)if( *(m2+ic) != chb[0]){ *(m2+ic+1)=chendl[0];break;}
+
+//for(ic=buffersize-2;ic>=0;ic--)if( *(m2+ic) != chb[0]){ *(m2+ic+1)=chendl[0];break;}
+
 outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
 outfile<<" 2x2x2 center_output short\n"; //Correction from BobD & allow for long line   EFP 1/27/2015
 delete [] m3;delete [] m2;delete [] m1;m1=m2=m3=NULL;
