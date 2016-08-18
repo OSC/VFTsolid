@@ -3580,11 +3580,10 @@ base.orig_matno[totEnum]=eltype*t7+n8*t3;
 kp=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break; //EFP 8/16/2016
 										  else kp++;
 										 }
-temp_cht1=new char[kp+1];temp_cht2=new char[kp+1];
-for(i=0;i<kp;i++){temp_cht1[i]=cht[i+jrec];
-				  temp_cht2[i]=cht[i+jrec];
-				 }
-temp_cht1[kp]='\0';temp_cht2[kp]='\0';
+temp_cht1=new char[kp+1];temp_cht2=new char[kp];
+for(i=0;i<kp;i++)temp_cht1[i]=cht[i+jrec];
+for(i=0;i<kp;i++)temp_cht2[i]=cht[i+jrec];
+temp_cht1[kp]='\0';//temp_cht2[kp]='\0';
 					base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht2); //This creates a UnicodeString of 80 characters but how to "trim"?
 					delete [] temp_cht2;temp_cht2=NULL;
 					// Something like base.groupsname[j].SetLength(base.groupsname[j].Length()-1);  ???
@@ -17487,7 +17486,7 @@ wp.sttEleNodes[wp.memWGa*4*iWP+4*in+ip]=
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::exportCTSPExecute(TObject *Sender)
-{long in=0;float iptmax=0.f;
+{long in=0;float ctoc_overlapmax=3000.f,iptmax=0.f;
 // long isw=0;
 // long ie=0,ies=0,i=0,j=0,k=0,ir=0,istart=0,iELSETtype=0,iELSETactive=0,t3=1000,ibrsw=0, *iELSETarr=NULL;
  if(base.nop1)
@@ -17514,7 +17513,7 @@ void __fastcall TForm1::exportCTSPExecute(TObject *Sender)
 	   CTSPnames->Label6->Caption="node.in";
 	   CTSPnames->Label7->Caption="element.in";
 	   CTSPnames->Label9->Caption="param.in";
-	   CTSPnames->Label10->Caption="Suggested core-to-core overlap (max 3000s)";
+	   CTSPnames->Label10->Caption="Suggested core-to-core overlap:";
 	   CTSPnames->Button1->Caption="OK";
 	   CTSPnames->Button2->Caption="Cancel";
 	   CTSPnames->Label2->Enabled=false;
@@ -17548,10 +17547,16 @@ void __fastcall TForm1::exportCTSPExecute(TObject *Sender)
 	   CTSPnames->Edit6->Visible=false;
 	   CTSPnames->CheckEdit1=gWsiAlias;
 	   CTSPnames->CheckEdit4=1;
-	   if(wp.nWeldPass>1){iptmax=0.f;for(in=0;in<wp.nWeldPass-1;in++)if(iptmax<wp.timeInterval[in])iptmax=wp.timeInterval[in];
-						  CTSPnames->CheckEdit6=min(3.5f*iptmax,3000.f); // Policy: core-to-core default= 3.5x max IPtime interval
-						 }
-	   else CTSPnames->CheckEdit6=float(3000);
+//	   if(wp.nWeldPass>1){iptmax=0.f;for(in=0;in<wp.nWeldPass-1;in++)if(iptmax<wp.timeInterval[in])iptmax=wp.timeInterval[in];
+//						  CTSPnames->CheckEdit6=min(3.5f*iptmax,3000.f); // Policy: core-to-core default= 3.5x max IPtime interval
+//						 }
+//	   else CTSPnames->CheckEdit6=float(3000);
+	   ctoc_overlapmax=0.f;for(in=0;in<wp.nWeldPass-1;in++){ //Linear between (1.5,4.5) & (50.8,1535), where (Pl.thick mm,overlap sec)
+iptmax=(4.5f*50.8f-1535.f*1.5f+(1535.f-4.5f)*(wp.thk1[in]+wp.thk2[in])/2.f)/(50.8f-1.5f);
+if(iptmax<4.5f)iptmax=4.5f;
+if(ctoc_overlapmax<iptmax)ctoc_overlapmax=iptmax;
+														   }
+	   CTSPnames->CheckEdit6=ctoc_overlapmax;
 	   CTSPnames->ShowModal();
 	   delete CTSPnames;CTSPnames=NULL;
 
