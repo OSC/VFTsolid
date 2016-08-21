@@ -17637,6 +17637,7 @@ void TForm1::exportCTSP2_public() //Version with load balancing  EFP 11/24/2012
 //{int ic=0,mcmlo=0,mcmup=0,mcminc=0,maxCore=128,mcm=CTSPnames->CheckEdit4;
 {int ic=0,mcmlo=0,mcmup=0,mcminc=0,maxCore=999,mcm=CTSPnames->CheckEdit4; //EFP 4/29/2013
  long i=0,j=0,ip=0,iseq=0,icount=0,itotal=0,stepsum=0, *loadBal;
+ float maxIPcoolTime=0.f,extraCool=0.f;
 //char *temps;
  char extensChar1a[]="CTSPsubd00",extensChar1b[]="CTSPsubd0",extensChar1c[]="CTSPsubd"
 ;
@@ -17684,6 +17685,23 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 
 //honk<<"\n"<<wp.lstart[0]<<" "<<mcm<<" "<<wp.nWeldPass<<" "<<mcminc<<" Writing multi-core CTSP(TM) directories...\n";
 	   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing multi-CTSP",MB_OK);
+
+	   maxIPcoolTime=0.f;
+	   for(ic=0;ic<mcm;ic++){stepsum=0;
+							 for(iseq=0;iseq<wp.nWeldPass;iseq++)//This should be done by sequence Correction  EFP 9/12/2013
+							   {for(ip=0;ip<wp.nWeldPass;ip++)if(iseq+1==wp.seqNum[ip])break;
+								stepsum=stepsum+loadBal[ip];
+								if(stepsum>=mcminc*(ic+1))break;
+							   }
+							 if(stepsum-mcminc*(ic+1)>mcminc*(ic+1)+loadBal[ip]-stepsum)iseq=iseq-1;
+							 if(iseq>wp.nWeldPass-mcm+ic)iseq=wp.nWeldPass-mcm+ic;
+							 if(iseq<ic)iseq=ic;  //Correction: EFP 11/25/2012
+							 if(ic<mcm-1){for(ip=0;ip<wp.nWeldPass;ip++)if(iseq+1==wp.seqNum[ip])break;
+										  maxIPcoolTime=max(maxIPcoolTime,wp.timeInterval[ip]);
+										 }
+							}
+	   extraCool=max(float(wp.lstart[0]),maxIPcoolTime+0.001f);
+
 	   for(ic=0;ic<mcm;ic++){stepsum=0;
 //							 for(ip=0;ip<wp.nWeldPass;ip++){stepsum=stepsum+loadBal[ip];
 //															if(stepsum>=mcminc*(ic+1))break;
@@ -17753,7 +17771,8 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //							 if(ic==mcm-1)export_CTSP_INPUTp_mcm(mcmlo,mcmup,0,float(wp.lstart[0]),gWsiAlias.t_str());//Extra cooling OFF
 //							 else         export_CTSP_INPUTp_mcm(mcmlo,mcmup,1,float(wp.lstart[0]),gWsiAlias.t_str());//Extra cooling ON
 							 if(ic==mcm-1)export_CTSP_INPUTp_mcm(mcmlo,mcmup,0,float(wp.lstart[0]));//Extra cooling OFF
-							 else         export_CTSP_INPUTp_mcm(mcmlo,mcmup,1,float(wp.lstart[0]));//Extra cooling ON
+//							 else         export_CTSP_INPUTp_mcm(mcmlo,mcmup,1,float(wp.lstart[0]));//Extra cooling ON
+							 else         export_CTSP_INPUTp_mcm(mcmlo,mcmup,1,extraCool);//Extra cooling ON
 //							 export_CTSP_NODE(gWsiAlias.t_str());
 							 export_CTSP_NODE();
 //							 export_CTSP_ELEMENT8(gWsiAlias.t_str());
