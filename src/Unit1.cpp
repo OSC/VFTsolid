@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59p_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59q_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -2640,13 +2640,13 @@ void TForm1::ImportAba_prog(int iswtype)
  ;
  long in=0,kn=0,klim=0,totNODEcard=0,totELEMcard=0,iumNODEset=0,iumELEMset=0,iumELSETset=0,
 n8=0,dummy=0,listAmbiguity=0,
-i=0,j=0,k=0,kk=0,kp=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1000,larr[10],larr1[10]
+i=0,j=0,k=0,kk=0,kp=0,kp2=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1000,larr[10],larr1[10]
 ,nodeuplim=0,nodelolim=0,totNnum=0,eluplim=0,ellolim=0,totEnum=0,sumWG=0,sumlim=0
 ,sumELSETel=0,totBMG=0,totWG=0,totELSETcard=0,totPART=0,totSOLIDScard=0,istart=0,jstart=0,jlast=0
   ,inadmissible=0,iallGrp=0, *revnode_map=NULL, *listWARbase=NULL;
  float darr[10];
  char cht[200],extensChar[]=".inp", *temp_cht=NULL, *temp_cht1=NULL, *temp_cht2=NULL, *fnNeed1=NULL,*fnNeed2=NULL,
-	  ch_I='I',ch_i='i',ch_N='N',ch_n='n',ch_P='P',ch_p='p',ch_U='U',ch_u='u',ch_T='T',ch_t='t',ch_eq='=';
+	  ch_I='I',ch_i='i',ch_N='N',ch_n='n',ch_P='P',ch_p='p',ch_U='U',ch_u='u',ch_T='T',ch_t='t',ch_eq='=',chspace=' ';
  wchar_t string0[11];
  if(base.nop1){extern PACKAGE void __fastcall Beep(void);
 			   Application->MessageBox(L"First, close current file->FileClose",L"Halt",MB_OK);}
@@ -3106,7 +3106,7 @@ Application->MessageBox(L"*STEP found in input *.inp/abq.\nThermal analysis *STE
 //		  base.groupsname[0]=L"ElAll"; //EFP 10/23/2011
 //		  base.groupsname[base.allGrp-wp.nWeldGroup-1]=L"AllWeld"; //EFP 10/23/2011
 ////		  ifstream ntape1(OpenDialog1->FileName.t_str(),ios::nocreate|ios::binary,0);
-		  FDdynmem_manage(20,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.allGrp+1);//EFP 8/07/2011
+		  FDdynmem_manage(20,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.allGrp+1+1);//EFP 8/07/2011
 //		  base.ELSETinputnames[0]=L"ALLEL";
 //////////////////////////////////////////////////////////////
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
@@ -3488,12 +3488,13 @@ base.orig_matno[totEnum]=eltype*t7+n8*t3;
 ////
 
 						}
+
+
+
 				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='L' || cht[2]=='l') && (cht[3]=='S' || cht[3]=='s')) // *ELSET
 				   {iumELSETset++;in=jsw=kn=0;
 					for(i=0;i<int(strlen(cht))-1;i++)if(cht[i]==','){kn++;jrec=i;break;}  //Find first comma. Code to handle "generate" EFP 4/22/2011
-//					if(kn>1 && int(strlen(cht))-1-jrec >=8)
 					if(kn>0 && int(strlen(cht))-1-jrec >=3)
-//					  {for(i=jrec+1;i<int(strlen(cht))-8;i++)
 					  {for(i=jrec+1;i<int(strlen(cht))-3;i++)
 						 {if((cht[i  ]=='G' || cht[i  ]=='g') &&
 							 (cht[i+1]=='E' || cht[i+1]=='e') &&
@@ -3571,75 +3572,292 @@ base.orig_matno[totEnum]=eltype*t7+n8*t3;
 														   }  // Accept WDx, WPx, WGx and WELDx
 												  }
 					listWARsw=1;for(i=0;i<eluplim-ellolim+1;i++)listWAR[i]=0;
-////							if(jsw)totWG++;
-////							else totBMG++;
+kp=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break; //EFP 8/16/2016
+										else kp++;
+									   }
+//////temp_cht1=new char[kp+1];temp_cht2=new char[kp];
+//////for(i=0;i<kp;i++)temp_cht1[i]=cht[i+jrec];
+//////for(i=0;i<kp;i++)temp_cht2[i]=cht[i+jrec];
+//////temp_cht1[kp]='\0';//temp_cht2[kp]='\0';
+//////					base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht2); //This creates a UnicodeString of 80 characters but how to "trim"?
+//////					delete [] temp_cht2;temp_cht2=NULL; // Something like base.groupsname[j].SetLength(base.groupsname[j].Length()-1);  ???
+					iallGrp++;
+nGID++;
+//////if(jsw){temp_cht=new char[kp+1];
+//////		for(i=0;i<kp;i++)temp_cht[i]=cht[i+jrec];
+//////		temp_cht[kp]='\0';
+//////		base.groupsname[totWG]=temp_cht; //EFP 3/25/2011
+//////		delete [] temp_cht;temp_cht=NULL;
+//////		totWG++;sumWG=0;
+//////	   }
+					if(in==2){
+//*ELSET, ELSET=PTBOT, GENERATE
+//   33049,   33057,       1
+//   33085,   33093,       1
+//   33121,   33129,       1
+							  do {ntape.getline(cht,200-1);if(ntape.eof())break;  // ELSET.... GENERATE
+								  if( kp){parse_cdm(cht,3,&nic,&nrc,larr,darr); //TBD: Unnecessary test??
+										  if(larr[1]-larr[0]+1<=base.nelt){for(i=larr[0]-1;i<larr[1];i=i+larr[2])
+																		   {
+j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==i){j=kk;break;}
+if(j== -1){//honk<<"TERMINATE: GENERATED WG el_map crash in *.abq/*.inp\n";
+		   exit(0);}
+//////else {if(jsw){base.arrELSET[j]=totWG;sumWG++;}
+//////	  k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
+//////	 }
+listWAR[i-ellolim+1]=1;
+if(listWARbase[i-ellolim+1]>0)listAmbiguity++;
+listWARbase[i-ellolim+1]=iallGrp;
+																		   }
+																		 }
+										 }
+								 }
+							  while (ntape.peek()!= '*');
+							 }
+					else {
+//*ELSET, ELSET=PTTOP
+//   52369,   52370,   52371,   52372,   52373,   52374,   52375,   52376,
+//   52401,   52402,   52403,   52404,   52405,   52406,   52407,   52408,
+//   52433,   52434,   52435,   52436,   52437,   52438,   52439,   52440,
+					do {ntape.getline(cht,200-1);if(ntape.eof())break;
+						parse_cdmQ_public(cht,&nic,&nrc,larr,darr); //This accommodates comma-end or no-comma EFP 4/15/2011
+						for(i=0;i<nic;i++){if(larr[i]) //This accommodates comma-end or no-comma EFOP 4/15/2011
+											 {
+j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
+if(j== -1){//honk<<"TERMINATE: WG el_map crash in *.abq/*.inp\n";
+		   exit(0);}
+//////else {if(jsw){base.arrELSET[j]=totWG;sumWG++;}
+//////	  k=base.matno[j]-t3*(base.matno[j]/t3);base.matno[j]=base.matno[j]-k+iallGrp-1;
+//////	 }
+listWAR[larr[i]-ellolim]=1;
+if(listWARbase[larr[i]-ellolim]>0)listAmbiguity++;
+listWARbase[larr[i]-ellolim]=iallGrp;
 
-//kp=0;for(i=jrec;i<int(strlen(cht))-1;i++){if(cht[i]==',')break;
-//										  else kp++;
-//										 }
+
+											 }
+										  }
+					   }
+					while (ntape.peek()!= '*');
+						 }
+					if(sumlim<sumWG)sumlim=sumWG;
+						   }
+					if(iumNODEset==totNODEcard && iumELEMset==totELEMcard && iumELSETset==totELSETcard)psw=2;
+////////aaaaaaaaaaaaaaaaaaaaa
+////////list "PlateUpper" 1-24,141-164,717-764,1033-1080
+//////if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
+//////			  if(swstart){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No elements in an ELSET",L"Warning:",MB_OK);}
+//////			  else {echoWARfile<<"list \""<<temp_cht1<<"\" ";
+//////					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
+//////					for(i=jstart;i<jlast+1;i++)
+//////					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
+//////					   else if(swend){icountlim++;swend=0;swstart=1;
+//////									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
+//////									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
+//////									 }
+//////					  }
+//////					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
+//////				   }
+//////			  listWARsw=0;
+//////			 }
+//////if(temp_cht1){delete [] temp_cht1;temp_cht1=NULL;} //Relocated by EFP 7/11/2016
+////////bbbbbbbbbbbbbbbbbbbbb
+				   }
+
+
+
+				 else if(cht[ 0]=='*' && (cht[ 1]=='M' || cht[ 1]=='m') && (cht[ 2]=='A' || cht[ 2]=='a') && (cht[ 3]=='T' || cht[ 3]=='t') && (cht[ 4]=='E' || cht[ 4]=='e') &&
+										 (cht[ 5]=='R' || cht[ 5]=='r') && (cht[ 6]=='I' || cht[ 6]=='i') && (cht[ 7]=='A' || cht[ 7]=='a') && (cht[ 8]=='L' || cht[ 8]=='l'))
+				  {psw=3;
+//				   if(psw==1)tmpfile01<<cht<<"\n";
+//				   else if(psw==2)tmpfile02<<cht<<"\n";
+//				   else if(psw==3)tmpfile03<<cht<<"\n";
+//				   while (ntape1.peek()!= '*'){ntape1.getline(cht,200-1);
+//											   if(psw==1)tmpfile01<<cht<<"\n";
+//											   else if(psw==2)tmpfile02<<cht<<"\n";
+//											   else if(psw==3)tmpfile03<<cht<<"\n";
+//											  }
+				  } // *MATERIAL
+				 else if(cht[0]=='*' && (cht[1]=='P' || cht[1]=='p') && (cht[2]=='A' || cht[2]=='a') && (cht[3]=='R' || cht[3]=='r') && (cht[4]=='T' || cht[4]=='t'))
+				  {continue;}
+				 else if(cht[0]=='*' && (cht[1]=='S' || cht[1]=='s') && (cht[2]=='T' || cht[2]=='t') && (cht[3]=='E' || cht[3]=='e') && (cht[4]=='P' || cht[4]=='p'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *Step
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='A' || cht[5]=='a'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Assembly
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='I' || cht[5]=='i'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Instance
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='P' || cht[5]=='p'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Part
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d') && cht[4]==' ' && (cht[5]=='S' || cht[5]=='s'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}} // *End Step
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='N' || cht[2]=='n') && (cht[3]=='D' || cht[3]=='d'))
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}}
+							// *end step CORRECTED EFP 10/22/2010
+				 else
+				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}}
+				}
+			 while (!ntape.eof()); //EndDO02
+
+
+
+
+////
+//////
+//////// write unspecified elements to list "basemetal" in *.list
+//aaaaaaaaaaaaaaaaaaaaa
+//list "PlateUpper" 1-24,141-164,717-764,1033-1080
+//listWARsw=1;
+//if(listWARsw){
+			  nGID=0; //EFP 8/23/2016
+			  for(kk=0;kk< eluplim-ellolim+1;kk++){
+//honk<<(kk+1)<<" "<<listWARbase[kk]<<" listBBB\n";
+												   if(listWARbase[kk])listWAR[kk]=0;
+												   else {listWAR[kk]=1;}
+												  }
+			  swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
+			  if(!swstart)
+				   {echoWARfile<<"list \"basemetal\" ";
+					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
+					for(i=jstart;i<jlast+1;i++)
+					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
+					   else if(swend){icountlim++;swend=0;swstart=1;
+									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
+									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
+									 }
+					  }
+					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
+//base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
+//base.allGrp=base.allGrp+1;
+base.ELSETinputnames[nGID]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
+nGID++; //EFP 8/23/2016
+				   }
+////			  listWARsw=0;
+////			  delete [] temp_cht1;temp_cht1=NULL;
+////			 }
+//base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
+//base.allGrp=base.allGrp+1;
+if(listAmbiguity){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Some elements in multiple lists",L"Warning:",MB_OK);}
+//bbbbbbbbbbbbbbbbbbbbb
+////////
+//////
+////
+
+
+
+//**
+//****
+//******  Read ABAQ model file third time to write non-basemetal "lists" (read ELSETs only, not ELEMENT)
+			 iallGrp=totWG=0; //EFP 8/23/2016
+			 if(ntape.fail())ntape.clear();
+			 ntape.seekg(0,ios::beg);
+			 do {ntape.getline(cht,200-1); //StartDO03
+				 if(cht[0]=='*' && cht[1]=='*')continue; //Comment ** & ***include & ***ORIENTATION
+				 else if(cht[0]=='*' && (cht[1]=='E' || cht[1]=='e') && (cht[2]=='L' || cht[2]=='l') && (cht[3]=='S' || cht[3]=='s')) // *ELSET
+				   {iumELSETset++;in=jsw=kn=0;
+					for(i=0;i<int(strlen(cht))-1;i++)if(cht[i]==','){kn++;jrec=i;break;}  //Find first comma. Code to handle "generate" EFP 4/22/2011
+					if(kn>0 && int(strlen(cht))-1-jrec >=3)
+					  {for(i=jrec+1;i<int(strlen(cht))-3;i++)
+						 {if((cht[i  ]=='G' || cht[i  ]=='g') &&
+							 (cht[i+1]=='E' || cht[i+1]=='e') &&
+							 (cht[i+2]=='N' || cht[i+2]=='n')  //GENERATE can be shortened to GEN
+															 ){in=2;break;} //Note:in=2 signifies GENERATE, not #commas
+						 }
+					  }
+				   for(i=7;i<int(strlen(cht))-1;i++)if(cht[i]=='=')break; //Coding to accommodate *ELSET,ELSET= & *ELSET, ELSET=
+				   for(jrec=i+1;jrec<int(strlen(cht))-1;jrec++)if(cht[jrec]!=' ')break;
+				   klim=int(strlen(cht))-1;
+				   for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i]==','){klim=i;break;}
+				   k=0;
+///////////////////
+				   for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='A' || cht[i  ]=='a')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='W' || cht[i+3]=='w') &&
+																		  (cht[i+4]=='D' || cht[i+4]=='d')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject AllWD
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='A' || cht[i  ]=='a')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='W' || cht[i+3]=='w') &&
+																		  (cht[i+4]=='E' || cht[i+4]=='e') &&
+																		  (cht[i+5]=='L' || cht[i+5]=='l') &&
+																		  (cht[i+6]=='D' || cht[i+6]=='d')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject AllWELD
+						 }
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='E' || cht[i  ]=='e')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='A' || cht[i+2]=='a') &&
+																		  (cht[i+3]=='L' || cht[i+3]=='l') &&
+																		  (cht[i+4]=='L' || cht[i+4]=='l')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject ElAll
+						 }
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='A' || cht[i  ]=='a')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='L' || cht[i+1]=='l') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='E' || cht[i+3]=='e') &&
+																		  (cht[i+4]=='L' || cht[i+4]=='l')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject AllEl
+						 }
+				   if(!k){for(i=jrec;i<int(strlen(cht))-1;i++)if(cht[i  ]=='E' || cht[i  ]=='e')
+												  {if(i+4<int(strlen(cht))){if((cht[i+1]=='A' || cht[i+1]=='a') &&
+																		  (cht[i+2]=='L' || cht[i+2]=='l') &&
+																		  (cht[i+3]=='L' || cht[i+3]=='l')){k=1;break;}
+																	  }
+												   else break;
+												  }  // Reject EAll  EFP 4/08/2012
+						 }
+///////////////////
+				   jsw=0;
+				   if(k==0){for(i=jrec;i<klim;i++){if(cht[i  ]=='W' || cht[i  ]=='w')
+														   {if(i+1<klim+1){if(cht[i+1]=='D' || cht[i+1]=='d'){jsw=1;break;}
+																		   else if(cht[i+1]=='P' || cht[i+1]=='p'){jsw=1;break;}
+																		   else if(cht[i+1]=='G' || cht[i+1]=='g'){jsw=1;break;}
+																		   else if(cht[i+1]=='E' || cht[i+1]=='e')
+																					   {if(i+3<klim+1)
+																						  {if((cht[i+2]=='L' || cht[i+2]=='l') &&
+																							  (cht[i+3]=='D' || cht[i+3]=='d')){jsw=1;break;}
+																						  }
+																						else break;
+																					   }
+																		   else break;
+																		  }
+															else break;
+														   }  // Accept WDx, WPx, WGx and WELDx
+												  }
+					listWARsw=1;for(i=0;i<eluplim-ellolim+1;i++)listWAR[i]=0;
 kp=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break; //EFP 8/16/2016
 										  else kp++;
 										 }
-temp_cht1=new char[kp+1];temp_cht2=new char[kp];
+temp_cht1=new char[kp+1];
 for(i=0;i<kp;i++)temp_cht1[i]=cht[i+jrec];
-for(i=0;i<kp;i++)temp_cht2[i]=cht[i+jrec];
 temp_cht1[kp]='\0';//temp_cht2[kp]='\0';
-					base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht2); //This creates a UnicodeString of 80 characters but how to "trim"?
+
+//temp_cht2=new char[kp];for(i=0;i<kp;i++)temp_cht2[i]=cht[i+jrec];
+kp2=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break;
+										 else if(isspace(cht[i]))break;
+										 else kp2++;
+										}
+temp_cht2=new char[kp2+1];for(i=0;i<kp2;i++)temp_cht2[i]=cht[i+jrec];
+temp_cht2[kp2]='\0';
+
+//honk<<nGID<<" "<<strlen(temp_cht2)<<" "<<kp2<<" "<<temp_cht2<<" TTTtempCHT2\n";
+//honk<<nGID<<" "<<kp2<<" TTTtempCHT2\n";
+
+//					base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht2); //This creates a UnicodeString of 80 characters but how to "trim"?
+					base.ELSETinputnames[nGID]=UTF8ToString(temp_cht2); //This creates a UnicodeString of 80 characters but how to "trim"?
+                    for(i=0;i<kp2+1;i++)temp_cht2[i]=chspace;
 					delete [] temp_cht2;temp_cht2=NULL;
 					// Something like base.groupsname[j].SetLength(base.groupsname[j].Length()-1);  ???
 					iallGrp++;
 //					delete [] temp_cht1;temp_cht1=NULL;
 nGID++;
-
-//if(jsw){
-//		temp_cht=new char[kp+1];
-//		for(i=0;i<kp;i++)temp_cht[i]=cht[i+jrec];
-//		temp_cht[kp]='\0';
-//		base.groupsname[totWG]=temp_cht; //EFP 3/25/2011
-//		delete [] temp_cht; *temp_cht=NULL;
-//		totWG++;nGID++;sumWG=0;
-//					if(in==2){
-////*ELSET, ELSET=PTBOT, GENERATE
-////   33049,   33057,       1
-////   33085,   33093,       1
-////   33121,   33129,       1
-//							  do {ntape1.getline(cht,200-1);  // ELSET.... GENERATE
-//								  if( kp){parse_cdm(cht,3,&nic,&nrc,larr,darr); //TBD: Unnecessary test??
-//										  if(larr[1]-larr[0]+1<base.nelt){for(i=larr[0]-1;i<larr[1];i=i+larr[2])
-//																		   {
-//j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==i){j=kk;break;}
-//if(j== -1){honk<<"TERMINATE: GENERATED WG el_map crash in *.abq/*.inp\n";exit(0);}
-//else {base.arrELSET[j]=totWG;sumWG++;}
-//																		   }
-//																		 }
-//										 }
-//								 }
-//							  while (ntape1.peek()!= '*');
-//							 }
-//					else {
-////*ELSET, ELSET=PTTOP
-////   52369,   52370,   52371,   52372,   52373,   52374,   52375,   52376,
-////   52401,   52402,   52403,   52404,   52405,   52406,   52407,   52408,
-////   52433,   52434,   52435,   52436,   52437,   52438,   52439,   52440,
-//					do {ntape1.getline(cht,200-1);
-//						parse_cdmQ_public(cht,&nic,&nrc,larr,darr); //This accommodates comma-end or no-comma EFP 4/15/2011
-//						for(i=0;i<nic;i++){if(larr[i]) //This accommodates comma-end or no-comma EFOP 4/15/2011
-//											 {
-//j= -1;for(kk=0;kk<totEnum;kk++)if(base.el_map[kk]==larr[i]-1){j=kk;break;}  //Correction EFP 4/01/2011
-//if(j== -1){honk<<"TERMINATE: WG el_map crash in *.abq/*.inp\n";exit(0);}
-//else {base.arrELSET[j]=totWG;sumWG++;}
-//											 }
-//										  }
-//					   }
-//					while (ntape1.peek()!= '*');
-//						 }
-//					if(sumlim<sumWG)sumlim=sumWG;
-//	   }
-//else {do {ntape1.getline(cht,200-1);
-//		 }
-//	  while (ntape1.peek()!= '*');
-//	  totBMG++;
-//	 }
 
 if(jsw){temp_cht=new char[kp+1];
 		for(i=0;i<kp;i++)temp_cht[i]=cht[i+jrec];
@@ -3701,7 +3919,7 @@ listWARbase[larr[i]-ellolim]=iallGrp;
 						 }
 					if(sumlim<sumWG)sumlim=sumWG;
 						   }
-					if(iumNODEset==totNODEcard && iumELEMset==totELEMcard && iumELSETset==totELSETcard)psw=2;
+//					if(iumNODEset==totNODEcard && iumELEMset==totELEMcard && iumELSETset==totELSETcard)psw=2;
 //aaaaaaaaaaaaaaaaaaaaa
 //list "PlateUpper" 1-24,141-164,717-764,1033-1080
 if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
@@ -3723,18 +3941,6 @@ if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;
 if(temp_cht1){delete [] temp_cht1;temp_cht1=NULL;} //Relocated by EFP 7/11/2016
 //bbbbbbbbbbbbbbbbbbbbb
 				   }
-				 else if(cht[ 0]=='*' && (cht[ 1]=='M' || cht[ 1]=='m') && (cht[ 2]=='A' || cht[ 2]=='a') && (cht[ 3]=='T' || cht[ 3]=='t') && (cht[ 4]=='E' || cht[ 4]=='e') &&
-										 (cht[ 5]=='R' || cht[ 5]=='r') && (cht[ 6]=='I' || cht[ 6]=='i') && (cht[ 7]=='A' || cht[ 7]=='a') && (cht[ 8]=='L' || cht[ 8]=='l'))
-				  {psw=3;
-//				   if(psw==1)tmpfile01<<cht<<"\n";
-//				   else if(psw==2)tmpfile02<<cht<<"\n";
-//				   else if(psw==3)tmpfile03<<cht<<"\n";
-//				   while (ntape1.peek()!= '*'){ntape1.getline(cht,200-1);
-//											   if(psw==1)tmpfile01<<cht<<"\n";
-//											   else if(psw==2)tmpfile02<<cht<<"\n";
-//											   else if(psw==3)tmpfile03<<cht<<"\n";
-//											  }
-				  } // *MATERIAL
 				 else if(cht[0]=='*' && (cht[1]=='P' || cht[1]=='p') && (cht[2]=='A' || cht[2]=='a') && (cht[3]=='R' || cht[3]=='r') && (cht[4]=='T' || cht[4]=='t'))
 				  {continue;}
 				 else if(cht[0]=='*' && (cht[1]=='S' || cht[1]=='s') && (cht[2]=='T' || cht[2]=='t') && (cht[3]=='E' || cht[3]=='e') && (cht[4]=='P' || cht[4]=='p'))
@@ -3753,53 +3959,19 @@ if(temp_cht1){delete [] temp_cht1;temp_cht1=NULL;} //Relocated by EFP 7/11/2016
 				 else
 				  {while (ntape.peek()!= '*'){ntape.getline(cht,200-1);if(ntape.eof())break;}}
 				}
-			 while (!ntape.eof()); //EndDO02
+			 while (!ntape.eof()); //EndDO03
+//******
+//****
+//**
 
 
-
-
-////
-//////
-//////// write unspecified elements to list "basemetal" in *.list
-//aaaaaaaaaaaaaaaaaaaaa
-//list "PlateUpper" 1-24,141-164,717-764,1033-1080
-//listWARsw=1;
-//if(listWARsw){
-			  for(kk=0;kk< eluplim-ellolim+1;kk++){
-//honk<<(kk+1)<<" "<<listWARbase[kk]<<"\n";
-												   if(listWARbase[kk])listWAR[kk]=0;
-												   else {listWAR[kk]=1;}
-												  }
-			  swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
-			  if(!swstart)
-				   {echoWARfile<<"list \"basemetal\" ";
-					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
-					for(i=jstart;i<jlast+1;i++)
-					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
-					   else if(swend){icountlim++;swend=0;swstart=1;
-									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
-									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
-									 }
-					  }
-					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
-base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
-base.allGrp=base.allGrp+1;
-				   }
-////			  listWARsw=0;
-////			  delete [] temp_cht1;temp_cht1=NULL;
-////			 }
-//base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
-//base.allGrp=base.allGrp+1;
-if(listAmbiguity){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Some elements in multiple lists",L"Warning:",MB_OK);}
-//bbbbbbbbbbbbbbbbbbbbb
-////////
-//////
-////
 
 
 
 
 			 echoWARfile.close();delete [] listWAR;listWAR=NULL;delete [] listWARbase;listWARbase=NULL;
+			 base.allGrp=nGID; //EFP 8/23/2016
+
 ////////
 //////////
 //////////// Nodal coincidence coding with original numbering  EFP 8/26/2015
