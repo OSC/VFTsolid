@@ -16668,11 +16668,18 @@ void TForm1::wpCreate1_public()
 }
 //---------------------------------------------------------------------------
 void TForm1::wpCreate2_public()
-{FD_LButtonstatus=11;stateVFT=2;
+{long in=0,ieGID1=0;
+ FD_LButtonstatus=11;stateVFT=2;
+//Attempt to fix "CANCEL abandoned WP" black WG region problem  EFP 8/29/2016
+ for(in=0;in<base.nelt;in++){ieGID1=indat.arrELSET[in];
+							 if(ieGID1==base.allGrp+wp.PRECORD)indat.arrELSET[in]=base.arrELSET[in];
+							}
+
 /////////// Cursor EFP 1/21/2011
 Screen->Cursor=crSizeAll;
 ///////////
  delete CreateLinWeldPass;CreateLinWeldPass=NULL;// because it was created with Show()?
+ iCullyesno=0;Invalidate();// EFP 8/29/2016
 }
 //---------------------------------------------------------------------------
 void TForm1::wpEdit_public(){
@@ -16809,7 +16816,8 @@ FDcomp_nGID(indat.nelt,&nGID,arGID);
 							  }
 //---------------------------------------------------------------------------
 void TForm1::wpEdit2_public()
-{//long j=0,ie=0//,eltype=0,bscode=0,node=0,ieGID=0,t3=1000,t5=100000,t7=10000000
+{long in=0,ieGID1=0;
+//long j=0,ie=0//,eltype=0,bscode=0,node=0,ieGID=0,t3=1000,t5=100000,t7=10000000
 //;
 // wp.name[wp.PRECORD]=wp.temp_name;
 // wp.matName[wp.PRECORD]=wp.temp_matName;
@@ -16872,6 +16880,9 @@ void TForm1::wpEdit2_public()
 
 
  FD_LButtonstatus=11;stateVFT=2;
+ for(in=0;in<base.nelt;in++){ieGID1=indat.arrELSET[in]; //EFP 8/29/2016
+							 if(ieGID1==base.allGrp+wp.PRECORD)indat.arrELSET[in]=base.arrELSET[in];
+							}
 /////////// Cursor EFP 1/21/2011
 Screen->Cursor=crSizeAll;
 ///////////
