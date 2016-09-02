@@ -349,7 +349,7 @@ private:	// User declarations
 				 ;
 				 float *presc,*press,*pointld,*prop,*body,*cangl, *c1,*res1,*beta;
 ///////////////// EFP 2/25/2012
-char *comboCWD;
+char *comboCWD, *ELSETinputnamesCh;
 /////////////////
 				 String *groupsname, *ELSETinputnames; //EFP 3/15/2011 & 01/01/2015
 				} base;

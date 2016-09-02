@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59q_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59r_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -2645,7 +2645,7 @@ i=0,j=0,k=0,kk=0,kp=0,kp2=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=10000
 ,sumELSETel=0,totBMG=0,totWG=0,totELSETcard=0,totPART=0,totSOLIDScard=0,istart=0,jstart=0,jlast=0
   ,inadmissible=0,iallGrp=0, *revnode_map=NULL, *listWARbase=NULL;
  float darr[10];
- char cht[200],extensChar[]=".inp", *temp_cht=NULL, *temp_cht1=NULL, *temp_cht2=NULL, *fnNeed1=NULL,*fnNeed2=NULL,
+ char cht[200],extensChar[]=".inp",basemetal[]="basemetal", *temp_cht=NULL, *temp_cht1=NULL, *temp_cht2=NULL, *fnNeed1=NULL,*fnNeed2=NULL,
 	  ch_I='I',ch_i='i',ch_N='N',ch_n='n',ch_P='P',ch_p='p',ch_U='U',ch_u='u',ch_T='T',ch_t='t',ch_eq='=',chspace=' ';
  wchar_t string0[11];
  if(base.nop1){extern PACKAGE void __fastcall Beep(void);
@@ -3728,6 +3728,7 @@ listWARbase[larr[i]-ellolim]=iallGrp;
 //base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
 //base.allGrp=base.allGrp+1;
 base.ELSETinputnames[nGID]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
+for(kk=0;kk<10;kk++)base.ELSETinputnamesCh[(79+1)*nGID+kk]=basemetal[kk];
 nGID++; //EFP 8/23/2016
 				   }
 ////			  listWARsw=0;
@@ -3844,15 +3845,17 @@ kp2=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break;
 										 else if(isspace(cht[i]))break;
 										 else kp2++;
 										}
-temp_cht2=new char[kp2+1];for(i=0;i<kp2;i++)temp_cht2[i]=cht[i+jrec];
+temp_cht2=new char[kp2+1];for(i=0;i<kp2;i++){temp_cht2[i]=cht[i+jrec];
+											 base.ELSETinputnamesCh[(79+1)*nGID+i]=cht[i+jrec];
+											}
 temp_cht2[kp2]='\0';
-
+base.ELSETinputnamesCh[(79+1)*nGID+kp2]='\0';
 //honk<<nGID<<" "<<strlen(temp_cht2)<<" "<<kp2<<" "<<temp_cht2<<" TTTtempCHT2\n";
 //honk<<nGID<<" "<<kp2<<" TTTtempCHT2\n";
 
 //					base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht2); //This creates a UnicodeString of 80 characters but how to "trim"?
 					base.ELSETinputnames[nGID]=UTF8ToString(temp_cht2); //This creates a UnicodeString of 80 characters but how to "trim"?
-                    for(i=0;i<kp2+1;i++)temp_cht2[i]=chspace;
+					for(i=0;i<kp2+1;i++)temp_cht2[i]=chspace;
 					delete [] temp_cht2;temp_cht2=NULL;
 					// Something like base.groupsname[j].SetLength(base.groupsname[j].Length()-1);  ???
 					iallGrp++;
@@ -4028,12 +4031,12 @@ if(temp_cht1){delete [] temp_cht1;temp_cht1=NULL;} //Relocated by EFP 7/11/2016
 /////////////////////////// Check for non-hex in welds  EFP 3/22/2016
 //honk<<"\n";
 int bufferSize=0;
-for(j=0;j<base.allGrp;j++){bufferSize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,NULL,0,NULL,NULL);
-						   char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,m,bufferSize,NULL,NULL);
-//honk<<(j+1)<<" ABAQ base.ELSETinputnames[j]= "<<m<<"\n";
-						   delete m;m=NULL;
-						  }
-//honk<<"\n";
+//for(j=0;j<base.allGrp;j++){bufferSize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,NULL,0,NULL,NULL);
+//						   char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,m,bufferSize,NULL,NULL);
+////honk<<(j+1)<<" ABAQ base.ELSETinputnames[j]= "<<m<<"\n";
+//						   delete m;m=NULL;
+//						  }
+////honk<<"\n";
 psw=0;
 for(j=0;j<wp.nWeldGroup;j++){bufferSize=WideCharToMultiByte(CP_UTF8,0,base.groupsname[j].w_str(), -1,NULL,0,NULL,NULL);
 							 char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,base.groupsname[j].w_str(), -1,m,bufferSize,NULL,NULL);
@@ -4873,7 +4876,7 @@ nodeuplim=0,nodelolim=0,totNnum=0,eluplim=0,ellolim=0,totEnum=0,sumWG=0,sumlim=0
 totWG=0,ELSETmobsize=0,exALLEL=0,exALLWD=0,iallGrp=0, *revnode_map;
  float //fval=0.f,
  darr[10];
- char cht[200], *temp_cht=NULL, *temp_cht1=NULL//,extensChar[]=".msh",chELSET[78+1], *fnNeed1=NULL,*fnNeed2=NULL
+ char cht[200],allel[]="ALLEL", *temp_cht=NULL, *temp_cht1=NULL//,extensChar[]=".msh",chELSET[78+1], *fnNeed1=NULL,*fnNeed2=NULL
  ;
  wchar_t string0[11];
 ////////////////
@@ -5091,6 +5094,7 @@ Screen->Cursor=Save_Cursor;
 		  FDdynmem_manage(15,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.nelt);//EFP 8/07/2011
 		  FDdynmem_manage(20,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.allGrp);//EFP 8/07/2011
 		  base.ELSETinputnames[0]=L"ALLEL";
+		  for(kk=0;kk<6;kk++)base.ELSETinputnamesCh[(79+1)*0+kk]=allel[kk];
 //		  ifstream ntape1("record.tmp",ios::nocreate|ios::binary,0);
 //		  if(ntape1) //seek() can be used with binary-opened files (NOT ascii) so close & reopen file  EFP 12/18/2011
 //			{
@@ -5239,9 +5243,11 @@ revnode_map=new long[nodeuplim-nodelolim+1];
 					temp_cht[kp]='\0';base.groupsname[totWG]=temp_cht; //EFP 3/25/2011
 					temp_cht1=new char[kp];
 					for(i=0;i<kp-1;i++){temp_cht1[i]=cht[i+3];
+										base.ELSETinputnamesCh[(79+1)*iallGrp+i]=cht[i+3];
 //honk<<i<<" "<<temp_cht1[i]<<" roxanne1\n";
 									   }
 temp_cht1[kp-1]='\0';
+base.ELSETinputnamesCh[(79+1)*iallGrp+kp-1]='\0';
 //honk<<8<<" "<<temp_cht1[8]<<" roxanne1\n";
 //honk<<9<<" "<<temp_cht1[9]<<" roxanne1\n";
 ////					base.ELSETinputnames[iallGrp]=L" ";
@@ -5276,9 +5282,11 @@ else {base.arrELSET[j]=totWG;sumWG++;
 						 kp=int(strlen(cht))-3;temp_cht=new char[kp+1];for(i=0;i<kp;i++)temp_cht[i]=cht[i+3];
 		temp_cht[kp]='\0';
 		if(iallGrp != exALLEL){temp_cht1=new char[kp];for(i=0;i<kp-1;i++){temp_cht1[i]=cht[i+3];
+																		  base.ELSETinputnamesCh[(79+1)*iallGrp+i]=cht[i+3];
 //honk<<i<<" "<<temp_cht1[i]<<" roxanne2\n";
 									   }
 temp_cht1[kp-1]='\0';
+base.ELSETinputnamesCh[(79+1)*iallGrp+kp-1]='\0';
 ////							   base.ELSETinputnames[iallGrp]=L" ";
 //							   base.ELSETinputnames[iallGrp]=temp_cht1;
 							   base.ELSETinputnames[iallGrp]=UTF8ToString(temp_cht1); //This creates a UnicodeString of 80 characters but how to "trim"?
@@ -5418,8 +5426,8 @@ void __fastcall TForm1::ImportVFTrExecute(TObject *Sender)
 // long ix=0,i=0,ii=0,ie=0,ir=0,ipid=0,nop0=0,nop1=0,nop2=0,nop3=0,nop4=0,nop5=0,nop6=0,nop7=0,dummy=0,larr[9]
  long ix=0,i=0,ii=0,ie=0,ir=0,ipid=0,nop0=0,nop1=0,nop2=0,nop3=0,nop4=0,nop5=0,nop6=0,nop7=0,dummy=0,larr[20+1]
 	  ,control[10],accum=0,j=0,eltype=0,bscode=0,node=0,ieGID=0,t7=10000000,t5=100000,t3=1000,sumlim=0,
-	  nodeuplim=0,nodelolim=0,eluplim=0,wpWG=0,wpWP=0,in=0,ip=0,inp=0,sumELSETel=0, *revnode_map;
- char cht[10*(MXNPELS+3)],chtm[200]; // Anticipate 23I10
+	  nodeuplim=0,nodelolim=0,eluplim=0,wpWG=0,wpWP=0,in=0,ip=0,inp=0,kk=0,sumELSETel=0, *revnode_map;
+ char cht[10*(MXNPELS+3)],chtm[200],allel[]="ALLEL",GenericWG[]="GenericWG",GenericWP[]="GenericWP"; // Anticipate 23I10
  _TCHAR descript0[41],descript1[41],descript2[41], *temp_cht; // Anticipate 23I10
 //String efpAnsi1[20];
 //String *efpAnsi=NULL;
@@ -5637,6 +5645,13 @@ Screen->Cursor=Save_Cursor;
 		  base.ELSETinputnames[0]=L"ALLEL";
 		  for(in=0;in<wpWG;in++)base.ELSETinputnames[in+1]=L"GenericWG";
 		  for(in=0;in<wpWP;in++)base.ELSETinputnames[in+wpWG+1]=L"GenericWP";  //EFP 9/17/2015
+		  for(kk=0;kk<6;kk++)base.ELSETinputnamesCh[(79+1)*0+kk]=allel[kk];
+		  for(in=0;in<wpWG;in++){
+								 for(kk=0;kk<10;kk++)base.ELSETinputnamesCh[(79+1)*(in+1)+kk]=GenericWG[kk];
+								}
+		  for(in=0;in<wpWP;in++){
+								 for(kk=0;kk<10;kk++)base.ELSETinputnamesCh[(79+1)*(in+wpWG+1)+kk]=GenericWP[kk];
+								}
 //////////
 //vvvvvvvvvvvvvvvvvvv //Correction  EFp 4/13/2013
 			 for(in=0;in<2*base.npoin;in++)base.nofix[in]=0;
@@ -7302,6 +7317,7 @@ void TForm1::FDdynmem_manage(int isel,long bnpoin,long bnelt,long inpoin,long in
 				   indat.arrELSET=new long[MXNP];//Warning: highest number of ELSETs=unlimited
 				  }
  else if(isel==20){base.ELSETinputnames=new String[MXNP];//ELSET names in input deck (including basemetal ALLEL even if absent)
+				   base.ELSETinputnamesCh=new char[MXNP*(79+1)];
 				  } //EFP 01/01/2015
 
 //**************** End from VFTgen
@@ -7491,6 +7507,7 @@ void TForm1::FDdynmem_manage(int isel,long bnpoin,long bnelt,long inpoin,long in
  else if(isel== -17){if(indat.arrELSET){delete [] indat.arrELSET;indat.arrELSET=NULL;}
 					}
  else if(isel== -20){if(base.ELSETinputnames){delete [] base.ELSETinputnames;base.ELSETinputnames=NULL;}
+                     if(base.ELSETinputnamesCh){delete [] base.ELSETinputnamesCh;base.ELSETinputnamesCh=NULL;}
 				  } //EFP 01/01/2015
 //**************** End from VFTgen
  else {
@@ -17734,8 +17751,8 @@ void __fastcall TForm1::exportCTSPExecute(TObject *Sender)
 //						  CTSPnames->CheckEdit6=min(3.5f*iptmax,3000.f); // Policy: core-to-core default= 3.5x max IPtime interval
 //						 }
 //	   else CTSPnames->CheckEdit6=float(3000);
-	   ctoc_overlapmax=0.f;for(in=0;in<wp.nWeldPass-1;in++){ //Linear between (1.5,4.5) & (50.8,1535), where (Pl.thick mm,overlap sec)
-iptmax=(4.5f*50.8f-1535.f*1.5f+(1535.f-4.5f)*(wp.thk1[in]+wp.thk2[in])/2.f)/(50.8f-1.5f);
+	   ctoc_overlapmax=0.f;for(in=0;in<wp.nWeldPass-1;in++){ //Linear between (1.5,4.5) & (50.8,450), where (Pl.thick mm,overlap sec)
+iptmax=(4.5f*50.8f-450.f*1.5f+(450.f-4.5f)*(wp.thk1[in]+wp.thk2[in])/2.f)/(50.8f-1.5f); //Changed 1535->450
 if(iptmax<4.5f)iptmax=4.5f;
 if(ctoc_overlapmax<iptmax)ctoc_overlapmax=iptmax;
 														   }
@@ -20564,7 +20581,7 @@ void TForm1::exportWARP4_public()
 	  iELSETactive=0,swstart=0,tot=0,swactive=0,icountlist=0,ncountlist=0, *iELSETarr=NULL, *wpelORDER=NULL;
  float tcuth=0.f,tdummy=0.f;
 // char *nameMat;
- char umat[5+1]="_umat",chb[1+1]=" ",chendl[1+1]="\0";
+ char umat[5+1]="_umat",chb[1+1]=" ",chendl[1+1]="\0",outtrim[80];
 
 // String umat=L"_umat", *sArr=NULL;
  String *sArr=NULL;
@@ -21119,14 +21136,17 @@ char* m1=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,sArr[icycle].w_str()
 char* m3=new char[buffersize-4];
 for(ic=0;ic<buffersize-4-1;ic++)m3[ic]=m1[ic];
 m3[buffersize-4-1]=chendl[0];
-buffersize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[icycle].w_str(), -1,NULL,0,NULL,NULL);
-char* m2=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[icycle].w_str(), -1,m2,buffersize,NULL,NULL);
-
-//for(ic=buffersize-2;ic>=0;ic--)if( *(m2+ic) != chb[0]){ *(m2+ic+1)=chendl[0];break;}
-
-outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+for(ic=0;ic<80;ic++){outtrim[ic]=base.ELSETinputnamesCh[(79+1)*icycle+ic];
+					 if(base.ELSETinputnamesCh[(79+1)*icycle+ic]== '\0')break;
+					}
+//buffersize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[icycle].w_str(), -1,NULL,0,NULL,NULL);
+//char* m2=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[icycle].w_str(), -1,m2,buffersize,NULL,NULL);
+outfile<<"\""<<outtrim<<"\" type l3disop material "<<m3<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
+//outfile<<"\""<<m2<<"\" type l3disop material "<<m3<<umat<<" order,\n"; //Correction from BobD   EFP 1/27/2015
 outfile<<" 2x2x2 center_output short\n"; //Correction from BobD & allow for long line   EFP 1/27/2015
-delete [] m3;delete [] m2;delete [] m1;m1=m2=m3=NULL;
+delete [] m3;delete [] m1;
+//delete [] m1;m1=NULL;
+m1=m3=NULL;
 									}
 // for(icycle=0;icycle<wp.nWeldPass;icycle++){   //Commented out  EFP 8/01/2016
 //buffersize=WideCharToMultiByte(CP_UTF8,0,wp.matName[icycle].w_str(), -1,NULL,0,NULL,NULL);
@@ -21335,6 +21355,7 @@ delete[] m1;m1=NULL;
 //	   ir=11; //MUST COUNT ENTITIES BELOW
 	   Form9=new TForm9(this);
 	   Form9->Caption=L"WARP3D output options";
+	   Form9->Left=450;
 	   Form9->Button1->Caption=L"OK";
 	   i=  0;Form9->CheckListBox1->AddItem(L"Stresses",this);
 	   Form9->CheckListBox1->Checked[i]=true;
