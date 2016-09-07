@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59r_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59s_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -3972,6 +3972,7 @@ if(temp_cht1){delete [] temp_cht1;temp_cht1=NULL;} //Relocated by EFP 7/11/2016
 
 
 
+	         echoWARfile<<"*echo on\nc\n";
 			 echoWARfile.close();delete [] listWAR;listWAR=NULL;delete [] listWARbase;listWARbase=NULL;
 			 base.allGrp=nGID; //EFP 8/23/2016
 
@@ -4869,11 +4870,13 @@ void __fastcall TForm1::ImportMshExecute(TObject *Sender)
 //     Hence wp.nWeldGroup is incremented but not wp.nWeldPass
 // 8n hex elements only
 {
- int nic=0,nrc=0,jsw=0;
- long in=0,n8=0,dummy=0,jrec=0,//iswELSET2=0,
+ int nic=0,nrc=0,jsw=0,
+  listWARsw=0, *listWAR=NULL
+ ;
+ long in=0,n8=0,dummy=0,jrec=0,listAmbiguity=0,//iswELSET2=0,
 i=0,j=0,k=0,kk=0,kp=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1000,larr[10],//larr1[10],
 nodeuplim=0,nodelolim=0,totNnum=0,eluplim=0,ellolim=0,totEnum=0,sumWG=0,sumlim=0,sumELSETel=0,//totBMG=0,
-totWG=0,ELSETmobsize=0,exALLEL=0,exALLWD=0,iallGrp=0, *revnode_map;
+totWG=0,ELSETmobsize=0,exALLEL=0,exALLWD=0,iallGrp=0, *revnode_map, *listWARbase=NULL;
  float //fval=0.f,
  darr[10];
  char cht[200],allel[]="ALLEL", *temp_cht=NULL, *temp_cht1=NULL//,extensChar[]=".msh",chELSET[78+1], *fnNeed1=NULL,*fnNeed2=NULL
@@ -5417,17 +5420,19 @@ void __fastcall TForm1::ImportVFTrExecute(TObject *Sender)
 //    A subroutine checks for annihilation of WG.  EFP 1/23/2012
 // TBD: increase 199 to allow for 20n hex element connectivity read from 1 line
 {
- int nic=0,nrc=0
+ int limlist=5,nic=0,nrc=0
 //, *temp_allGID=NULL
- ,bufferSize1=0,bufferSize2=0,bufferSize3=0
+ ,bufferSize=0,bufferSize1=0,bufferSize2=0,bufferSize3=0,swstart=0,swend=0,icountlim=0,
+  listWARsw=0, *listWAR=NULL
 ;
 // int *tw_allGID=NULL;
  float pval=0.f,darr[9];
 // long ix=0,i=0,ii=0,ie=0,ir=0,ipid=0,nop0=0,nop1=0,nop2=0,nop3=0,nop4=0,nop5=0,nop6=0,nop7=0,dummy=0,larr[9]
  long ix=0,i=0,ii=0,ie=0,ir=0,ipid=0,nop0=0,nop1=0,nop2=0,nop3=0,nop4=0,nop5=0,nop6=0,nop7=0,dummy=0,larr[20+1]
 	  ,control[10],accum=0,j=0,eltype=0,bscode=0,node=0,ieGID=0,t7=10000000,t5=100000,t3=1000,sumlim=0,
-	  nodeuplim=0,nodelolim=0,eluplim=0,wpWG=0,wpWP=0,in=0,ip=0,inp=0,kk=0,sumELSETel=0, *revnode_map;
- char cht[10*(MXNPELS+3)],chtm[200],allel[]="ALLEL",GenericWG[]="GenericWG",GenericWP[]="GenericWP"; // Anticipate 23I10
+	  istart=0,jstart=0,jlast=0,listAmbiguity=0,
+	  nodeuplim=0,nodelolim=0,ellolim=0,eluplim=0,wpWG=0,wpWP=0,in=0,ip=0,inp=0,kk=0,sumELSETel=0, *revnode_map, *listWARbase=NULL;
+ char cht[10*(MXNPELS+3)],chtm[200],basemetal[]="basemetal",allel[]="ALLEL",GenericWG[]="GenericWG",GenericWP[]="GenericWP"; // Anticipate 23I10
  _TCHAR descript0[41],descript1[41],descript2[41], *temp_cht; // Anticipate 23I10
 //String efpAnsi1[20];
 //String *efpAnsi=NULL;
@@ -5500,6 +5505,10 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 	   for(i=0;i<base.nelt;i++){ntape0.getline(chtm,199);parse_cdm(chtm,9,&nic,&nrc,larr,darr);ii=larr[0];
 								if(eluplim<ii)eluplim=ii;
 							   }
+	   ellolim=1;ofstream echoWARfile("MustIncludeThese.list");
+	   echoWARfile<<"c\n*echo off\n";
+	   listWARsw=0;listWAR=new int[eluplim-ellolim+1];
+	   listAmbiguity=0;listWARbase=new long[eluplim-ellolim+1];for(in=0;in< eluplim-ellolim+1;in++)listWARbase[in]=0;
 //////////////////////  EFP 2/11/2012
 ///////////////////////
 ////////////////////////
@@ -5523,6 +5532,7 @@ ntape0.getline(chtm,199);// Omit JavaVFT groupsname[]
 				 if(wpWG)         {sumlim=0;
 								   for(j=0;j<wpWG;j++)
 								   {
+listWARsw=1;for(i=0;i<eluplim-ellolim+1;i++)listWAR[i]=0;
 ntape0.getline(chtm,199); //Just in case  EFP 4/03/2011
 ntape0.getline(chtm,199);// Omit JavaVFT group[]
 ntape0.getline(chtm,199);// Omit JavaVFT groupsall[]
@@ -5535,8 +5545,12 @@ ntape0.getline(chtm,199);// Omit JavaVFT groupname[]
 ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
 ntape0.getline(chtm,199);
 									if(sumlim<accum)sumlim=accum;
-									for(ii=0;ii<accum;ii++){ntape0.getline(chtm,199);
+									for(ii=0;ii<accum;ii++){//ntape0.getline(chtm,199);
+ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);i=larr[0];
 															sumELSETel++;
+listWAR[i-ellolim]=1;
+if(listWARbase[i-ellolim]>0)listAmbiguity++;
+listWARbase[i-ellolim]=j+1;
 														   }
 								   }
 								   wp.memWGa=sumlim;
@@ -5666,6 +5680,48 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //			 base.allGrp=wpWG+wpWP+1;//Emergency Code to plot WP without WG
 //honk<<base.allGrp<<" "<<wpWG<<" "<<wpWP<<" Zooey0 "<<wp.memWGa<<"\n";
 //if(1==1)exit(0);
+
+
+
+
+
+
+
+////
+//////
+//////// write unspecified elements to list "basemetal" in *.list
+//list "PlateUpper" 1-24,141-164,717-764,1033-1080
+			  nGID=0; //EFP 8/23/2016
+			  for(kk=0;kk< eluplim-ellolim+1;kk++){
+												   if(listWARbase[kk])listWAR[kk]=0;
+												   else {listWAR[kk]=1;}
+												  }
+			  swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
+			  if(!swstart)
+				   {echoWARfile<<"list \"basemetal\" ";
+					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
+					for(i=jstart;i<jlast+1;i++)
+					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
+					   else if(swend){icountlim++;swend=0;swstart=1;
+									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
+									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
+									 }
+					  }
+					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
+base.ELSETinputnames[nGID]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
+for(kk=0;kk<10;kk++)base.ELSETinputnamesCh[(79+1)*nGID+kk]=basemetal[kk];
+nGID++; //EFP 8/23/2016
+				   }
+if(listAmbiguity){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Some elements in multiple lists",L"Warning:",MB_OK);}
+////////
+//////
+////
+
+
+
+
+
+
 
 	   for(i=0;i<base.nelt;i++)base.arELEM[i]=1; //Correction EFP 12/03/2010
 	   for(i=0;i<base.nelt;i++)base.arrELSET[i]=0;
@@ -5817,7 +5873,7 @@ FDdynmem_manage(13,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,b
 				 if(wp.nWeldGroup){//sumlim=0;
 								   for(j=0;j<wp.nWeldGroup;j++)
 								   {
-
+listWARsw=1;for(i=0;i<eluplim-ellolim+1;i++)listWAR[i]=0;
 /////////////  Include just in case  EFP 4/03/2011
 //////////////
 //////////////
@@ -5883,7 +5939,38 @@ ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);i=larr[0]; //DO I 
 //									i=i-1;
 //temp_allGID[base.nelt*(j+1)+i]=1;//Add coding for basemetal&weldgroup
 base.arrELSET[i-1]=j+1;//Add coding for basemetal&weldgroup
+listWAR[i-ellolim]=1;
+listWARbase[i-ellolim]=j+1;
 														   }
+
+
+
+
+//list "PlateUpper" 1-24,141-164,717-764,1033-1080
+if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
+			  if(swstart){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No elements in an ELSET",L"Warning:",MB_OK);}
+			  else {
+					bufferSize=WideCharToMultiByte(CP_UTF8,0,base.groupsname[j].w_str(), -1,NULL,0,NULL,NULL);
+					char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,base.groupsname[j].w_str(), -1,m,bufferSize,NULL,NULL);
+					echoWARfile<<"list \""<<m<<"\" ";
+					delete m;m=NULL;
+					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
+					for(i=jstart;i<jlast+1;i++)
+					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
+					   else if(swend){icountlim++;swend=0;swstart=1;
+									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
+									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
+									 }
+					  }
+					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
+				   }
+			  listWARsw=0;
+			 }
+
+
+
+
+
 								   }
 //								   wp.memWGa=sumlim;
 								  }
@@ -6447,6 +6534,9 @@ Screen->Cursor=Save_Cursor;
 
 
 
+	         echoWARfile<<"*echo on\nc\n";
+			 echoWARfile.close();delete [] listWAR;listWAR=NULL;delete [] listWARbase;listWARbase=NULL;
+			 base.allGrp=nGID; //EFP 8/23/2016
 
 
 
@@ -12412,8 +12502,8 @@ void TForm1::VFT_SaveAs1(int ksw)
 // *.VFTr is NOT COMMA-DELIMITED currently
 // TBD: Currently using & writing highest node number but only writing active nodes. Switch to memory-saving "true node number" scheme
 //      This is a cat's ass scheme. Switch to pre-read/reserve memory/read again
-{long i=0,j=0,jsw=0,control[10],eltype=0,bscode=0,node=0,ieGID=0,t7=10000000,t5=100000,t3=1000,accum=0;
- char *fnNeed;
+{long i=0,j=0,kk=0,jsw=0,control[10],eltype=0,bscode=0,node=0,ieGID=0,t7=10000000,t5=100000,t3=1000,accum=0;
+ char *fnNeed, bufferCh[79+1];
  fnNeed=NULL;
  if(base.nop1)
 //   {if(ksw)
@@ -12577,8 +12667,11 @@ ieGID=base.arrELSET[i];
 //xxxxxxxxxx
  int bufferSize1=WideCharToMultiByte(CP_UTF8,0,base.groupsname[j].w_str(), -1,NULL,0,NULL,NULL);
  char* m1=new char[bufferSize1];WideCharToMultiByte(CP_UTF8,0,base.groupsname[j].w_str(), -1,m1,bufferSize1,NULL,NULL);
- ntape<<m1<<"\n";// EFP 12/10/2014
+ for(kk=0;kk<79;kk++){if(isspace(m1[kk])){bufferCh[kk]='\0';break;}
+					  else bufferCh[kk]=m1[kk];
+					 }
  delete[] m1;
+ ntape<<bufferCh<<"\n";// EFP 12/10/2014
 //xxxxxxxxxx
 									for(i=0;i<base.nelt;i++){
 ////eltype=base.orig_matno[i]/t7;bscode=(base.orig_matno[i]-eltype*t7)/t5;node=(base.orig_matno[i]-eltype*t7-bscode*t5)/t3;ieGID=base.orig_matno[i]-eltype*t7-bscode*t5-node*t3;
