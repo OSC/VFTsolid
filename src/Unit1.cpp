@@ -189,7 +189,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59s_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59u_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -2643,10 +2643,12 @@ n8=0,dummy=0,listAmbiguity=0,
 i=0,j=0,k=0,kk=0,kp=0,kp2=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1000,larr[10],larr1[10]
 ,nodeuplim=0,nodelolim=0,totNnum=0,eluplim=0,ellolim=0,totEnum=0,sumWG=0,sumlim=0
 ,sumELSETel=0,totBMG=0,totWG=0,totELSETcard=0,totPART=0,totSOLIDScard=0,istart=0,jstart=0,jlast=0
-  ,inadmissible=0,iallGrp=0, *revnode_map=NULL, *listWARbase=NULL;
+  ,inadmissible=0,iallGrp=0,sloc=0, *revnode_map=NULL, *listWARbase=NULL;
  float darr[10];
- char cht[200],extensChar[]=".inp",basemetal[]="basemetal", *temp_cht=NULL, *temp_cht1=NULL, *temp_cht2=NULL, *fnNeed1=NULL,*fnNeed2=NULL,
-	  ch_I='I',ch_i='i',ch_N='N',ch_n='n',ch_P='P',ch_p='p',ch_U='U',ch_u='u',ch_T='T',ch_t='t',ch_eq='=',chspace=' ';
+ char cht[200],extensChar[]=".inp",basemetal[]="basemetal",list[]="list",echo_off[]="*echo off",chspace6[]="      ",
+	  *temp_cht=NULL, *temp_cht1=NULL, *temp_cht2=NULL, *fnNeed1=NULL,*fnNeed2=NULL,
+	  bufferCh[239+1],strLong[32+1],chspace=' ',ch_dash='-',ch_comma=',',ch_doublequo='\"',ch_newline='\n',
+	  ch_I='I',ch_i='i',ch_N='N',ch_n='n',ch_P='P',ch_p='p',ch_U='U',ch_u='u',ch_T='T',ch_t='t',ch_eq='=';
  wchar_t string0[11];
  if(base.nop1){extern PACKAGE void __fastcall Beep(void);
 			   Application->MessageBox(L"First, close current file->FileClose",L"Halt",MB_OK);}
@@ -3145,7 +3147,9 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 			 if(ntape.fail())ntape.clear();
 			 ntape.seekg(0,ios::beg);
 	   ofstream echoWARfile("MustIncludeThese.list");
+//	   ofstream echoWARfile("MustIncludeThese.list",ios::binary);
 	   echoWARfile<<"c\n*echo off\n";
+
 	   listWARsw=0;listWAR=new int[eluplim-ellolim+1];
 	   listAmbiguity=0;listWARbase=new long[eluplim-ellolim+1];for(in=0;in< eluplim-ellolim+1;in++)listWARbase[in]=0;
 
@@ -3700,48 +3704,122 @@ listWARbase[larr[i]-ellolim]=iallGrp;
 
 
 
+//////
+////////
+////////// write unspecified elements to list "basemetal" in *.list
+////aaaaaaaaaaaaaaaaaaaaa
+////list "PlateUpper" 1-24,141-164,717-764,1033-1080
+////listWARsw=1;
+////if(listWARsw){
+//			  nGID=0; //EFP 8/23/2016
+//			  for(kk=0;kk< eluplim-ellolim+1;kk++){
+////honk<<(kk+1)<<" "<<listWARbase[kk]<<" listBBB\n";
+//												   if(listWARbase[kk])listWAR[kk]=0;
+//												   else {listWAR[kk]=1;}
+//												  }
+//			  swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
+//			  if(!swstart)
+//				   {echoWARfile<<"list \"basemetal\" ";
+//					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
+//					for(i=jstart;i<jlast+1;i++)
+//					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
+//					   else if(swend){icountlim++;swend=0;swstart=1;
+//									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
+//									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
+//									 }
+//					  }
+//					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
+////base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
+////base.allGrp=base.allGrp+1;
+//base.ELSETinputnames[nGID]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
+//for(kk=0;kk<10;kk++)base.ELSETinputnamesCh[(79+1)*nGID+kk]=basemetal[kk];
+//nGID++; //EFP 8/23/2016
+//				   }
+//////			  listWARsw=0;
+//////			  delete [] temp_cht1;temp_cht1=NULL;
+//////			 }
+////base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
+////base.allGrp=base.allGrp+1;
+//if(listAmbiguity){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Some elements in multiple lists",L"Warning:",MB_OK);}
+////bbbbbbbbbbbbbbbbbbbbb
+//////////
+////////
+//////
+
+
 ////
 //////
-//////// write unspecified elements to list "basemetal" in *.list
+//////// write unspecified elements to list "basemetal" in *.list (use bufferCh[] to bypass skipping issue in WINE/Linux  EFP 9/10/2016)
 //aaaaaaaaaaaaaaaaaaaaa
 //list "PlateUpper" 1-24,141-164,717-764,1033-1080
-//listWARsw=1;
-//if(listWARsw){
 			  nGID=0; //EFP 8/23/2016
-			  for(kk=0;kk< eluplim-ellolim+1;kk++){
-//honk<<(kk+1)<<" "<<listWARbase[kk]<<" listBBB\n";
-												   if(listWARbase[kk])listWAR[kk]=0;
-												   else {listWAR[kk]=1;}
+			  for(kk=0;kk< eluplim-ellolim+1;kk++){if(listWARbase[kk])listWAR[kk]=0;
+												   else listWAR[kk]=1;
 												  }
 			  swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
 			  if(!swstart)
-				   {echoWARfile<<"list \"basemetal\" ";
-					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
+				   {
+//					echoWARfile<<"list \"basemetal\" ";
+					sloc=0;for(kk=sloc;kk<sloc+strlen(list);kk++)bufferCh[kk]=list[kk-sloc];
+					sloc=sloc+strlen(list);
+					bufferCh[sloc]=chspace;sloc++;
+					bufferCh[sloc]=ch_doublequo;sloc++;
+					for(kk=sloc;kk<sloc+strlen(basemetal);kk++)bufferCh[kk]=basemetal[kk-sloc];
+					sloc=sloc+strlen(basemetal);
+					bufferCh[sloc]=ch_doublequo;sloc++;
+					bufferCh[sloc]=chspace;sloc++;
+					swstart=1;swend=icountlim=0;
 					for(i=jstart;i<jlast+1;i++)
 					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
 					   else if(swend){icountlim++;swend=0;swstart=1;
-									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
-									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
+									  if(icountlim<limlist){
+//															echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
+itoa(istart+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_dash;sloc++;
+itoa(i-1+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_comma;sloc++;
+														   }
+									  else {icountlim=0;
+//											echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";
+itoa(istart+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_dash;sloc++;
+itoa(i-1+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_comma;sloc++;
+bufferCh[sloc]=ch_newline;sloc++;
+for(kk=sloc;kk<sloc+strlen(chspace6);kk++)bufferCh[kk]=chspace6[kk-sloc];
+sloc=sloc+strlen(chspace6);
+										   }
 									 }
 					  }
-					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
-//base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
-//base.allGrp=base.allGrp+1;
-base.ELSETinputnames[nGID]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
+//					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
+itoa(istart+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_dash;sloc++;
+itoa(jlast+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_newline;sloc++;
+//echoWARfile<<bufferCh;
+echoWARfile.write(bufferCh,sloc);
+
+base.ELSETinputnames[nGID]=UTF8ToString("basemetal");
 for(kk=0;kk<10;kk++)base.ELSETinputnamesCh[(79+1)*nGID+kk]=basemetal[kk];
 nGID++; //EFP 8/23/2016
 				   }
-////			  listWARsw=0;
-////			  delete [] temp_cht1;temp_cht1=NULL;
-////			 }
-//base.ELSETinputnames[base.allGrp]=UTF8ToString("basemetal"); //This creates a UnicodeString of 80 characters but how to "trim"?
-//base.allGrp=base.allGrp+1;
 if(listAmbiguity){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Some elements in multiple lists",L"Warning:",MB_OK);}
 //bbbbbbbbbbbbbbbbbbbbb
 ////////
 //////
 ////
-
 
 
 //**
@@ -3846,10 +3924,13 @@ kp2=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break;
 										 else kp2++;
 										}
 temp_cht2=new char[kp2+1];for(i=0;i<kp2;i++){temp_cht2[i]=cht[i+jrec];
+bufferCh[i]=cht[i+jrec];
 											 base.ELSETinputnamesCh[(79+1)*nGID+i]=cht[i+jrec];
 											}
 temp_cht2[kp2]='\0';
+bufferCh[kp2]='\0';
 base.ELSETinputnamesCh[(79+1)*nGID+kp2]='\0';
+//honk<<nGID<<" "<<strlen(base.ELSETinputnamesCh[(79+1)*nGID+0])<<" "<<kp2<<" "<<base.ELSETinputnamesCh[(79+1)*nGID+0]<<" TTTtempCHT2\n";
 //honk<<nGID<<" "<<strlen(temp_cht2)<<" "<<kp2<<" "<<temp_cht2<<" TTTtempCHT2\n";
 //honk<<nGID<<" "<<kp2<<" TTTtempCHT2\n";
 
@@ -3923,20 +4004,82 @@ listWARbase[larr[i]-ellolim]=iallGrp;
 					if(sumlim<sumWG)sumlim=sumWG;
 						   }
 //					if(iumNODEset==totNODEcard && iumELEMset==totELEMcard && iumELSETset==totELSETcard)psw=2;
+////aaaaaaaaaaaaaaaaaaaaa
+////list "PlateUpper" 1-24,141-164,717-764,1033-1080
+//if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
+//			  if(swstart){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No elements in an ELSET",L"Warning:",MB_OK);}
+//			  else {echoWARfile<<"list \""<<temp_cht1<<"\" ";
+//					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
+//					for(i=jstart;i<jlast+1;i++)
+//					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
+//					   else if(swend){icountlim++;swend=0;swstart=1;
+//									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
+//									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
+//									 }
+//					  }
+//					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
+//				   }
+//			  listWARsw=0;
+////			  delete [] temp_cht1;temp_cht1=NULL;
+//			 }
+//if(temp_cht1){delete [] temp_cht1;temp_cht1=NULL;} //Relocated by EFP 7/11/2016
+////bbbbbbbbbbbbbbbbbbbbb
 //aaaaaaaaaaaaaaaaaaaaa
 //list "PlateUpper" 1-24,141-164,717-764,1033-1080
 if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
 			  if(swstart){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No elements in an ELSET",L"Warning:",MB_OK);}
-			  else {echoWARfile<<"list \""<<temp_cht1<<"\" ";
+			  else {
+//					echoWARfile<<"list \""<<temp_cht1<<"\" ";
+					sloc=0;for(kk=sloc;kk<sloc+strlen(list);kk++)bufferCh[kk]=list[kk-sloc];
+					sloc=sloc+strlen(list);
+					bufferCh[sloc]=chspace;sloc++;
+					bufferCh[sloc]=ch_doublequo;sloc++;
+					for(kk=sloc;kk<sloc+strlen(temp_cht1);kk++)bufferCh[kk]=temp_cht1[kk-sloc];
+					sloc=sloc+strlen(temp_cht1);
+					bufferCh[sloc]=ch_doublequo;sloc++;
+					bufferCh[sloc]=chspace;sloc++;
 					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
 					for(i=jstart;i<jlast+1;i++)
 					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
 					   else if(swend){icountlim++;swend=0;swstart=1;
-									  if(icountlim<limlist)echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
-									  else {icountlim=0;echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";}
+									  if(icountlim<limlist){
+//															echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",";
+itoa(istart+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_dash;sloc++;
+itoa(i-1+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_comma;sloc++;
+														   }
+									  else {icountlim=0;
+//											echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";
+itoa(istart+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_dash;sloc++;
+itoa(i-1+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_comma;sloc++;
+bufferCh[sloc]=ch_newline;sloc++;
+for(kk=sloc;kk<sloc+strlen(chspace6);kk++)bufferCh[kk]=chspace6[kk-sloc];
+sloc=sloc+strlen(chspace6);
+										   }
 									 }
 					  }
-					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
+//					echoWARfile<<(istart+ellolim)<<"-"<<(jlast+ellolim)<<"\n";
+itoa(istart+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_dash;sloc++;
+itoa(jlast+ellolim,strLong,10);
+for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
+sloc=sloc+strlen(strLong);
+bufferCh[sloc]=ch_newline;sloc++;
+//echoWARfile<<bufferCh;
+echoWARfile.write(bufferCh,sloc);
 				   }
 			  listWARsw=0;
 //			  delete [] temp_cht1;temp_cht1=NULL;
@@ -3972,7 +4115,7 @@ if(temp_cht1){delete [] temp_cht1;temp_cht1=NULL;} //Relocated by EFP 7/11/2016
 
 
 
-	         echoWARfile<<"*echo on\nc\n";
+//	         echoWARfile<<"*echo on\nc\n";
 			 echoWARfile.close();delete [] listWAR;listWAR=NULL;delete [] listWARbase;listWARbase=NULL;
 			 base.allGrp=nGID; //EFP 8/23/2016
 
@@ -6534,7 +6677,7 @@ Screen->Cursor=Save_Cursor;
 
 
 
-	         echoWARfile<<"*echo on\nc\n";
+//	         echoWARfile<<"*echo on\nc\n";
 			 echoWARfile.close();delete [] listWAR;listWAR=NULL;delete [] listWARbase;listWARbase=NULL;
 			 base.allGrp=nGID; //EFP 8/23/2016
 
