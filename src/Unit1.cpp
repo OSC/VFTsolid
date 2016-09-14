@@ -1,3 +1,15 @@
+// EFP still does not understand Char/w_har/UniCode. On CodeGear/MS_Win
+// it is understood that now (i.e. 2016) _DELPHI_STRING_UNICODE is set to Unicode
+// in the following:
+//#ifdef _DELPHI_STRING_UNICODE
+//Application->MessageBox(L"This should be on top.", L"Look", MB_OKCANCEL);
+//#else
+//Application->MessageBox("This should be on top.", "Look", MB_OKCANCEL);
+//#endif
+// Linux is set to UTF16 now??? (equivalent to Unicode?)
+// EFP changed all Char strings to L"..." throughout & c_str() for w_str(), BUT NOT
+//   ifstream(""),ofstream(""),FileExists(""),DeleteFile("").
+//
 // Dire warning about Abaqus datafiles:
 //  (i) Beware of missing GENERATEs
 //  (ii) *END or *END STEP required at end (This is not true anymore)
@@ -81,6 +93,12 @@
 //       using std::min;..max..setw..scientific..dec..showpoint..setprecision
 // (v) pow(,) function needs pow(double,double) to satisfy Unit21 linker problem
 // (vi) It is wise to use std::XXX throughout.
+
+// MS_Win-to-Linux/WINE issues:
+// (i) When writing to a file which exists from a preceding session, MS_Win deletes and reopens it.
+//     However, Linux/WINE overwrites it so, if the preceding file was longer,
+//     remanents of it will persist. Hence FileExists() & DeleteFile() throughout.
+//
 
 // To create new C++ Builder form:
 //   File/New/VCL form => FormX
@@ -189,7 +207,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59u_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59v_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -2678,14 +2696,18 @@ i=0,j=0,k=0,kk=0,kp=0,kp2=0,jrec=0,eltype=0,bscode=0,node=0,t7=10000000,t5=10000
 // else       OpenDialog1->Filter= "SIMULIA_Abq (*.inp)|*.inp;*.INP";
 /////////////////////////////////////
  if(OpenDialog1->Execute())
-   {ifstream ntape(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0); //OPEN03
+//   {ifstream ntape(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0); //OPEN03
+   {ifstream ntape(OpenDialog1->FileName.c_str(),ios::nocreate|ios::binary,0); //OPEN03
 	if(ntape)
 	  { //startOPEN04
 
 GeomFileName=OpenDialog1->FileName;
 SetCurrentDir(ExtractFilePath(GeomFileName));
+//if(FileExists(L"MustIncludeThese.list"))DeleteFile(L"MustIncludeThese.list");
+if(FileExists("MustIncludeThese.list"))DeleteFile("MustIncludeThese.list");
 
 gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
+
 //////////////////////////////////////////////////////////////
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //////////////////////////////////////////////////////////////
@@ -2725,7 +2747,7 @@ for(j=8;j<int(strlen(cht))-4;j++){
 											 for(kk=j+1;kk<in;kk++)fnNeed1[kk-j-1]=cht[kk];
 //											 StringCchCat(fnNeed1,in-j-1+strlen(extensChar)+1,extensChar);
 											 fnNeed1[in+0-j-1]='.';fnNeed1[in+1-j-1]='i';fnNeed1[in+2-j-1]='n';fnNeed1[in+3-j-1]='p';fnNeed1[in+4-j-1]='\0';
-											 ifstream viewfile1(fnNeed1,ios::nocreate);
+											 ifstream viewfile1(fnNeed1,ios::nocreate);//Char-to-W?
 											 if(viewfile1){do {viewfile1.getline(cht,200-1);
 //															   parse_cdm(cht,4,&nic,&nrc,larr,darr); // *NODE
 															   if(strlen(cht))
@@ -2794,7 +2816,7 @@ for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
 											 fnNeed2=new char[in-j-1+strlen(extensChar)+1];
 											 for(kk=j+1;kk<in;kk++)fnNeed2[kk-j-1]=cht[kk]; //StringCchCat(fnNeed2,in-j-1+strlen(extensChar)+1,extensChar);
 											 fnNeed2[in+0-j-1]='.';fnNeed2[in+1-j-1]='i';fnNeed2[in+2-j-1]='n';fnNeed2[in+3-j-1]='p';fnNeed2[in+4-j-1]='\0';
-											 ifstream viewfile2(fnNeed2,ios::nocreate);
+											 ifstream viewfile2(fnNeed2,ios::nocreate);//Char-to-W?
 											 if(viewfile2){do {viewfile2.getline(cht,200-1);
 															   for(i=0;i<10;i++)larr[i]=0;
 															   parse_cdmQ_public(cht,&nic,&nrc,larr,darr); // *ELEMENT, stored in fnNeed2 file
@@ -3146,6 +3168,7 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 			 revnode_map=new long[nodeuplim-nodelolim+1];
 			 if(ntape.fail())ntape.clear();
 			 ntape.seekg(0,ios::beg);
+//	   ofstream echoWARfile(L"MustIncludeThese.list");
 	   ofstream echoWARfile("MustIncludeThese.list");
 //	   ofstream echoWARfile("MustIncludeThese.list",ios::binary);
 	   echoWARfile<<"c\n*echo off\n";
@@ -3200,7 +3223,7 @@ for(j=8;j<int(strlen(cht))-4;j++){
 											 fnNeed1=new char[in-j-1+strlen(extensChar)+1];
 											 for(kk=j+1;kk<in;kk++)fnNeed1[kk-j-1]=cht[kk]; //StringCchCat(fnNeed1,in-j-1+strlen(extensChar)+1,extensChar);
 											 fnNeed1[in+0-j-1]='.';fnNeed1[in+1-j-1]='i';fnNeed1[in+2-j-1]='n';fnNeed1[in+3-j-1]='p';fnNeed1[in+4-j-1]='\0';
-											 ifstream viewfile3(fnNeed1,ios::nocreate);
+											 ifstream viewfile3(fnNeed1,ios::nocreate);//Char-to-W?
 											 if(viewfile3){do {viewfile3.getline(cht,200-1); //parse_cdm(cht,4,&nic,&nrc,larr,darr); // *NODE
 															   if(strlen(cht))
 																{parse_cdm3ff(cht,4,&nic,&nrc,larr,darr);
@@ -3280,7 +3303,7 @@ for(j=8;j<int(strlen(cht))-1;j++)if((cht[j-5]=='I' || cht[j-5]=='i') &&
 											 fnNeed2=new char[in-j-1+strlen(extensChar)+1];
 											 for(kk=j+1;kk<in;kk++)fnNeed2[kk-j-1]=cht[kk]; //StringCchCat(fnNeed2,in-j-1+strlen(extensChar)+1,extensChar);
 											 fnNeed2[in+0-j-1]='.';fnNeed2[in+1-j-1]='i';fnNeed2[in+2-j-1]='n';fnNeed2[in+3-j-1]='p';fnNeed2[in+4-j-1]='\0';
-											 ifstream viewfile4(fnNeed2,ios::nocreate);
+											 ifstream viewfile4(fnNeed2,ios::nocreate);//Char-to-W?
 											 if(viewfile4){do {viewfile4.getline(cht,200-1);
 															   if(strlen(cht))
 																{for(i=0;i<10;i++)larr[i]=0;
@@ -3912,11 +3935,14 @@ if(listAmbiguity){extern PACKAGE void __fastcall Beep(void);Application->Message
 												  }
 					listWARsw=1;for(i=0;i<eluplim-ellolim+1;i++)listWAR[i]=0;
 kp=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break; //EFP 8/16/2016
-										  else kp++;
-										 }
+										else if(isspace(cht[i]))break;
+										else kp++;
+									   }
 temp_cht1=new char[kp+1];
 for(i=0;i<kp;i++)temp_cht1[i]=cht[i+jrec];
 temp_cht1[kp]='\0';//temp_cht2[kp]='\0';
+
+//honk<<kp<<" "<<temp_cht1<<" Cujoooooo\n";
 
 //temp_cht2=new char[kp];for(i=0;i<kp;i++)temp_cht2[i]=cht[i+jrec];
 kp2=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break;
@@ -5045,12 +5071,15 @@ totWG=0,ELSETmobsize=0,exALLEL=0,exALLWD=0,iallGrp=0, *revnode_map, *listWARbase
 
 /////////////////////////////////////
  if(OpenDialog1->Execute())
-//   {ifstream ntape2(OpenDialog1->FileName.t_str(),ios::nocreate|ios::binary,0);
-   {ifstream ntape(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
+////   {ifstream ntape2(OpenDialog1->FileName.t_str(),ios::nocreate|ios::binary,0);
+//   {ifstream ntape(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
+   {ifstream ntape(OpenDialog1->FileName.c_str(),ios::nocreate|ios::binary,0);
 	if(ntape)
 	  {
 
 GeomFileName=OpenDialog1->FileName;
+SetCurrentDir(ExtractFilePath(GeomFileName));
+if(FileExists("MustIncludeThese.list"))DeleteFile("MustIncludeThese.list");
 
 gWsiAlias=(String)modelName_g; // where char modelName_g[260] in *.h
 //honk<<gWsiAlias.t_str()<<" gWsiAliasImportAbmmmmmm\n";
@@ -5598,6 +5627,7 @@ _TCHAR *efpChar, *texasbuf;
 
  if(OpenDialog1->Execute())
    {ifstream ntape0(OpenDialog1->FileName.c_str(),ios::nocreate|ios::binary,0);
+//   {ifstream ntape0(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
 	if(ntape0)
 	  {
 ////////////////////////////////////////// start EFP 11/13/2011
@@ -5615,7 +5645,8 @@ _TCHAR *efpChar, *texasbuf;
 
 
 GeomFileName=OpenDialog1->FileName;
-
+SetCurrentDir(ExtractFilePath(GeomFileName));
+if(FileExists("MustIncludeThese.list"))DeleteFile("MustIncludeThese.list");
 
 //TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //try {
@@ -5816,6 +5847,7 @@ Screen->Cursor=Save_Cursor;
 			 for(in=0;in<NDF*base.npoin;in++)base.presc[in]=0.f;
 //vvvvvvvvvvvvvvvvvvv
 		  ifstream ntape(OpenDialog1->FileName.c_str(),ios::nocreate|ios::binary,0);
+//		  ifstream ntape(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
 		  if(ntape)
 			{
 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
@@ -12675,6 +12707,7 @@ void TForm1::VFT_SaveAs1(int ksw)
 	  {
 
 //	   StringCchCopy(VFTr_name,strlen(fnNeed),fnNeed);
+	   if(FileExists(fnNeed))DeleteFile(fnNeed);//Char-to-W?
 	   ofstream ntape(fnNeed);delete [] fnNeed;
 //honk<<VFTr_name<<" VFTr_name VFTSAVEASsolid\n";
 //honk<<fnNeed<<" VFTr_name VFTSAVEASsolid\n";
@@ -13077,8 +13110,9 @@ void TForm1::CTSPinterpolate_prog(int solidshellsw)
  nstor1=NULL;nstor2=NULL;rstor1=NULL;rstor2=NULL;combo=NULL;
  OpenDialog1->Filter=L"Out (*.out)|*.out;*.OUT";
  if(OpenDialog1->Execute())
-//   {ifstream viewfile1(OpenDialog1->FileName.t_str(),ios::nocreate,0);
-   {ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate,0);
+////   {ifstream viewfile1(OpenDialog1->FileName.t_str(),ios::nocreate,0);
+//   {ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate,0);
+   {ifstream viewfile1(OpenDialog1->FileName.c_str(),ios::nocreate,0);
 	if(viewfile1)
 	  {
 ///////////////
@@ -13110,8 +13144,9 @@ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating poi
 	   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Reading first temp@@@.out file.\nNext, select second file.",L"Status",MB_OK);
 	   OpenDialog2->Filter=L"Out (*.out)|*.out;*.OUT";
 	   if(OpenDialog2->Execute())
-//		{ifstream viewfile2(OpenDialog2->FileName.t_str(),ios::nocreate,0);
-		{ifstream viewfile2(OpenDialog2->FileName.w_str(),ios::nocreate,0);
+////		{ifstream viewfile2(OpenDialog2->FileName.t_str(),ios::nocreate,0);
+//		{ifstream viewfile2(OpenDialog2->FileName.w_str(),ios::nocreate,0);
+		{ifstream viewfile2(OpenDialog2->FileName.c_str(),ios::nocreate,0);
 		 if(OpenDialog2->FileName != OpenDialog1->FileName){
 		 if(viewfile2)
 		   {
@@ -13138,8 +13173,10 @@ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating poi
 			  }
 			viewfile2.close();
 /////////////////////////
-			ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate,0);
-			ifstream viewfile2(OpenDialog2->FileName.w_str(),ios::nocreate,0);
+//			ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate,0);
+//			ifstream viewfile2(OpenDialog2->FileName.w_str(),ios::nocreate,0);
+			ifstream viewfile1(OpenDialog1->FileName.c_str(),ios::nocreate,0);
+			ifstream viewfile2(OpenDialog2->FileName.c_str(),ios::nocreate,0);
 			if(viewfile1 && viewfile2)
 			  {nstor1=new long[2*nndmax1];nstor2=new long[2*nndmax2];
 			   if(solidshellsw){rstor1=new float[2*nndmax1*5];rstor2=new float[2*nndmax2*5];combo=new float[5*(inodemax-inodemin+1)];}
@@ -13169,6 +13206,8 @@ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating poi
 					   }
 ///////
 			   index1=index2=0;
+			   if(FileExists("tempCombine.out"))DeleteFile("tempCombine.out");
+			   if(FileExists("timeCombine.out"))DeleteFile("timeCombine.out");
 			   ofstream outfile1("tempCombine.out");ofstream outfile2("timeCombine.out");
 			   for(ic=0;ic<ntime1+ntime2;ic++)
 				 {index1old=index1;index2old=index2;
@@ -18065,6 +18104,7 @@ if(ctoc_overlapmax<iptmax)ctoc_overlapmax=iptmax;
  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
+// Note: This routine is called after	   CTSPnames=new TForm29(1,wp.nWeldPass,this);
 void TForm1::exportCTSP2_public() //Version with load balancing  EFP 11/24/2012
 // FRANTIC NOTICE: ic, mcmlo.... must be int (not long, or HUGE PROBLEMS) so set maxCore=128
 // For some reason, Delete *.* does not work so EFP has to delete files individually
@@ -18097,13 +18137,16 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
  StringCchCatW(string0,160,curMess2);
  StringCchCatW(string0,160,curMess3);
 
+// Delete all CTSPsubdXXXX sub-directories before we create new CTSP data
+ DelSubd0();
+
  if(mcm==1){
 //honk<<"\n"<<" Writing CTSP(TM) files...\n";
 			extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing CTSP files",MB_OK);
 
 
-			// Delete any old CTSPsubdXXXX sub-directories before we create new CTSP data
-			DelSubd0();
+//// Delete any old CTSPsubdXXXX sub-directories before we create new CTSP data
+//			DelSubd0();
 
 
 
@@ -18234,6 +18277,7 @@ Screen->Cursor=crSizeAll;
 ///////////
 }
 //---------------------------------------------------------------------------
+// Note: This routine is called after	   CTSPnames=new TForm29(0,wp.nWeldPass,this);
 void TForm1::exportCTSP3_public()
 {gWsiAlias=CTSPnames->CheckEdit1;
 	   CTSPnames->CheckIsel=1;
@@ -18434,7 +18478,8 @@ void TForm1::export_CTSP_NODE() // Identical to ABAQUS-format ASCII nodal geomet
 // char extensChar[]="_CTSP_node.in";char *fnNeed=new char[strlen(gVFTnameStem)+strlen(extensChar)+1];
 // StringCchCopy(fnNeed,strlen(gVFTnameStem)+strlen(extensChar)+1,gVFTnameStem);StringCchCat(fnNeed,strlen(gVFTnameStem)+strlen(extensChar)+1,extensChar);
 // ofstream viewfile(fnNeed);delete [] fnNeed;
- ofstream mirrorfile(L"node.in");
+ if(FileExists("node.in"))DeleteFile("node.in");
+ ofstream mirrorfile("node.in");
 // viewfile.setf(ios::scientific);
  mirrorfile.setf(ios::scientific);
 
@@ -18458,7 +18503,8 @@ void TForm1::export_CTSP_ELEMENT8() // Identical to ABAQUS format ASCII element 
 // char extensChar[]="_CTSP_element.in";char *fnNeed=new char[strlen(gVFTnameStem)+strlen(extensChar)+1];
 // StringCchCopy(fnNeed,strlen(gVFTnameStem)+strlen(extensChar)+1,gVFTnameStem);StringCchCat(fnNeed,strlen(gVFTnameStem)+strlen(extensChar)+1,extensChar);
 // ofstream viewfile(fnNeed);delete [] fnNeed;
- ofstream mirrorfile(L"element.in"); //Version with mirror file  EFP 3/26/2011
+ if(FileExists("element.in"))DeleteFile("element.in");
+ ofstream mirrorfile("element.in"); //Version with mirror file  EFP 3/26/2011
  TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //// try {
 ////      for(i=0;i<base.nelt;i++)viewfile<<base.el_map[i]+1<<","
@@ -18527,9 +18573,12 @@ void TForm1::export_CTSP_INPUTp1(float overlap) //Version with mirror file  EFP 
 // char extensChar[]="_CTSP_input.in";char *fnNeed=new char[strlen(gVFTnameStem)+strlen(extensChar)+1];
 // StringCchCopy(fnNeed,strlen(gVFTnameStem)+strlen(extensChar)+1,gVFTnameStem);StringCchCat(fnNeed,strlen(gVFTnameStem)+strlen(extensChar)+1,extensChar);
 // ofstream viewfile(fnNeed);delete [] fnNeed;
- ofstream mirrorfile(L"input.in");
- ofstream outfile2(L"time.out");
- ofstream outfile3(L"scratch0.txt");
+ if(FileExists("input.in"))DeleteFile("input.in");
+ if(FileExists("time.out"))DeleteFile("time.out");
+ if(FileExists("scratch0.txt"))DeleteFile("scratch0.txt");
+ ofstream mirrorfile("input.in");
+ ofstream outfile2("time.out");
+ ofstream outfile3("scratch0.txt");
 // viewfile.setf(ios::scientific);
  mirrorfile.setf(ios::scientific);
 
@@ -18751,6 +18800,7 @@ Screen->Cursor=Save_Cursor;
 /////////////////////////////////////////////////////////////
  sleep(5); //Allow real time 5 seconds for file to close... Needs <dos.h>
  ifstream infile3("scratch0.txt");
+ if(FileExists("preWARP.txt"))DeleteFile("preWARP.txt");
  ofstream outfile3a("preWARP.txt");
 // int hcflag1=0,hcrec=3,hc_stor[500];float timesum=0.f,time1=0.f,time_stor[500];
  int hcflag1=0,hcrec=3, *hc_stor;float timesum=0.f,time1=0.f, *time_stor;
@@ -18879,6 +18929,7 @@ Screen->Cursor=Save_Cursor;
 // char extensChar1[]="_CTSP_param.in";char *fnNeed1=new char[strlen(gVFTnameStem)+strlen(extensChar1)+1];
 // StringCchCopy(fnNeed1,strlen(gVFTnameStem)+strlen(extensChar1)+1,gVFTnameStem);StringCchCat(fnNeed1,strlen(gVFTnameStem)+strlen(extensChar1)+1,extensChar1);
 // ofstream view1file(fnNeed1);delete [] fnNeed1;
+ if(FileExists("param.in"))DeleteFile("param.in");
  ofstream mirror1file("param.in");
 
  k=0;for(i=0;i<wp.nWeldPass;i++)if(k<wp.n_curr_sttEl[i])k=wp.n_curr_sttEl[i]; //Moved up here per EK format  EFP 6/26/2012
@@ -18983,6 +19034,7 @@ void TForm1::export_CTSP_INPUTp_mcm(long mcmlo,long mcmup,int isw,float lasttime
  double delt=0.f;
 
  TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+ if(FileExists("input.in"))DeleteFile("input.in");
  ofstream mirrorfile("input.in");mirrorfile.setf(ios::scientific);
 
  highestTmelt=0.f; //Policy: use globally highest Tmelt on each core, regardless of the WPs on that core
@@ -19144,6 +19196,7 @@ delt=dist/(float(wp.n_curr_sttEl[k])*wp.speed[k]); //We require the last delt of
 		}
 	  mirrorfile<<"-1\n";
  mirrorfile.close();
+ if(FileExists("param.in"))DeleteFile("param.in");
  ofstream mirror1file("param.in");
 
  mirror1file<<mstep<<"\n"; //mstep= #timesteps (but not #times in time.out)
@@ -19297,7 +19350,12 @@ void TForm1::exportWARP3D1a_public()
    {
 ////	ofstream viewfile1("default.coordinates");
 //	ofstream viewfile1(fnNeed1);
-	ofstream viewfile1(fnNeedS1.w_str());
+
+//	if(FileExists(fnNeedS1.w_str()))DeleteFile(fnNeedS1.w_str());
+//	ofstream viewfile1(fnNeedS1.w_str());
+	if(FileExists(fnNeedS1.c_str()))DeleteFile(fnNeedS1.c_str());//TriedC
+	ofstream viewfile1(fnNeedS1.c_str());
+
 //	delete [] fnNeed1;
 	if(viewfile1)
 	  {TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
@@ -19308,7 +19366,12 @@ void TForm1::exportWARP3D1a_public()
 	   Screen->Cursor=Save_Cursor;
 ////	   ofstream viewfile2("default.incid_and_blocking");
 //	   ofstream viewfile2(fnNeed2);
-	   ofstream viewfile2(fnNeedS2.w_str());
+
+//	   if(FileExists(fnNeedS2.w_str()))DeleteFile(fnNeedS2.w_str());
+//	   ofstream viewfile2(fnNeedS2.w_str());
+	   if(FileExists(fnNeedS2.c_str()))DeleteFile(fnNeedS2.c_str());
+	   ofstream viewfile2(fnNeedS2.c_str());
+
 //	   delete [] fnNeed2;
 	   if(viewfile2) //8-n elements throughout
 		 {TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
@@ -19551,8 +19614,16 @@ void TForm1::export_VED(String gVFTnameStem,float *timesave2,int isw) // VED= vi
 // fnNeedS=gVFTnameStem+extensCharS;
 //// if(isw)ofstream viewfile("VED.dat");
 //// else
- if(isw)fnNeedS=L"VED.dat";else fnNeedS=gVFTnameStem+extensCharS;
- ofstream viewfile(fnNeedS.w_str());
+
+// if(isw)fnNeedS=L"VED.dat";
+ if(isw)fnNeedS=UnicodeString(L"VED.dat");
+ else fnNeedS=gVFTnameStem+extensCharS;
+
+// if(FileExists(fnNeedS.w_str()))DeleteFile(fnNeedS.w_str());
+// ofstream viewfile(fnNeedS.w_str());
+ if(FileExists(fnNeedS.c_str()))DeleteFile(fnNeedS.c_str());
+ ofstream viewfile(fnNeedS.c_str());
+
 // delete [] fnNeed;
 
   viewfile.setf(ios::scientific);
@@ -20919,8 +20990,15 @@ viewfile4>>hielem;viewfile4.close();
  fnNeedS1=gWsiAlias+extensCharS1;
  fnNeedS2=extensCharS2;
  nameforsys=leftend+gWsiAlias+rightend;
+//// ofstream outfile(fnNeedS1.w_str());
+// if(FileExists(fnNeedS1.w_str()))DeleteFile(fnNeedS1.w_str());
 // ofstream outfile(fnNeedS1.w_str());
- ofstream outfile(fnNeedS1.w_str());ofstream outfila(fnNeedS2.w_str(),ios::nocreate|ios::app,0);
+// ofstream outfila(fnNeedS2.w_str(),ios::nocreate|ios::app,0);
+ if(FileExists(fnNeedS1.c_str()))DeleteFile(fnNeedS1.c_str());
+ ofstream outfile(fnNeedS1.c_str());
+ ofstream outfila(fnNeedS2.c_str(),ios::nocreate|ios::app,0);
+
+
 //xxxxxxxxxx
  buffersize=WideCharToMultiByte(CP_UTF8,0,gWsiAlias.w_str(), -1,NULL,0,NULL,NULL);
  char* m=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,gWsiAlias.w_str(), -1,m,buffersize,NULL,NULL);
@@ -21461,6 +21539,7 @@ outfile<<"   extrapolate off\n";
  delete[] m;m=NULL;
 //xxxxxxxxxx
 /////////////////////////////				  delete [] timeSeries;
+ if(FileExists("compute_commands_all_profiles.inp"))DeleteFile("compute_commands_all_profiles.inp");
  ofstream outfile1("compute_commands_all_profiles.inp");
 // for(ipp=0;ipp<wp.stepInterval[k];ipp++)
  for(ic=0;ic<10000;ic++) // Allow for max 10000 "on the fly" steps per BobD's request  EFP 10/09/2014
@@ -21471,6 +21550,7 @@ outfile<<"   extrapolate off\n";
  outfile1.close();
 
 //////////////////////////////////
+ if(FileExists("uexternal_data_file.inp"))DeleteFile("uexternal_data_file.inp");
  ofstream outfile4("uexternal_data_file.inp");
  outfile4<<"!  Three non-comment lines with file names required\n";
  outfile4<<"!   1 - name of material.dat file for VFT\n";
@@ -21644,6 +21724,7 @@ void TForm1::sortLArr_by_bubble(long *facetmap,const long lwFace,const long upFa
 void TForm1::exportWARP3D5_public()
 //Routine to write "output_commands.inp"  EFP 1/16/2015
 {int icount=0;
+ if(FileExists("output_commands.inp"))DeleteFile("output_commands.inp");
  ofstream outfile5("output_commands.inp");
  outfile5<<"!  DEFAULT FOR WSO, IF YOU NEED STRESS/STRAIN, COMMENT Line 3,\n";
  outfile5<<"!  UNCOMMENT OTHER LINES AS APPROPRIATE\n";
@@ -21737,7 +21818,8 @@ viewfile4>>hielem;viewfile4.close();
 // delete [] fnNeed1;
 
  fnNeedS1=gWsiAlias+extensCharS1;
- ofstream outfile(fnNeedS1.w_str());
+// ofstream outfile(fnNeedS1.w_str());
+ ofstream outfile(fnNeedS1.c_str());
 //xxxxxxxxxx
  int bufferSize=WideCharToMultiByte(CP_UTF8,0,gWsiAlias.w_str(), -1,NULL,0,NULL,NULL);
  char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,gWsiAlias.w_str(), -1,m,bufferSize,NULL,NULL);
@@ -21994,7 +22076,11 @@ void TForm1::export_WARP_BC(String gWsiAlias) // Write WARP-format ASCII nodal B
  fnNeed=gWsiAlias+extensChar;
  icount=0;for(i=0;i<base.npoin;i++)if(base.nofix[2*i+1])icount++;
  if(icount){
- ofstream viewfile(fnNeed.w_str());viewfile.setf(ios::scientific);viewfile.precision(6);
+// if(FileExists(fnNeed.w_str()))DeleteFile(fnNeed.w_str());
+// ofstream viewfile(fnNeed.w_str());
+ if(FileExists(fnNeed.c_str()))DeleteFile(fnNeed.c_str());
+ ofstream viewfile(fnNeed.c_str());
+ viewfile.setf(ios::scientific);viewfile.precision(6);
  TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
  viewfile<<"*echo off\nconstraints\n";
 //// try {
@@ -22443,7 +22529,8 @@ void TForm1::tshiftCTSP_public()
 /////////
  OpenDialog1->Filter=L"CTSP temp result (*.out)|*.out;*.OUT";
  if(OpenDialog1->Execute())
-   {ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate);
+//   {ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate);
+   {ifstream viewfile1(OpenDialog1->FileName.c_str(),ios::nocreate);
 	if(viewfile1)
 	  {vcount=0;viewfile1.getline(descript,76);
 	   if(strlen(descript))
@@ -22454,6 +22541,8 @@ void TForm1::tshiftCTSP_public()
 ///////////////////////////
 				 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //				 try {
+			 if(FileExists("tempShift.out"))DeleteFile("tempShift.out");
+			 if(FileExists("timeShift.out"))DeleteFile("timeShift.out");
 			 ofstream outfile1("tempShift.out");ofstream outfile2("timeShift.out");max1=1;
 			 outfile1<<setw(15)<<scientific<<(tstep+tshift)<<setw(12)<<nnd<<"\n";
 			 outfile2<<setw(12)<<max1<<setw(15)<<scientific<<(tstep+tshift)<<"\n";max1++;icheck=1;
@@ -22516,7 +22605,8 @@ void TForm1::tshiftCTSP_public()
 //94426, 94434, 94442, 94450, 94428, 94436, 94444, 94452,
  OpenDialog1->Filter=L"VED (*.dat)|*.dat;*.DAT";
  if(OpenDialog1->Execute())
-   {ifstream viewfile2(OpenDialog1->FileName.w_str(),ios::nocreate);
+//   {ifstream viewfile2(OpenDialog1->FileName.w_str(),ios::nocreate);
+   {ifstream viewfile2(OpenDialog1->FileName.c_str(),ios::nocreate);
 	if(viewfile2)
 	  {vcount=0;viewfile2.getline(descript,76);
 	   if(strlen(descript))
@@ -22530,6 +22620,7 @@ void TForm1::tshiftCTSP_public()
 ///////////////////////////
 				 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //				 try {
+			 if(FileExists("VEDshift.dat"))DeleteFile("VEDshift.dat");
 			 ofstream outfile3("VEDshift.dat");icheck=icheck+10;
 			 outfile3<<setw(12)<<scientific<<(tstep+tshift)<<","<<setw(4)<<nnd<<"\n";
 			 viewfile2.getline(descript1,8*1024);outfile3<<descript1<<"\n";
@@ -22589,7 +22680,8 @@ void TForm1::tshiftCTSP2(int isw)
 /////////
  OpenDialog1->Filter=L"CTSP temp result (*.out)|*.out;*.OUT";
  if(OpenDialog1->Execute())
-   {ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate);
+//   {ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate);
+   {ifstream viewfile1(OpenDialog1->FileName.c_str(),ios::nocreate);
 	if(viewfile1)
 	  {vcount=0;viewfile1.getline(descript,76);
 	   if(strlen(descript))
@@ -22603,6 +22695,8 @@ void TForm1::tshiftCTSP2(int isw)
 				 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //				 try {
 			 peakTime=tstep+tshift;
+			 if(FileExists("tempMerge.out"))DeleteFile("tempMerge.out");
+			 if(FileExists("timeMerge.out"))DeleteFile("timeMerge.out");
 			 ofstream outfile1("tempMerge.out");ofstream outfile2("timeMerge.out");max1=1;
 //honk<<tstep<<" "<<nnd<<" First card of Merge 1st temp.out "<<max1<<"\n";
 			 outfile1<<setw(15)<<scientific<<(tstep+tshift)<<setw(12)<<nnd<<"\n";
@@ -22672,7 +22766,8 @@ void TForm1::tshiftCTSP2(int isw)
 //94426, 94434, 94442, 94450, 94428, 94436, 94444, 94452,
  OpenDialog1->Filter=L"VED (*.dat)|*.dat;*.DAT";
  if(OpenDialog1->Execute())
-   {ifstream viewfile2(OpenDialog1->FileName.w_str(),ios::nocreate);
+//   {ifstream viewfile2(OpenDialog1->FileName.w_str(),ios::nocreate);
+   {ifstream viewfile2(OpenDialog1->FileName.c_str(),ios::nocreate);
 	if(viewfile2)
 	  {vcount=0;viewfile2.getline(descript,76);
 	   if(strlen(descript))
@@ -22688,6 +22783,7 @@ void TForm1::tshiftCTSP2(int isw)
 ///////////////////////////
 				 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 //				 try {
+			 if(FileExists("VEDmerge.dat"))DeleteFile("VEDmerge.dat");
 			 ofstream outfile3("VEDmerge.dat");icheck=icheck+10;
 			 outfile3<<setw(12)<<scientific<<(tstep+tshift)<<","<<setw(4)<<nnd<<"\n";
 			 viewfile2.getline(descript1,8*1024);outfile3<<descript1<<"\n";
@@ -22762,7 +22858,8 @@ void TForm1::tshiftCTSP3_public()
 /////////
  OpenDialog1->Filter=L"CTSP temp result (*.out)|*.out;*.OUT";
  if(OpenDialog1->Execute())
-   {ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate);
+//   {ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate);
+   {ifstream viewfile1(OpenDialog1->FileName.c_str(),ios::nocreate);
 	if(viewfile1)
 	  {vcount=0;viewfile1.getline(descript,76);
 	   if(strlen(descript))
@@ -22863,7 +22960,8 @@ m2ax1++;
 //94426, 94434, 94442, 94450, 94428, 94436, 94444, 94452,
  OpenDialog1->Filter=L"VED (*.dat)|*.dat;*.DAT";
  if(OpenDialog1->Execute())
-   {ifstream viewfile2(OpenDialog1->FileName.w_str(),ios::nocreate);
+//   {ifstream viewfile2(OpenDialog1->FileName.w_str(),ios::nocreate);
+   {ifstream viewfile2(OpenDialog1->FileName.c_str(),ios::nocreate);
 	if(viewfile2)
 	  {vcount=0;viewfile2.getline(descript,76);
 	   if(strlen(descript))
