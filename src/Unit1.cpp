@@ -207,7 +207,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59y_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.59z_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -3262,9 +3262,9 @@ _TCHAR *efpChar, *texasbuf;
  OpenDialog1->InitialDir = getenv("VFTHOME");
 
  if(OpenDialog1->Execute())
-   {ifstream ntape0(OpenDialog1->FileName.c_str(),ios::nocreate|ios::binary,0);
+   {ifstream ntape(OpenDialog1->FileName.c_str(),ios::nocreate|ios::binary,0);
 //   {ifstream ntape0(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
-	if(ntape0)
+	if(ntape)
 	  {
 ////////////////////////////////////////// start EFP 11/13/2011
 //char *driveEFP=NULL,*dirEFP=NULL,*extEFP=NULL;
@@ -3292,7 +3292,7 @@ if(FileExists("MustIncludeThese.list"))DeleteFile("MustIncludeThese.list");
 
 //				 ntape>>control[0]>>control[1]>>control[2]>>control[3]>>control[4]>>
 //						control[5]>>control[6]>>control[7]>>control[8]>>control[9];
-				 ntape0.getline(chtm,199);parse_cdm(chtm,8,&nic,&nrc,larr,darr);
+				 ntape.getline(chtm,199);parse_cdm(chtm,8,&nic,&nrc,larr,darr);
 /////////////// EFP 4/04/2011
 //	   if(larr[0]==2){sumELSETel=0;
 	   if(larr[0]==3){sumELSETel=0;
@@ -3307,12 +3307,12 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 	   if(base.nelt> LONG_INT/t3){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Excessive #elements in *.VFT file",L"Terminate",MB_OK);exit(0);}
 	   nodeuplim=0;nodelolim=LONG_INT;
 	   for(i=0;i<base.npoin;i++)
-		 {ntape0.getline(chtm,199);parse_cdm(chtm,4,&nic,&nrc,larr,darr);ix=larr[0];
+		 {ntape.getline(chtm,199);parse_cdm(chtm,4,&nic,&nrc,larr,darr);ix=larr[0];
 		  if(nodeuplim<ix)nodeuplim=ix;
 		  if(nodelolim>ix)nodelolim=ix;
 		 }
 	   eluplim=0;
-	   for(i=0;i<base.nelt;i++){ntape0.getline(chtm,199);parse_cdm(chtm,9,&nic,&nrc,larr,darr);ii=larr[0];
+	   for(i=0;i<base.nelt;i++){ntape.getline(chtm,199);parse_cdm(chtm,9,&nic,&nrc,larr,darr);ii=larr[0];
 								if(eluplim<ii)eluplim=ii;
 							   }
 	   ellolim=1;ofstream echoWARfile("MustIncludeThese.list");
@@ -3325,17 +3325,17 @@ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 /////////////////////////
 //////////////////////////
 ///////////////////////////
-ntape0.getline(chtm,199); //Just in case  EFP 4/03/2011
-ntape0.getline(chtm,199);// Omit JavaVFT group[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupsall[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupA[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupsallname[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupsallindex[]
-ntape0.getline(chtm,199);// Omit JavaVFT groups[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupscount[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupname[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupsname[]
-				 ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);wpWG=larr[0];
+ntape.getline(chtm,199); //Just in case  EFP 4/03/2011
+ntape.getline(chtm,199);// Omit JavaVFT group[]
+ntape.getline(chtm,199);// Omit JavaVFT groupsall[]
+ntape.getline(chtm,199);// Omit JavaVFT groupA[]
+ntape.getline(chtm,199);// Omit JavaVFT groupsallname[]
+ntape.getline(chtm,199);// Omit JavaVFT groupsallindex[]
+ntape.getline(chtm,199);// Omit JavaVFT groups[]
+ntape.getline(chtm,199);// Omit JavaVFT groupscount[]
+ntape.getline(chtm,199);// Omit JavaVFT groupname[]
+ntape.getline(chtm,199);// Omit JavaVFT groupsname[]
+				 ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);wpWG=larr[0];
 /////////////////////////////////
 //FDdynmem_manage(13,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,dummy,base.ncoorf,dummy,dummy);//EFP 3/15/2011
 /////////////////////////////////
@@ -3343,20 +3343,20 @@ ntape0.getline(chtm,199);// Omit JavaVFT groupsname[]
 								   for(j=0;j<wpWG;j++)
 								   {
 listWARsw=1;for(i=0;i<eluplim-ellolim+1;i++)listWAR[i]=0;
-ntape0.getline(chtm,199); //Just in case  EFP 4/03/2011
-ntape0.getline(chtm,199);// Omit JavaVFT group[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupsall[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupA[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupsallname[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupsallindex[]
-ntape0.getline(chtm,199);// Omit JavaVFT groups[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupscount[]
-ntape0.getline(chtm,199);// Omit JavaVFT groupname[]
-ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
-ntape0.getline(chtm,199);
+ntape.getline(chtm,199); //Just in case  EFP 4/03/2011
+ntape.getline(chtm,199);// Omit JavaVFT group[]
+ntape.getline(chtm,199);// Omit JavaVFT groupsall[]
+ntape.getline(chtm,199);// Omit JavaVFT groupA[]
+ntape.getline(chtm,199);// Omit JavaVFT groupsallname[]
+ntape.getline(chtm,199);// Omit JavaVFT groupsallindex[]
+ntape.getline(chtm,199);// Omit JavaVFT groups[]
+ntape.getline(chtm,199);// Omit JavaVFT groupscount[]
+ntape.getline(chtm,199);// Omit JavaVFT groupname[]
+ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
+ntape.getline(chtm,199);
 									if(sumlim<accum)sumlim=accum;
 									for(ii=0;ii<accum;ii++){//ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);i=larr[0];
+ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);i=larr[0];
 															sumELSETel++;
 listWAR[i-ellolim]=1;
 if(listWARbase[i-ellolim]>0)listAmbiguity++;
@@ -3366,65 +3366,65 @@ listWARbase[i-ellolim]=j+1;
 								   wp.memWGa=sumlim;
 								  }
 				 else wp.memWGa=0;
-ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);wpWP=larr[0];
+ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);wpWP=larr[0];
 			   if(wpWP)     {   for(i=0;i<wpWP;i++){
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
 		wp.memWGa=max(wp.memWGa,accum);//Emergency Code to plot WP without WG
-		for(j=0;j<accum;j++){ntape0.getline(chtm,199);
+		for(j=0;j<accum;j++){ntape.getline(chtm,199);
 //parse_cdm(chtm,1,&nic,&nrc,larr,darr);wp.eles[wp.memWGa*i+j]=larr[0];
 							 sumELSETel++;
 							}
-ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
-		for(j=0;j<accum;j++)ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
-		for(j=0;j<accum;j++)ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
-		for(j=0;j<accum;j++)ntape0.getline(chtm,199);
-		for(j=0;j<4;j++)ntape0.getline(chtm,199);
-		for(j=0;j<4;j++)ntape0.getline(chtm,199);
-		for(j=0;j<3;j++)ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
+ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
+		for(j=0;j<accum;j++)ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
+		for(j=0;j<accum;j++)ntape.getline(chtm,199);
+ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
+		for(j=0;j<accum;j++)ntape.getline(chtm,199);
+		for(j=0;j<4;j++)ntape.getline(chtm,199);
+		for(j=0;j<4;j++)ntape.getline(chtm,199);
+		for(j=0;j<3;j++)ntape.getline(chtm,199);
+ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
 		if(accum){ //Attempt to accommodate uncertain edgeEles/edgeNodes  EFP 4/09/2011
-				  for(j=0;j<accum;j++)ntape0.getline(chtm,199);
-				  for(j=0;j<4;j++)ntape0.getline(chtm,199);
+				  for(j=0;j<accum;j++)ntape.getline(chtm,199);
+				  for(j=0;j<4;j++)ntape.getline(chtm,199);
 				 }
-ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
-		for(j=0;j<accum;j++)ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
-		for(j=0;j<accum;j++)ntape0.getline(chtm,199);
-		for(j=0;j<3*NDF;j++)ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
-ntape0.getline(chtm,199);
+ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
+		for(j=0;j<accum;j++)ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);parse_cdm(chtm,1,&nic,&nrc,larr,darr);accum=larr[0];
+		for(j=0;j<accum;j++)ntape.getline(chtm,199);
+		for(j=0;j<3*NDF;j++)ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
+ntape.getline(chtm,199);
 														   }
 							   }
 /*
@@ -3449,11 +3449,11 @@ nGID=wp.nWeldGroup+wp.nWeldPass+1;nGIDmax=nGID;
 
 
 //HERO
-//	   GeomFileName=OpenDialog1->FileName;
-	   ntape0.close();
+////	   GeomFileName=OpenDialog1->FileName;
+//	   ntape0.close();
 /////////// Cursor EFP 1/03/2013
-//Screen->Cursor=crSizeAll;
-Screen->Cursor=Save_Cursor;
+////Screen->Cursor=crSizeAll;
+//Screen->Cursor=Save_Cursor;
 ///////////
 //	   base.matsteps=matstep;
 //honk<<nodeuplim<<" "<<nodelolim<<" "<<base.npoin<<" "<<eluplim<<" "<<base.nelt<<" "<<MXNPEL<<" DDDDDDDD\n";
@@ -3484,11 +3484,11 @@ Screen->Cursor=Save_Cursor;
 			 for(in=0;in<base.npoin;in++)base.nrfix[in]=0;
 			 for(in=0;in<NDF*base.npoin;in++)base.presc[in]=0.f;
 //vvvvvvvvvvvvvvvvvvv
-		  ifstream ntape(OpenDialog1->FileName.c_str(),ios::nocreate|ios::binary,0);
-//		  ifstream ntape(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
-		  if(ntape)
-			{
-TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+//		  ifstream ntape(OpenDialog1->FileName.c_str(),ios::nocreate|ios::binary,0);
+////		  ifstream ntape(OpenDialog1->FileName.w_str(),ios::nocreate|ios::binary,0);
+//		  if(ntape)
+//			{
+//TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 ////			 base.allGrp=wpWG+1;
 //			 base.allGrp=wpWG+wpWP+1;//Emergency Code to plot WP without WG
 //honk<<base.allGrp<<" "<<wpWG<<" "<<wpWP<<" Zooey0 "<<wp.memWGa<<"\n";
@@ -3533,6 +3533,8 @@ if(listAmbiguity){extern PACKAGE void __fastcall Beep(void);Application->Message
 
 
 
+			 if(ntape.fail())ntape.clear();
+			 ntape.seekg(0,ios::beg);
 
 
 
@@ -4255,7 +4257,7 @@ ntape.getline(chtm,199);
 																  }
 									}
 ntape.getline(chtm,199);
-	   ntape.close();
+//	   ntape.close();
 //	   GeomFileName=OpenDialog1->FileName;
 
 //TBD: NodalCoincidence
@@ -4342,8 +4344,8 @@ Form1->Caption=GeomFileName;
 //Screen->Cursor=crSizeAll;
 Screen->Cursor=Save_Cursor;
 ///////////
-	  }
-	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not reopen *.VFTr file",L"Failure",MB_OK);}
+//	  }
+//	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not reopen *.VFTr file",L"Failure",MB_OK);}
 		 }
 	   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Nodes/elements missing from *.VFTr datafile",L"Failure",MB_OK);}
 
@@ -4355,6 +4357,7 @@ Screen->Cursor=Save_Cursor;
 			 base.allGrp=nGID; //EFP 8/23/2016
 
 
+	   ntape.close();
 
 
 					 }
@@ -15576,7 +15579,8 @@ void __fastcall TForm1::exportCTSPExecute(TObject *Sender)
 //						  CTSPnames->CheckEdit6=min(3.5f*iptmax,3000.f); // Policy: core-to-core default= 3.5x max IPtime interval
 //						 }
 //	   else CTSPnames->CheckEdit6=float(3000);
-	   ctoc_overlapmax=0.f;for(in=0;in<wp.nWeldPass-1;in++){ //Linear between (1.5,4.5) & (50.8,450), where (Pl.thick mm,overlap sec)
+//	   ctoc_overlapmax=0.f;for(in=0;in<wp.nWeldPass-1;in++){ //Linear between (1.5,4.5) & (50.8,450), where (Pl.thick mm,overlap sec)
+	   ctoc_overlapmax=0.f;for(in=0;in<wp.nWeldPass;in++){ //Linear between (1.5,4.5) & (50.8,450), where (Pl.thick mm,overlap sec)
 iptmax=(4.5f*50.8f-450.f*1.5f+(450.f-4.5f)*(wp.thk1[in]+wp.thk2[in])/2.f)/(50.8f-1.5f); //Changed 1535->450
 if(iptmax<4.5f)iptmax=4.5f;
 if(ctoc_overlapmax<iptmax)ctoc_overlapmax=iptmax;

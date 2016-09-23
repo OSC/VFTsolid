@@ -112,7 +112,7 @@ object Form29: TForm29
   end
   object Edit4: TEdit
     Left = 223
-    Top = 116
+    Top = 117
     Width = 89
     Height = 21
     TabOrder = 3

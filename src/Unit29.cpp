@@ -53,12 +53,24 @@ int TForm29::getIsel(){return loc_isel;}
 void TForm29::setIsel(int s){loc_isel=s;}
 //---------------------------------------------------------------------------
 void __fastcall TForm29::Button1Click(TObject *Sender)
-{int isw=1,jsw=1;long max_core=999,mval=0;
+{int isw=1;long max_core=999,mval=0;
  if(loc_isel){
-			  if(StrToFloat(Edit6->Text)>3000.f)
+//			  if(StrToFloat(Edit6->Text)>3000.f)
+// {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Suggested max core-to-core overlap time 3000 exceeded.",L"Warning:",MB_OK);}
+//			  Form1->exportCTSP2_public();
+//			  Close(); //Emergency Close() EFP 4/19/2010
+	   try {StrToFloat(Edit6->Text);
+			if(Edit6->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);}
+			else if(StrToFloat(Edit6->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);}
+			else if(StrToFloat(Edit6->Text)>3000.f)
  {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Suggested max core-to-core overlap time 3000 exceeded.",L"Warning:",MB_OK);}
-			  Form1->exportCTSP2_public();
-			  Close(); //Emergency Close() EFP 4/19/2010
+			if(isw){Form1->exportCTSP2_public();
+					Close(); //Emergency Close() EFP 4/19/2010
+				   }
+		   }
+	   catch (EConvertError &E){isw=0;extern PACKAGE void __fastcall Beep(void);
+								ShowMessage(Label10->Caption +L" "+ Edit6->Text + L" must be positive float");
+							   }
 			 }
  else {try {StrToInt(Edit4->Text);
 			if(Edit4->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit4->Text.w_str(),L"Reenter +multicores",MB_OK);}
@@ -68,14 +80,15 @@ void __fastcall TForm29::Button1Click(TObject *Sender)
 	   catch (EConvertError &E){isw=0;extern PACKAGE void __fastcall Beep(void);
 								ShowMessage(Label4->Caption +L" "+ Edit4->Text + L" must be positive integer");
 							   }
-	   try {StrToFloat(Edit6->Text);
-			if(Edit6->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);}
-			else if(StrToFloat(Edit6->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);}
-		   }
-	   catch (EConvertError &E){jsw=0;extern PACKAGE void __fastcall Beep(void);
-								ShowMessage(Label10->Caption +L" "+ Edit6->Text + L" must be positive float");
-							   }
-	   if(isw & jsw){if(loc_pass<max_core)mval=loc_pass;else mval=max_core;
+//	   try {StrToFloat(Edit6->Text);
+//			if(Edit6->Text==L"0"){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);}
+//			else if(StrToFloat(Edit6->Text)<=0.000001f){isw=0;extern PACKAGE void __fastcall Beep(void);Application->MessageBox(Edit6->Text.w_str(),L"Reenter +float",MB_OK);}
+//		   }
+//	   catch (EConvertError &E){jsw=0;extern PACKAGE void __fastcall Beep(void);
+//								ShowMessage(Label10->Caption +L" "+ Edit6->Text + L" must be positive float");
+//							   }
+//	   if(isw & jsw){if(loc_pass<max_core)mval=loc_pass;else mval=max_core;
+	   if(isw      ){if(loc_pass<max_core)mval=loc_pass;else mval=max_core;
 //					 if(StrToInt(Edit4->Text)>0 && StrToInt(Edit4->Text)<loc_pass+1)
 					 if(StrToInt(Edit4->Text)>0 && StrToInt(Edit4->Text)<=mval)Form1->exportCTSP3_public();
 					 else ShowMessage(L"For this model, multi-core value must be in range 1 to "+IntToStr(__int64(mval)));
