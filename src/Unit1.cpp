@@ -207,7 +207,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.59z_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.60a_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -1538,7 +1538,7 @@ listWARbase[larr[i]-ellolim]=iallGrp;
 
 ////
 //////
-//////// write unspecified elements to list "basemetal" in *.list (use bufferCh[] to bypass skipping issue in WINE/Linux  EFP 9/10/2016)
+//////// write unspecified elements to list "basemetal" in *.list (use buffer3Ch[] to bypass skipping issue in WINE/Linux  EFP 9/10/2016)
 //aaaaaaaaaaaaaaaaaaaaa
 //list "PlateUpper" 1-24,141-164,717-764,1033-1080
 			  nGID=0; //EFP 8/23/2016
@@ -1700,21 +1700,26 @@ if(listAmbiguity){extern PACKAGE void __fastcall Beep(void);Application->Message
 														   }  // Accept WDx, WPx, WGx and WELDx
 												  }
 					listWARsw=1;for(i=0;i<eluplim-ellolim+1;i++)listWAR[i]=0;
-kp=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break; //EFP 8/16/2016
-										else if(isspace(cht[i]))break;
-										else kp++;
-									   }
+//kp=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break; //EFP 8/16/2016
+////										else if(isspace(cht[i]))break;
+//										else kp++;
+//									   }
+kp= -1;for(i=jrec;i<int(strlen(cht));i++){kp++;if(cht[i]==',')break;}
+//if(isspace(cht[int(strlen(cht))-1]))kp--;
+//if(isspace(cht[kp]))kp--;
 temp_cht1=new char[kp+1];
 for(i=0;i<kp;i++)temp_cht1[i]=cht[i+jrec];
-temp_cht1[kp]='\0';//temp_cht2[kp]='\0';
+temp_cht1[kp]='\0';
+//temp_cht2[kp]='\0';
 
-//honk<<kp<<" "<<temp_cht1<<" Cujoooooo\n";
+//honk<<jrec<<" "<<strlen(cht)<<" "<<int(strlen(cht))<<" "<<cht<<"\n"<<kp<<" "<<temp_cht1<<" Cujoooooo\n";
 
-//temp_cht2=new char[kp];for(i=0;i<kp;i++)temp_cht2[i]=cht[i+jrec];
-kp2=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break;
-										 else if(isspace(cht[i]))break;
-										 else kp2++;
-										}
+////temp_cht2=new char[kp];for(i=0;i<kp;i++)temp_cht2[i]=cht[i+jrec];
+//kp2=0;for(i=jrec;i<int(strlen(cht));i++){if(cht[i]==',')break;
+////										 else if(isspace(cht[i]))break;
+//										 else kp2++;
+//										}
+kp2= -1;for(i=jrec;i<int(strlen(cht));i++){kp2++;if(cht[i]==',')break;}
 temp_cht2=new char[kp2+1];for(i=0;i<kp2;i++){temp_cht2[i]=cht[i+jrec];
 //bufferCh[i]=cht[i+jrec];
 											 base.ELSETinputnamesCh[(79+1)*nGID+i]=cht[i+jrec];
@@ -10645,7 +10650,10 @@ if(ksw!=2){
  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::CTSPinterpSolidExecute(TObject *Sender){int solidshellsw=0;CTSPinterpolate_prog(solidshellsw);} //Shell not used anymore
+void __fastcall TForm1::CTSPinterpSolidExecute(TObject *Sender)
+{//int solidshellsw=0;CTSPinterpolate_prog(solidshellsw);
+ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Obsolete",L"Halt",MB_OK);
+} //Shell not used anymore
 //---------------------------------------------------------------------------
 //void __fastcall TForm1::CTSPinterpolateExecute(TObject *Sender)
 void TForm1::CTSPinterpolate_prog(int solidshellsw)
@@ -17221,8 +17229,8 @@ void TForm1::exportWARP4_public()
  String *sArr=NULL;
  UnicodeString fnNeedS1,fnNeedS2,nameforsys,extensCharS1=UnicodeString(L".wrp"),
  extensCharS2=UnicodeString(L"MustIncludeThese.list"),
-// leftend=UnicodeString(L"\"mv MustIncludeThese.list "),//REMEMBER "LINUX" CHANGE THIS
- leftend=UnicodeString(L"\"move MustIncludeThese.list "),//REMEMBER "LINUX" CHANGE THIS
+ leftend=UnicodeString(L"\"mv MustIncludeThese.list "),//REMEMBER "LINUX" CHANGE THIS
+// leftend=UnicodeString(L"\"move MustIncludeThese.list "),
  rightend=UnicodeString(L".list\"");
 
  rollcall=NULL;iELSETorder=NULL;sArr=NULL;
@@ -18536,6 +18544,7 @@ void __fastcall TForm1::TimeshiftCTSPandVED0Execute(TObject *Sender) //EFP 11/24
 void __fastcall TForm1::MergeTimeshiftCTSP0Execute(TObject *Sender){int isw=7;tshiftCTSP2(isw);} //EFP 5/09/2013
 void __fastcall TForm1::MergeTimeshiftVED0Execute(TObject *Sender){int isw=8;tshiftCTSP2(isw);}
 void __fastcall TForm1::MergeTimeshiftCTSPandVED01Execute(TObject *Sender){int isw=9;tshiftCTSP2(isw);}
+/*
 //---------------------------------------------------------------------------
 void TForm1::tshiftCTSP_public()
 //TBD: Write code here to discriminate between solid/shell & set solidshellsw  EFP 7/05/2012
@@ -18685,6 +18694,168 @@ void TForm1::tshiftCTSP_public()
  else if(isw==5 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDshift.dat",L"Partial success VED",MB_OK);}
  else if(isw==2 && icheck==1) {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename tempShift.out & timeShift.out",L"Success",MB_OK);}
  else if(isw==4 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDshift.dat",L"Success",MB_OK);}
+}
+*/
+//---------------------------------------------------------------------------
+void TForm1::tshiftCTSP_public()
+//TBD: Write code here to discriminate between solid/shell & set solidshellsw  EFP 7/05/2012
+{int solidshellsw=0,nic=0,nrc=0,icheck=0,vcheck=0,isw=tshiftCTSP->checkISW;
+ int bufferSize=0;
+ long nnd=0,id=0,in=0,max1=0,vcount=0,movestor=0,nprofile=0,nprof=0,npts=0,nval=0,hc_flag=0,larr[5];
+ float tshift=tshiftCTSP->Angle0,tstep=0.f,changetime=0.f,t11=0.f,t12=0.f,t13=0.f,t14=0.f,t15=0.f,darr[5];
+ char descript[76],descript1[8*1024],TITLEX[79+1],  //Allow for 1000 elements per VED line
+//  moveVED[]="move VEDshift.dat ",moveWARP[]="move warp_temp_2_filesShift.txt ";
+  moveVED[]="mv VEDshift.dat ",moveWARP[]="mv warp_temp_2_filesShift.txt "; //REMEMBER "LINUX" CHANGE TO THIS
+/////////
+ icheck=0;
+ if(isw==2 || isw==5){
+// Typical warp_temp_2_files.txt format
+//! Job name=
+//            59        38018            1
+//     0  0.000000E+00         1 1  0.299987E+01
+//     1  0.428042E+00      1536 3  0.257184E+01
+//	   2  0.857985E+00      2288 3  0.214190E+01
+//      .
+//      .
+/////////
+ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Select warp_temp file",L"Next step",MB_OK);
+ OpenDialog1->Filter=L"CTSP warp_temp_2_files.txt (*.txt)|*.txt;*.TXT";
+ if(OpenDialog1->Execute())
+//   {ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate);
+   {ifstream viewfile1(OpenDialog1->FileName.c_str(),ios::nocreate);
+	if(viewfile1)
+	  {
+///////////////////////////
+				 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+//				 try {
+			 if(FileExists("warp_temp_2_filesShift.txt"))DeleteFile("warp_temp_2_filesShift.txt");
+			 ofstream outfile1("warp_temp_2_filesShift.txt");
+			 viewfile1.getline(TITLEX,80);
+			 icheck=1;
+			 outfile1<<TITLEX<<"\n";
+			 viewfile1>>nprofile>>nnd>>nval;
+			 outfile1<<"        "<<setw(6)<<nprofile<<"     "<<setw(8)<<nnd<<"            "<<setw(1)<<nval<<"\n";
+//			 while(!viewfile1.eof())
+			 for(in=0;in<nprofile;in++)
+			   {
+//				viewfile1.getline(descript,76);
+//				if(strlen(descript))
+//				  {parse_cdm(descript,2,&nic,&nrc,larr,darr);nnd=larr[0];tstep=darr[0];
+//				   outfile1<<setw(15)<<scientific<<(tstep+tshift)<<setw(12)<<nnd<<"\n";
+//				   if(nnd){if(solidshellsw){for(in=0;in<nnd;in++){viewfile1>>id>>t11>>t12>>t13>>t14>>t15;
+//																  outfile1<<setw(7)<<id<<setw(14)<<dec<<showpoint<<setprecision(5)<<t11<<setw(14)<<t12<<setw(14)<<t13<<setw(14)<<t14<<setw(14)<<t15<<setw(14)<<"\n";
+//																 } //setw(5->7) above & below for more space EFP 12/15/2011
+//										   }
+//						   else {for(in=0;in<nnd;in++){viewfile1>>id>>t11;
+//													   outfile1<<setw(7)<<id<<setw(14)<<dec<<showpoint<<setprecision(5)<<t11<<"\n";
+//													  }
+//								}
+//						  }
+//				  }
+				viewfile1>>nprof>>tstep>>npts>>hc_flag>>changetime;
+				outfile1<<setw(6)<<nprof<<setw(14)<<scientific<<(tstep+tshift)<<setw(10)<<npts<<setw(2)<<hc_flag<<setw(14)<<scientific<<changetime<<"\n";
+			   }
+			 outfile1.close();
+//					 }
+//				 __finally {
+			 Screen->Cursor=Save_Cursor;
+//			 }
+///////////////////////////
+	   viewfile1.close();
+bufferSize=WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,NULL,0,NULL,NULL);
+char* mm=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,mm,bufferSize,NULL,NULL);
+			 movestor=strlen(moveWARP)+bufferSize+1;
+			 char* moveWARP1WARP2=new char[movestor];
+			 StringCchCopyA(moveWARP1WARP2,movestor,moveWARP);StringCchCatA(moveWARP1WARP2,movestor,mm);
+			 delete mm;mm=NULL;
+			 system(moveWARP1WARP2);
+			 delete moveWARP1WARP2;moveWARP1WARP2=NULL;
+	   DeleteFile("warp_temp_2_filesShift.txt");
+	  }
+	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not open *.out file",L"Failure",MB_OK);}
+   }
+// else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not create FileOpen selector",L"Failure",MB_OK);}
+///////////
+					 }
+ if(isw==4 || isw==5){
+ // Typical ...VED.dat format
+//0.000000e+00, 12
+//33352, 33351, 33350, 33349, 33360, 33359, 33358, 33357, 33368, 33367, 33366, 33365,
+//7.511511e-01, 12
+//33348, 33347, 33346, 33345, 33356, 33355, 33354, 33353, 33364, 33363, 33362, 33361,
+//1.502439e+00, 12
+// .
+// .
+//2.627592e+04, 12
+//32884, 32888, 32932, 32936, 32876, 32880, 32924, 32928, 32868, 32872, 32916, 32920,
+//2.987915e+04, 8
+//94425, 94433, 94441, 94449, 94427, 94435, 94443, 94451,
+//2.988155e+04, 8
+//94426, 94434, 94442, 94450, 94428, 94436, 94444, 94452,
+ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Select VED file",L"Next step",MB_OK);
+ OpenDialog1->Filter=L"VED (*.dat)|*.dat;*.DAT";
+ if(OpenDialog1->Execute())
+//   {ifstream viewfile2(OpenDialog1->FileName.w_str(),ios::nocreate);
+   {ifstream viewfile2(OpenDialog1->FileName.c_str(),ios::nocreate);
+	if(viewfile2)
+	  {vcount=0;viewfile2.getline(descript,76);
+	   if(strlen(descript))
+		 {vcheck=parse_cdmVc(descript,2,&nic,&nrc,larr,darr);
+		  if(!vcount && vcheck<0){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Floating point not found in first number (possible MatProp.dat file?)",L"Failure: ",MB_OK);}
+		  else
+			{nnd=larr[0];tstep=darr[0];vcount++;
+		  if(nnd)
+			{
+///////////////////////////
+				 TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+//				 try {
+			 if(FileExists("VEDshift.dat"))DeleteFile("VEDshift.dat");
+			 ofstream outfile3("VEDshift.dat");icheck=icheck+10;
+			 outfile3<<setw(12)<<scientific<<(tstep+tshift)<<","<<setw(4)<<nnd<<"\n";
+			 viewfile2.getline(descript1,8*1024);outfile3<<descript1<<"\n";
+			 while(!viewfile2.eof())
+			   {viewfile2.getline(descript,76);
+				if(strlen(descript))
+				  {parse_cdm(descript,2,&nic,&nrc,larr,darr);nnd=larr[0];tstep=darr[0];
+				   outfile3<<setw(12)<<scientific<<(tstep+tshift)<<","<<setw(4)<<nnd<<"\n";
+				   viewfile2.getline(descript1,8*1024);outfile3<<descript1<<"\n";
+				  }
+			   }
+			 outfile3.close();
+//					 }
+//				 __finally {
+			 Screen->Cursor=Save_Cursor;
+//			 }
+///////////////////////////
+			}
+		  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Corrupt *VED.dat file. No elements listed.",L"Failure",MB_OK);}
+			}
+		 }
+	   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Empty file",L"Failure",MB_OK);}
+	   viewfile2.close();
+	   if(!vcount && vcheck<0);
+	   else {
+bufferSize=WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,NULL,0,NULL,NULL);
+char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,m,bufferSize,NULL,NULL);
+			 movestor=strlen(moveVED)+bufferSize+1;
+			 char* moveVED1VED2=new char[movestor];
+			 StringCchCopyA(moveVED1VED2,movestor,moveVED);StringCchCatA(moveVED1VED2,movestor,m);
+			 delete m;m=NULL;
+			 system(moveVED1VED2);
+			 delete moveVED1VED2;moveVED1VED2=NULL;
+			 DeleteFile("VEDshift.dat");
+			}
+	  }
+	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not open *VED.dat file",L"Failure",MB_OK);}
+   }
+// else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not create FileOpen selector",L"Failure",MB_OK);}
+					 }
+///////////
+// if(isw==5 && icheck==11)     {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename warp_temp_2_filesShift.txt & VEDshift.dat",L"Success",MB_OK);}
+// else if(isw==5 && icheck==1) {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename warp_temp_2_filesShift.txt",L"Partial success CTSP",MB_OK);}
+// else if(isw==5 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDshift.dat",L"Partial success VED",MB_OK);}
+// else if(isw==2 && icheck==1) {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename warp_temp_2_filesShift.txt",L"Success",MB_OK);}
+// else if(isw==4 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDshift.dat",L"Success",MB_OK);}
 }
 //---------------------------------------------------------------------------
 void TForm1::tshiftCTSP2(int isw)

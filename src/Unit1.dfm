@@ -196,11 +196,11 @@ object Form1: TForm1
         Caption = 'Timeshift'
         object imeshiftCTSPandVED01: TMenuItem
           Action = TimeshiftCTSPandVED0
-          Caption = 'Timeshift CTSP+VED'
+          Caption = 'Timeshift Warp_temp+VED'
         end
         object imeshiftCTSP01: TMenuItem
           Action = TimeshiftCTSP0
-          Caption = 'Timeshift CTSP'
+          Caption = 'Timeshift Warp_temp'
         end
         object imeshiftVED01: TMenuItem
           Action = TimeshiftVED0
