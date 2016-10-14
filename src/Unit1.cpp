@@ -1,3 +1,5 @@
+// WINE requires MS_Win commands throughout (e.g. move, copy, etc) Thanks, Jeremy
+
 // EFP still does not understand Char/w_har/UniCode. On CodeGear/MS_Win
 // it is understood that now (i.e. 2016) _DELPHI_STRING_UNICODE is set to Unicode
 // in the following:
@@ -17229,8 +17231,8 @@ void TForm1::exportWARP4_public()
  String *sArr=NULL;
  UnicodeString fnNeedS1,fnNeedS2,nameforsys,extensCharS1=UnicodeString(L".wrp"),
  extensCharS2=UnicodeString(L"MustIncludeThese.list"),
- leftend=UnicodeString(L"\"mv MustIncludeThese.list "),//REMEMBER "LINUX" CHANGE THIS
-// leftend=UnicodeString(L"\"move MustIncludeThese.list "),
+// leftend=UnicodeString(L"\"mv MustIncludeThese.list "),//REMEMBER never use this
+ leftend=UnicodeString(L"\"move MustIncludeThese.list "), //Must be used with WINE
  rightend=UnicodeString(L".list\"");
 
  rollcall=NULL;iELSETorder=NULL;sArr=NULL;
@@ -18704,8 +18706,8 @@ void TForm1::tshiftCTSP_public()
  long nnd=0,id=0,in=0,max1=0,vcount=0,movestor=0,nprofile=0,nprof=0,npts=0,nval=0,hc_flag=0,larr[5];
  float tshift=tshiftCTSP->Angle0,tstep=0.f,changetime=0.f,t11=0.f,t12=0.f,t13=0.f,t14=0.f,t15=0.f,darr[5];
  char descript[76],descript1[8*1024],TITLEX[79+1],  //Allow for 1000 elements per VED line
-//  moveVED[]="move VEDshift.dat ",moveWARP[]="move warp_temp_2_filesShift.txt ";
-  moveVED[]="mv VEDshift.dat ",moveWARP[]="mv warp_temp_2_filesShift.txt "; //REMEMBER "LINUX" CHANGE TO THIS
+  moveVED[]="move VEDshift.dat ",moveWARP[]="move warp_temp_2_filesShift.txt "; //WINE requires MS_Win commands
+//  moveVED[]="mv VEDshift.dat ",moveWARP[]="mv warp_temp_2_filesShift.txt "; //REMEMBER never this
 /////////
  icheck=0;
  if(isw==2 || isw==5){
