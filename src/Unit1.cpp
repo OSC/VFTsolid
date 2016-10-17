@@ -3743,8 +3743,11 @@ temp_cht3[strlen(chtm)-1]='\0';
 base.ELSETinputnames[nGID]=UTF8ToString(temp_cht3); //This creates a UnicodeString of 80 characters but how to "trim"?
 delete temp_cht3;temp_cht3=NULL;
 
-for(kk=0;kk<strlen(chtm);kk++)base.ELSETinputnamesCh[(79+1)*nGID+kk]=chtm[kk];
-base.ELSETinputnamesCh[(79+1)*nGID+strlen(chtm)]='\0';
+//for(kk=0;kk<strlen(chtm);kk++)base.ELSETinputnamesCh[(79+1)*nGID+kk]=chtm[kk];
+//base.ELSETinputnamesCh[(79+1)*nGID+strlen(chtm)]='\0';
+for(kk=0;kk<strlen(chtm)-1;kk++)base.ELSETinputnamesCh[(79+1)*nGID+kk]=chtm[kk];
+base.ELSETinputnamesCh[(79+1)*nGID+strlen(chtm)-1]='\0';
+
 
 
 // int bufferSize1=WideCharToMultiByte(CP_UTF8,0,base.groupsname[j].w_str(), -1,NULL,0,NULL,NULL);
