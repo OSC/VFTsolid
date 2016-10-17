@@ -209,7 +209,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.60a_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.60b_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -3247,7 +3247,8 @@ void __fastcall TForm1::ImportVFTrExecute(TObject *Sender)
 	  ,control[10],accum=0,j=0,eltype=0,bscode=0,node=0,ieGID=0,t7=10000000,t5=100000,t3=1000,sumlim=0,
 	  istart=0,jstart=0,jlast=0,listAmbiguity=0,
 	  nodeuplim=0,nodelolim=0,ellolim=0,eluplim=0,wpWG=0,wpWP=0,in=0,ip=0,inp=0,kk=0,sumELSETel=0, *revnode_map, *listWARbase=NULL;
- char cht[10*(MXNPELS+3)],chtm[200],basemetal[]="basemetal",allel[]="ALLEL",GenericWG[]="GenericWG",GenericWP[]="GenericWP"; // Anticipate 23I10
+ char *temp_cht3=NULL,cht[10*(MXNPELS+3)],chtm[200],basemetal[]="basemetal",allel[]="ALLEL",
+	  GenericWG[]="GenericWG",GenericWP[]="GenericWP"; // Anticipate 23I10
  _TCHAR descript0[41],descript1[41],descript2[41], *temp_cht; // Anticipate 23I10
 //String efpAnsi1[20];
 //String *efpAnsi=NULL;
@@ -3734,8 +3735,14 @@ ntape.getline(chtm,199);
 base.groupsname[j]=UTF8ToString(chtm);
 
 base.groupsname[j].SetLength(base.groupsname[j].Length()-1);
+//base.ELSETinputnames[nGID]=UTF8ToString(chtm); //This creates a UnicodeString of 80 characters but how to "trim"?
 
-base.ELSETinputnames[nGID]=UTF8ToString(chtm); //This creates a UnicodeString of 80 characters but how to "trim"?
+temp_cht3=new char[strlen(chtm)]; //strlen() is string length INCLUDING '\0'
+for(kk=0;kk<strlen(chtm)-1;kk++)temp_cht3[kk]=chtm[kk];
+temp_cht3[strlen(chtm)-1]='\0';
+base.ELSETinputnames[nGID]=UTF8ToString(temp_cht3); //This creates a UnicodeString of 80 characters but how to "trim"?
+delete temp_cht3;temp_cht3=NULL;
+
 for(kk=0;kk<strlen(chtm);kk++)base.ELSETinputnamesCh[(79+1)*nGID+kk]=chtm[kk];
 base.ELSETinputnamesCh[(79+1)*nGID+strlen(chtm)]='\0';
 
