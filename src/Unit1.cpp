@@ -11585,7 +11585,9 @@ if(wp.count_curr_sttEl)
 										}
    if(ip1>=0){if(ip1+1<wp.count_curr_sttEl)
 				{for(ipp=ip1+1;ipp<wp.count_curr_sttEl;ipp++)wp.sttEles[wp.memWGa*incognito+ipp-1]=wp.sttEles[wp.memWGa*incognito+ipp];
+				 wp.sttEles[wp.memWGa*incognito+wp.count_curr_sttEl-1]= -1; //Correction EFP 11/6/2016
 				 for(ippp=4*(ip1+1);ippp<4*wp.count_curr_sttEl;ippp++)wp.sttEleNodes[wp.memWGa*4*incognito+ippp-4]=wp.sttEleNodes[wp.memWGa*4*incognito+ippp];
+				 for(ippp=4*(wp.count_curr_sttEl-1);ippp<4*wp.count_curr_sttEl;ippp++)wp.sttEleNodes[wp.memWGa*4*incognito+ippp]= -1;
 				}
 			  wp.count_curr_sttEl=wp.count_curr_sttEl-1;
 			  CreateLinWeldPass->CheckStartEndEl=1;
@@ -18745,6 +18747,7 @@ void TForm1::tshiftCTSP_public()
 //				 try {
 			 if(FileExists("warp_temp_2_filesShift.txt"))DeleteFile("warp_temp_2_filesShift.txt");
 			 ofstream outfile1("warp_temp_2_filesShift.txt");
+ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Opening warp_temp_2_filesShift.txt",L"First check",MB_OK);
 			 viewfile1.getline(TITLEX,80);
 			 icheck=1;
 			 outfile1<<TITLEX<<"\n";
@@ -18783,9 +18786,10 @@ char* mm=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(Open
 			 char* moveWARP1WARP2=new char[movestor];
 			 StringCchCopyA(moveWARP1WARP2,movestor,moveWARP);StringCchCatA(moveWARP1WARP2,movestor,mm);
 			 delete mm;mm=NULL;
+ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Renaming to warp_temp_2_files.txt",L"First check",MB_OK);
 			 system(moveWARP1WARP2);
 			 delete moveWARP1WARP2;moveWARP1WARP2=NULL;
-	   DeleteFile("warp_temp_2_filesShift.txt");
+//	   DeleteFile("warp_temp_2_filesShift.txt");
 	  }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not open *.out file",L"Failure",MB_OK);}
    }
@@ -18858,7 +18862,7 @@ char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenD
 			 delete m;m=NULL;
 			 system(moveVED1VED2);
 			 delete moveVED1VED2;moveVED1VED2=NULL;
-			 DeleteFile("VEDshift.dat");
+//			 DeleteFile("VEDshift.dat");
 			}
 	  }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not open *VED.dat file",L"Failure",MB_OK);}
