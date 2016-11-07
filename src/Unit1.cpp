@@ -209,7 +209,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.60c_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.60d_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -18747,7 +18747,7 @@ void TForm1::tshiftCTSP_public()
 //				 try {
 			 if(FileExists("warp_temp_2_filesShift.txt"))DeleteFile("warp_temp_2_filesShift.txt");
 			 ofstream outfile1("warp_temp_2_filesShift.txt");
- extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Opening warp_temp_2_filesShift.txt",L"First check",MB_OK);
+// extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Opening warp_temp_2_filesShift.txt",L"First check",MB_OK);
 			 viewfile1.getline(TITLEX,80);
 			 icheck=1;
 			 outfile1<<TITLEX<<"\n";
@@ -18786,8 +18786,9 @@ char* mm=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(Open
 			 char* moveWARP1WARP2=new char[movestor];
 			 StringCchCopyA(moveWARP1WARP2,movestor,moveWARP);StringCchCatA(moveWARP1WARP2,movestor,mm);
 			 delete mm;mm=NULL;
- extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Renaming to warp_temp_2_files.txt",L"First check",MB_OK);
-			 system(moveWARP1WARP2);
+// extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Renaming to warp_temp_2_files.txt",L"First check",MB_OK);
+//			 system(moveWARP1WARP2);
+			 system("move /y warp_temp_2_filesShift.txt warp_temp_2_files.txt");
 			 delete moveWARP1WARP2;moveWARP1WARP2=NULL;
 //	   DeleteFile("warp_temp_2_filesShift.txt");
 	  }
@@ -18860,7 +18861,8 @@ char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenD
 			 char* moveVED1VED2=new char[movestor];
 			 StringCchCopyA(moveVED1VED2,movestor,moveVED);StringCchCatA(moveVED1VED2,movestor,m);
 			 delete m;m=NULL;
-			 system(moveVED1VED2);
+//			 system(moveVED1VED2);
+			 system("move /y VEDshift.dat VED.dat");
 			 delete moveVED1VED2;moveVED1VED2=NULL;
 //			 DeleteFile("VEDshift.dat");
 			}
@@ -18875,6 +18877,7 @@ char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenD
 // else if(isw==5 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDshift.dat",L"Partial success VED",MB_OK);}
 // else if(isw==2 && icheck==1) {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename warp_temp_2_filesShift.txt",L"Success",MB_OK);}
 // else if(isw==4 && icheck==10){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"User should rename VEDshift.dat",L"Success",MB_OK);}
+ extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"warp_temp_2_files.txt \nand/or \nVED.dat \noverwritten",L"Success",MB_OK);
 }
 //---------------------------------------------------------------------------
 void TForm1::tshiftCTSP2(int isw)
