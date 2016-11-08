@@ -209,7 +209,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.60d_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.60e_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -417,8 +417,9 @@ void TForm1::ImportAba_prog(int iswtype)
 //   "inadmissible" 4th column>0 => presence of unsupported *NGEN
 //   "inadmissible" 5th column>0 => presence of unsupported *SYSTEM (i.e. cartesian coordinate frame only)
 //##############################################################
-// Flag to indicate model input from Abaqus *.inp/abq: glABAflag=totELEMcard+1000*totELSETcard+1000000*totSOLIDScard;
- int limlist=5,nic=0,nic1=0,nrc=0,jsw=0,psw=0,iswNode=0,iswElem=0,swstart=0,swend=0,icountlim=0,
+//// Flag to indicate model input from Abaqus *.inp/abq: glABAflag=totELEMcard+1000*totELSETcard+1000000*totSOLIDScard;
+// int limlist=5,nic=0,nic1=0,nrc=0,jsw=0,psw=0,iswNode=0,iswElem=0,swstart=0,swend=0,icountlim=0,
+ int limlist=3,nic=0,nic1=0,nrc=0,jsw=0,psw=0,iswNode=0,iswElem=0,swstart=0,swend=0,icountlim=0,
   listWARsw=0, *listWAR=NULL
  ;
  long in=0,kn=0,klim=0,totNODEcard=0,totELEMcard=0,iumNODEset=0,iumELEMset=0,iumELSETset=0,
@@ -1550,7 +1551,8 @@ listWARbase[larr[i]-ellolim]=iallGrp;
 			  swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
 			  if(!swstart)
 				   {
-					echoWARfile<<"list \"basemetal\" ";
+//					echoWARfile<<"list \"basemetal\" ";
+					echoWARfile<<"list \"basemetal\" \n ";
 //					sloc=0;for(kk=sloc;kk<sloc+strlen(list);kk++)bufferCh[kk]=list[kk-sloc];
 //					sloc=sloc+strlen(list);
 //					bufferCh[sloc]=chspace;sloc++;
@@ -1575,7 +1577,8 @@ listWARbase[larr[i]-ellolim]=iallGrp;
 //bufferCh[sloc]=ch_comma;sloc++;
 														   }
 									  else {icountlim=0;
-											echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";
+//											echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";
+											echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n";
 //itoa(istart+ellolim,strLong,10);
 //for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
 //sloc=sloc+strlen(strLong);
@@ -1829,7 +1832,8 @@ listWARbase[larr[i]-ellolim]=iallGrp;
 if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
 			  if(swstart){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No elements in an ELSET",L"Warning:",MB_OK);}
 			  else {
-					echoWARfile<<"list \""<<temp_cht1<<"\" ";
+//					echoWARfile<<"list \""<<temp_cht1<<"\" ";
+					echoWARfile<<"list \""<<temp_cht1<<"\" \n ";
 //					sloc=0;for(kk=sloc;kk<sloc+strlen(list);kk++)bufferCh[kk]=list[kk-sloc];
 //					sloc=sloc+strlen(list);
 //					bufferCh[sloc]=chspace;sloc++;
@@ -1854,7 +1858,8 @@ if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;
 //bufferCh[sloc]=ch_comma;sloc++;
 														   }
 									  else {icountlim=0;
-											echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";
+//											echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n      ";
+											echoWARfile<<(istart+ellolim)<<"-"<<(i-1+ellolim)<<",\n";
 //itoa(istart+ellolim,strLong,10);
 //for(kk=sloc;kk<sloc+strlen(strLong);kk++)bufferCh[kk]=strLong[kk-sloc];
 //sloc=sloc+strlen(strLong);
@@ -18720,8 +18725,9 @@ void TForm1::tshiftCTSP_public()
  int bufferSize=0;
  long nnd=0,id=0,in=0,max1=0,vcount=0,movestor=0,nprofile=0,nprof=0,npts=0,nval=0,hc_flag=0,larr[5];
  float tshift=tshiftCTSP->Angle0,tstep=0.f,changetime=0.f,t11=0.f,t12=0.f,t13=0.f,t14=0.f,t15=0.f,darr[5];
- char descript[76],descript1[8*1024],TITLEX[79+1],  //Allow for 1000 elements per VED line
-  moveVED[]="move /y VEDshift.dat ",moveWARP[]="move /y warp_temp_2_filesShift.txt "; //WINE requires MS_Win commands
+ char descript[76],descript1[8*1024],TITLEX[79+1]  //Allow for 1000 elements per VED line
+//  ,moveVED[]="move /y VEDshift.dat ",moveWARP[]="move /y warp_temp_2_filesShift.txt "
+  ; //WINE requires MS_Win commands
 //  moveVED[]="mv VEDshift.dat ",moveWARP[]="mv warp_temp_2_filesShift.txt "; //REMEMBER never this
 /////////
  icheck=0;
@@ -18780,17 +18786,21 @@ void TForm1::tshiftCTSP_public()
 //			 }
 ///////////////////////////
 	   viewfile1.close();
-bufferSize=WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,NULL,0,NULL,NULL);
-char* mm=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,mm,bufferSize,NULL,NULL);
-			 movestor=strlen(moveWARP)+bufferSize+1;
-			 char* moveWARP1WARP2=new char[movestor];
-			 StringCchCopyA(moveWARP1WARP2,movestor,moveWARP);StringCchCatA(moveWARP1WARP2,movestor,mm);
-			 delete mm;mm=NULL;
-// extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Renaming to warp_temp_2_files.txt",L"First check",MB_OK);
-//			 system(moveWARP1WARP2);
-			 system("move /y warp_temp_2_filesShift.txt warp_temp_2_files.txt");
-			 delete moveWARP1WARP2;moveWARP1WARP2=NULL;
-//	   DeleteFile("warp_temp_2_filesShift.txt");
+//bufferSize=WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,NULL,0,NULL,NULL);
+//char* mm=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,mm,bufferSize,NULL,NULL);
+//			 movestor=strlen(moveWARP)+bufferSize+1;
+//			 char* moveWARP1WARP2=new char[movestor];
+//			 StringCchCopyA(moveWARP1WARP2,movestor,moveWARP);StringCchCatA(moveWARP1WARP2,movestor,mm);
+//			 delete mm;mm=NULL;
+
+////// extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Renaming to warp_temp_2_files.txt",L"First check",MB_OK);
+//////			 system(moveWARP1WARP2);
+////			 system("move /y warp_temp_2_filesShift.txt warp_temp_2_files.txt");
+
+			 if(FileExists("warp_temp_2_files.txt"))DeleteFile("warp_temp_2_files.txt");
+			 system("move warp_temp_2_filesShift.txt warp_temp_2_files.txt");
+//			 delete moveWARP1WARP2;moveWARP1WARP2=NULL;
+////	   DeleteFile("warp_temp_2_filesShift.txt");
 	  }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not open *.out file",L"Failure",MB_OK);}
    }
@@ -18855,16 +18865,20 @@ char* mm=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(Open
 	   viewfile2.close();
 	   if(!vcount && vcheck<0);
 	   else {
-bufferSize=WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,NULL,0,NULL,NULL);
-char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,m,bufferSize,NULL,NULL);
-			 movestor=strlen(moveVED)+bufferSize+1;
-			 char* moveVED1VED2=new char[movestor];
-			 StringCchCopyA(moveVED1VED2,movestor,moveVED);StringCchCatA(moveVED1VED2,movestor,m);
-			 delete m;m=NULL;
-//			 system(moveVED1VED2);
-			 system("move /y VEDshift.dat VED.dat");
-			 delete moveVED1VED2;moveVED1VED2=NULL;
-//			 DeleteFile("VEDshift.dat");
+//bufferSize=WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,NULL,0,NULL,NULL);
+//char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,ExtractFileName(OpenDialog1->FileName).w_str(), -1,m,bufferSize,NULL,NULL);
+//			 movestor=strlen(moveVED)+bufferSize+1;
+//			 char* moveVED1VED2=new char[movestor];
+//			 StringCchCopyA(moveVED1VED2,movestor,moveVED);StringCchCatA(moveVED1VED2,movestor,m);
+//			 delete m;m=NULL;
+
+//////			 system(moveVED1VED2);
+////			 system("move /y VEDshift.dat VED.dat");
+
+			 if(FileExists("VED.dat"))DeleteFile("VED.dat");
+			 system("move VEDshift.dat VED.dat");
+//			 delete moveVED1VED2;moveVED1VED2=NULL;
+////			 DeleteFile("VEDshift.dat");
 			}
 	  }
 	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Could not open *VED.dat file",L"Failure",MB_OK);}
