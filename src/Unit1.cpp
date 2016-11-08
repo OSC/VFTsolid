@@ -18753,6 +18753,13 @@ void TForm1::tshiftCTSP_public()
 //				 try {
 			 if(FileExists("warp_temp_2_filesShift.txt"))DeleteFile("warp_temp_2_filesShift.txt");
 			 ofstream outfile1("warp_temp_2_filesShift.txt");
+
+if(FileExists("aquamarine.txt"))DeleteFile("aquamarine.txt");
+if(FileExists("cirulean.txt"))DeleteFile("cirulean.txt");
+system("copy warp_temp_2_files.txt aquamarine.txt");
+system("ren aquamarine.txt cirulean.txt");
+
+
 // extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Opening warp_temp_2_filesShift.txt",L"First check",MB_OK);
 			 viewfile1.getline(TITLEX,80);
 			 icheck=1;
