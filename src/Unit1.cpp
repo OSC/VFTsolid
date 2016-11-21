@@ -209,7 +209,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.60e_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.60f_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -419,7 +419,7 @@ void TForm1::ImportAba_prog(int iswtype)
 //##############################################################
 //// Flag to indicate model input from Abaqus *.inp/abq: glABAflag=totELEMcard+1000*totELSETcard+1000000*totSOLIDScard;
 // int limlist=5,nic=0,nic1=0,nrc=0,jsw=0,psw=0,iswNode=0,iswElem=0,swstart=0,swend=0,icountlim=0,
- int limlist=3,nic=0,nic1=0,nrc=0,jsw=0,psw=0,iswNode=0,iswElem=0,swstart=0,swend=0,icountlim=0,
+ int limlist=4,nic=0,nic1=0,nrc=0,jsw=0,psw=0,iswNode=0,iswElem=0,swstart=0,swend=0,icountlim=0,
   listWARsw=0, *listWAR=NULL
  ;
  long in=0,kn=0,klim=0,totNODEcard=0,totELEMcard=0,iumNODEset=0,iumELEMset=0,iumELSETset=0,
@@ -1551,8 +1551,9 @@ listWARbase[larr[i]-ellolim]=iallGrp;
 			  swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
 			  if(!swstart)
 				   {
-//					echoWARfile<<"list \"basemetal\" ";
-					echoWARfile<<"list \"basemetal\" \n ";
+////					echoWARfile<<"list \"basemetal\" ";
+//					echoWARfile<<"list \"basemetal\" \n ";
+					echoWARfile<<"list \"basemetal\",\n";
 //					sloc=0;for(kk=sloc;kk<sloc+strlen(list);kk++)bufferCh[kk]=list[kk-sloc];
 //					sloc=sloc+strlen(list);
 //					bufferCh[sloc]=chspace;sloc++;
@@ -1832,8 +1833,9 @@ listWARbase[larr[i]-ellolim]=iallGrp;
 if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
 			  if(swstart){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No elements in an ELSET",L"Warning:",MB_OK);}
 			  else {
-//					echoWARfile<<"list \""<<temp_cht1<<"\" ";
-					echoWARfile<<"list \""<<temp_cht1<<"\" \n ";
+////					echoWARfile<<"list \""<<temp_cht1<<"\" ";
+//					echoWARfile<<"list \""<<temp_cht1<<"\" \n ";
+					echoWARfile<<"list \""<<temp_cht1<<"\",\n";
 //					sloc=0;for(kk=sloc;kk<sloc+strlen(list);kk++)bufferCh[kk]=list[kk-sloc];
 //					sloc=sloc+strlen(list);
 //					bufferCh[sloc]=chspace;sloc++;
@@ -2298,7 +2300,7 @@ void __fastcall TForm1::ImportMshExecute(TObject *Sender)
 //     Hence wp.nWeldGroup is incremented but not wp.nWeldPass
 // 8n hex elements only
 {
- int limlist=5,nic=0,nrc=0,jsw=0,swstart=0,swend=0,icountlim=0,
+ int limlist=4,nic=0,nrc=0,jsw=0,swstart=0,swend=0,icountlim=0,
   listWARsw=0, *listWAR=NULL
  ;
  long in=0,n8=0,dummy=0,jrec=0,listAmbiguity=0,//iswELSET2=0,
@@ -2798,7 +2800,9 @@ listWARbase[larr[i]-ellolim]=iallGrp;
 												  }
 			  swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
 			  if(!swstart)
-				   {echoWARfile<<"list \"basemetal\" ";
+				   {
+//					echoWARfile<<"list \"basemetal\" ";
+					echoWARfile<<"list \"basemetal\",\n";
 					swstart=1;swend=icountlim=0;
 					for(i=jstart;i<jlast+1;i++)
 					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
@@ -3012,7 +3016,8 @@ if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;
 			  if(swstart){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No elements in an ELSET",L"Warning:",MB_OK);}
 			  else {
 
-					echoWARfile<<"list \""<<temp_cht1<<"\" ";
+//					echoWARfile<<"list \""<<temp_cht1<<"\" ";
+					echoWARfile<<"list \""<<temp_cht1<<"\",\n";
 					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
 
 //honk<<eluplim-ellolim+1<<" "<<jstart<<" "<<jlast<<" Nzzzzzzz\n";exit(0);
@@ -3100,7 +3105,9 @@ listWAR[larr[i]-ellolim]=1;
 //list "PlateUpper" 1-24,141-164,717-764,1033-1080
 if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
 			  if(swstart){extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"No elements in an ELSET",L"Warning:",MB_OK);}
-			  else {echoWARfile<<"list \""<<temp_cht1<<"\" ";
+			  else {
+//					echoWARfile<<"list \""<<temp_cht1<<"\" ";
+					echoWARfile<<"list \""<<temp_cht1<<"\",\n";
 					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
 					for(i=jstart;i<jlast+1;i++)
 					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
@@ -3240,7 +3247,7 @@ void __fastcall TForm1::ImportVFTrExecute(TObject *Sender)
 //    A subroutine checks for annihilation of WG.  EFP 1/23/2012
 // TBD: increase 199 to allow for 20n hex element connectivity read from 1 line
 {
- int limlist=5,nic=0,nrc=0
+ int limlist=4,nic=0,nrc=0
 //, *temp_allGID=NULL
  ,bufferSize=0,bufferSize1=0,bufferSize2=0,bufferSize3=0,swstart=0,swend=0,icountlim=0,
   listWARsw=0, *listWAR=NULL
@@ -3524,7 +3531,9 @@ nGID=wp.nWeldGroup+wp.nWeldPass+1;nGIDmax=nGID;
 												  }
 			  swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;if(swstart){jstart=i;swstart=0;}}}
 			  if(!swstart)
-				   {echoWARfile<<"list \"basemetal\" ";
+				   {
+//					echoWARfile<<"list \"basemetal\" ";
+					echoWARfile<<"list \"basemetal\",\n";
 					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
 					for(i=jstart;i<jlast+1;i++)
 					  {if(listWAR[i]){swend=1;if(swstart){istart=i;swstart=0;}}
@@ -3795,7 +3804,8 @@ if(listWARsw){swstart=1;for(i=0;i<eluplim-ellolim+1;i++){if(listWAR[i]){jlast=i;
 			  else {
 					bufferSize=WideCharToMultiByte(CP_UTF8,0,base.groupsname[j].w_str(), -1,NULL,0,NULL,NULL);
 					char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,base.groupsname[j].w_str(), -1,m,bufferSize,NULL,NULL);
-					echoWARfile<<"list \""<<m<<"\" ";
+//					echoWARfile<<"list \""<<m<<"\" ";
+					echoWARfile<<"list \""<<m<<"\",\n";
 					delete m;m=NULL;
 					swstart=1;swend=icountlim=0; //This coding ONLY APPLIES to array with known (jstart,jend)
 					for(i=jstart;i<jlast+1;i++)
@@ -18725,7 +18735,7 @@ void TForm1::tshiftCTSP_public()
  int bufferSize=0;
  long nnd=0,id=0,in=0,max1=0,vcount=0,movestor=0,nprofile=0,nprof=0,npts=0,nval=0,hc_flag=0,larr[5];
  float tshift=tshiftCTSP->Angle0,tstep=0.f,changetime=0.f,t11=0.f,t12=0.f,t13=0.f,t14=0.f,t15=0.f,darr[5];
- char descript[76],descript1[8*1024],TITLEX[79+1]  //Allow for 1000 elements per VED line
+ char descript[76],descript1[8*1024],TITLEX[79+1],TITLE[]="! Job name="  //Allow for 1000 elements per VED line
 //  ,moveVED[]="move /y VEDshift.dat ",moveWARP[]="move /y warp_temp_2_filesShift.txt "
   ; //WINE requires MS_Win commands
 //  moveVED[]="mv VEDshift.dat ",moveWARP[]="mv warp_temp_2_filesShift.txt "; //REMEMBER never this
@@ -18744,8 +18754,10 @@ void TForm1::tshiftCTSP_public()
  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Select warp_temp file",L"Next step",MB_OK);
  OpenDialog1->Filter=L"CTSP warp_temp_2_files.txt (*.txt)|*.txt;*.TXT";
  if(OpenDialog1->Execute())
-//   {ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate);
-   {ifstream viewfile1(OpenDialog1->FileName.c_str(),ios::nocreate);
+////   {ifstream viewfile1(OpenDialog1->FileName.w_str(),ios::nocreate);
+   {
+//	ifstream viewfile1(OpenDialog1->FileName.c_str(),ios::nocreate);
+	ifstream viewfile1(OpenDialog1->FileName.c_str(),ios::nocreate|ios::binary,0);
 	if(viewfile1)
 	  {
 ///////////////////////////
@@ -18754,17 +18766,22 @@ void TForm1::tshiftCTSP_public()
 			 if(FileExists("warp_temp_2_filesShift.txt"))DeleteFile("warp_temp_2_filesShift.txt");
 			 ofstream outfile1("warp_temp_2_filesShift.txt");
 
-if(FileExists("aquamarine.txt"))DeleteFile("aquamarine.txt");
-if(FileExists("cirulean.txt"))DeleteFile("cirulean.txt");
-system("copy warp_temp_2_files.txt aquamarine.txt");
-system("ren aquamarine.txt cirulean.txt");
+//if(FileExists("aquamarine.txt"))DeleteFile("aquamarine.txt");
+//if(FileExists("cirulean.txt"))DeleteFile("cirulean.txt");
+//system("copy warp_temp_2_files.txt aquamarine.txt");
+//system("ren aquamarine.txt cirulean.txt");
 
 
 // extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Opening warp_temp_2_filesShift.txt",L"First check",MB_OK);
 			 viewfile1.getline(TITLEX,80);
 			 icheck=1;
-			 outfile1<<TITLEX<<"\n";
-			 viewfile1>>nprofile>>nnd>>nval;
+//			 outfile1<<TITLEX<<"\n";
+			 outfile1<<TITLE<<"\n";
+//			 viewfile1>>nprofile>>nnd>>nval;
+			 viewfile1.getline(descript,76);
+			 parse_cdm(descript,3,&nic,&nrc,larr,darr);nprofile=larr[0];nnd=larr[1];nval=larr[2];
+//honk<<nprofile<<" "<<nnd<<" "<<nval<<" bonanza0\n";
+
 			 outfile1<<"        "<<setw(6)<<nprofile<<"     "<<setw(8)<<nnd<<"            "<<setw(1)<<nval<<"\n";
 //			 while(!viewfile1.eof())
 			 for(in=0;in<nprofile;in++)
@@ -18783,7 +18800,12 @@ system("ren aquamarine.txt cirulean.txt");
 //								}
 //						  }
 //				  }
-				viewfile1>>nprof>>tstep>>npts>>hc_flag>>changetime;
+
+//				viewfile1>>nprof>>tstep>>npts>>hc_flag>>changetime;
+			 viewfile1.getline(descript,76);
+			 parse_cdm(descript,5,&nic,&nrc,larr,darr);nprof=larr[0];tstep=darr[0];npts=larr[1];hc_flag=larr[2];changetime=darr[1];
+
+//honk<<nprof<<" "<<tstep<<" "<<npts<<" "<<hc_flag<<" "<<changetime<<" bonanza\n";
 				outfile1<<setw(6)<<nprof<<setw(14)<<scientific<<(tstep+tshift)<<setw(10)<<npts<<setw(2)<<hc_flag<<setw(14)<<scientific<<changetime<<"\n";
 			   }
 			 outfile1.close();
