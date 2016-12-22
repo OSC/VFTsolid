@@ -241,6 +241,8 @@ __published:	// IDE-managed Components
 	TAction *WeldPassEditingandSequencing2;
 	TMenuItem *WeldPassEditingandSequencing12;
 	TMenuItem *WeldPassEditingandSequencing21;
+	TAction *exportWARP3Dcut;
+	TMenuItem *exportWARP3Dcut1;
 	void __fastcall ImportAbaExecute(TObject *Sender);
 	void __fastcall ImportMshExecute(TObject *Sender);
 	void __fastcall FileCloseExecute(TObject *Sender);
@@ -338,6 +340,7 @@ __published:	// IDE-managed Components
 	void __fastcall BCsNclick6Execute(TObject *Sender);
 	void __fastcall BCsNclick7Execute(TObject *Sender);
 	void __fastcall WeldPassEditingandSequencing2Execute(TObject *Sender);
+	void __fastcall exportWARP3DcutExecute(TObject *Sender);
 
 private:	// User declarations
 ///////////////////////////////////////////////////////////
@@ -492,7 +495,7 @@ char *comboCWD, *ELSETinputnamesCh;
 			export_CTSP_INPUTp1(float),
 			export_CTSP_INPUTp_mcm(long,long,int,float),WeldPassEditSeqn0(int);
 //	   void export_VED(char [],float *); // VED= virtual element detection  (based on WSIExportABA.java export_VED)
-	   void export_VED(String,float *,int); // VED= virtual element detection  (based on WSIExportABA.java export_VED)
+	   void export_VED(String,float *,int),export_VEDtemp(String,float *,int); // VED= virtual element detection  (based on WSIExportABA.java export_VED)
 //aaaaaaaaaaaaaa
 	   void export_WARP_BC(String); // Write WARP-format ASCII nodal BC  EFP 2/26/2015
 //bbbbbbbbbbbbbb
@@ -511,7 +514,9 @@ public:		// User declarations
 		 wpEdit_public(),wpEdit2_public(),
 		 WeldPassEditSeqn1_public(),WeldPassEditSeqn2_public(),WeldPassEditSeqn3_public(),WeldPassEditSeqn4_public(),
 		 exportCTSP2_public(),exportCTSP3_public(),exportWARP4_public(),
-		 exportWARP3D_public(),exportWARP3D1a_public(),exportWARP3D5_public();
+		 exportWARP3D_public(),exportWARP3Dcut_public(),
+		 exportWARP3D1a_public(),exportWARP3D2a_public(),
+		 exportWARP3D5_public();
 	void Form28_public(),Form28Close_public(),
 		 tshiftCTSP_public(),tshiftCTSP3_public(),tshiftCTSP1_public();
     void parse_cdmQ_public(const char [],int*,int*,long [],float []); //Also called in Unit21 (Material properties)

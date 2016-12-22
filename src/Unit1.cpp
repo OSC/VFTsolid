@@ -209,7 +209,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.60f_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.60g_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -16736,6 +16736,40 @@ char* m6=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,gWsiAlias.w_str(), -
  else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open",L"Halt",MB_OK);}
 }
 //---------------------------------------------------------------------------
+void __fastcall TForm1::exportWARP3DcutExecute(TObject *Sender) //EFP 11/28/2016
+{if(base.nop1)
+   {if(wp.nWeldPass)
+	  {ABAQnames=new TForm25(4,this); //Value changed 2->4
+	   ABAQnames->Caption=L"Enter file names for WARP3D input deck.";
+	   ABAQnames->Label1->Caption=L"WARP3D main file";
+	   ABAQnames->Label2->Caption=L"WARP3D node file";
+	   ABAQnames->Label3->Caption=L"WARP3D element file";
+	   ABAQnames->Label4->Caption=L"WARP3D VED file";
+	   ABAQnames->Label7->Caption=L".wrp";
+	   ABAQnames->Label8->Caption=L".coordinates";
+	   ABAQnames->Label9->Caption=L".incid";
+	   ABAQnames->Label10->Caption=L"_VED.inp";
+	   ABAQnames->Button1->Caption=L"OK";
+	   ABAQnames->Button2->Caption=L"Cancel";
+	   ABAQnames->Label2->Enabled=false;ABAQnames->Label3->Enabled=false;ABAQnames->Label4->Enabled=false;
+	   ABAQnames->Label5->Enabled=false;ABAQnames->Label6->Enabled=false;ABAQnames->Label8->Enabled=false;
+	   ABAQnames->Label9->Enabled=false;ABAQnames->Label10->Enabled=false;ABAQnames->Label11->Enabled=false;
+	   ABAQnames->Edit2->Visible=false;ABAQnames->Edit3->Visible=false;ABAQnames->Edit4->Visible=false;
+	   ABAQnames->Edit5->Visible=false;ABAQnames->Edit6->Visible=false;
+
+int buffersize=WideCharToMultiByte(CP_UTF8,0,gWsiAlias.w_str(), -1,NULL,0,NULL,NULL);
+char* m6=new char[buffersize];WideCharToMultiByte(CP_UTF8,0,gWsiAlias.w_str(), -1,m6,buffersize,NULL,NULL);
+	   if(strlen(m6))ABAQnames->CheckEdit1=gWsiAlias;
+	   else ABAQnames->CheckEdit1=L"****";
+	   delete m6;m6=NULL;
+	   ABAQnames->ShowModal();
+	   delete ABAQnames;ABAQnames=NULL;
+	  }
+	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Must create weld passes->Weld",L"Halt",MB_OK);}
+   }
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open",L"Halt",MB_OK);}
+}
+//---------------------------------------------------------------------------
 void TForm1::exportWARP3D_public()
 {
 
@@ -16762,6 +16796,25 @@ void TForm1::exportWARP3D_public()
 	   ABAQnames->CheckEdit4=gWsiAlias;
 	   ABAQnames->Edit1->Enabled=false;ABAQnames->Button1->Caption=L"Write files";
 
+}
+//---------------------------------------------------------------------------
+void TForm1::exportWARP3Dcut_public() //EFP 11/28/2016
+{      gWsiAlias=ABAQnames->CheckEdit1;
+	   ABAQnames->CheckIsel=5;  //Value changed 3->5
+	   ABAQnames->Edit2->Visible=true;ABAQnames->Edit3->Visible=true;
+	   ABAQnames->Edit4->Visible=true;
+	   ABAQnames->Edit5->Visible=false;
+	   ABAQnames->Edit6->Visible=false;
+	   ABAQnames->Label1->Enabled=false;
+	   ABAQnames->Label2->Enabled=true;ABAQnames->Label3->Enabled=true;ABAQnames->Label4->Enabled=true;
+	   ABAQnames->Label5->Enabled=false;
+	   ABAQnames->Label6->Enabled=false;
+	   ABAQnames->Label8->Enabled=true;
+	   ABAQnames->Label9->Enabled=true;ABAQnames->Label10->Enabled=true;
+	   ABAQnames->Label11->Enabled=false;
+	   ABAQnames->CheckEdit1=gWsiAlias;ABAQnames->CheckEdit2=gWsiAlias;ABAQnames->CheckEdit3=gWsiAlias;
+	   ABAQnames->CheckEdit4=gWsiAlias;
+	   ABAQnames->Edit1->Enabled=false;ABAQnames->Button1->Caption=L"Write files";
 }
 //---------------------------------------------------------------------------
 void TForm1::exportWARP3D1a_public()
@@ -17026,6 +17079,264 @@ Screen->Cursor=crSizeAll;
 
 }
 //---------------------------------------------------------------------------
+void TForm1::exportWARP3D2a_public() //EFP 11/28/2016
+{long i=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1000,isw=0,
+	  ie=0,ies=0,j=0,k=0,ir=0,istart=0,iELSETtype=0,iELSETactive=0,ibrsw=0, *iELSETarr;
+ float timesave2=0.f;
+// long epStepsPerT=long(tdeltCTSP->Angle0 +0.5); //To reverse, comment this
+ UnicodeString fnNeedS1,fnNeedS2,extensCharS1=UnicodeString(L".coordinates"),extensCharS2=UnicodeString(L".incid");
+ wchar_t curMess0[]=L".wrp\n",    //curMess0[]=L"_ABA_input.inp\n",
+		 curMess1[]=L"_VED.dat\n",curMess2[]=L".coordinates\n",
+		 curMess3[]=L".incid\n",string0[160]; //Correction EFP 11/12/2012
+ iELSETarr=NULL;
+ StringCchCopyW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess0);
+ StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess1);
+ StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess2);
+ StringCchCatW(string0,160,gWsiAlias.w_str());StringCchCatW(string0,160,curMess3);
+// char extensChar1[]=".coordinates";char *fnNeed1=new char[strlen(gWsiAlias.t_str())+strlen(extensChar1)+1];
+// StringCchCopy(fnNeed1,strlen(gWsiAlias.t_str())+strlen(extensChar1)+1,gWsiAlias.t_str());StringCchCat(fnNeed1,strlen(gWsiAlias.t_str())+strlen(extensChar1)+1,extensChar1);
+// char extensChar2[]=".incid";char *fnNeed2=new char[strlen(gWsiAlias.t_str())+strlen(extensChar2)+1];
+// StringCchCopy(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,gWsiAlias.t_str());StringCchCat(fnNeed2,strlen(gWsiAlias.t_str())+strlen(extensChar2)+1,extensChar2);
+
+//honk<<" WARPing1\n";
+ fnNeedS1=gWsiAlias+extensCharS1;
+////xxxxxxxxxx
+// int bufferSize1=WideCharToMultiByte(CP_UTF8,0,fnNeedS1.w_str(), -1,NULL,0,NULL,NULL);
+// char* m1=new char[bufferSize1];WideCharToMultiByte(CP_UTF8,0,fnNeedS1.w_str(), -1,m1,bufferSize1,NULL,NULL);
+// honk<<m1<<"\n";// EFP 12/10/2014
+// delete[] m1;
+////xxxxxxxxxx
+ fnNeedS2=gWsiAlias+extensCharS2;
+////xxxxxxxxxx
+// int bufferSize2=WideCharToMultiByte(CP_UTF8,0,fnNeedS2.w_str(), -1,NULL,0,NULL,NULL);
+// char* m2=new char[bufferSize2];WideCharToMultiByte(CP_UTF8,0,fnNeedS2.w_str(), -1,m2,bufferSize2,NULL,NULL);
+// honk<<m2<<"\n";// EFP 12/10/2014
+// delete[] m2;
+////xxxxxxxxxx
+ if(base.nop1)
+   {
+////	ofstream viewfile1("default.coordinates");
+//	ofstream viewfile1(fnNeed1);
+
+//	if(FileExists(fnNeedS1.w_str()))DeleteFile(fnNeedS1.w_str());
+//	ofstream viewfile1(fnNeedS1.w_str());
+	if(FileExists(fnNeedS1.c_str()))DeleteFile(fnNeedS1.c_str());//TriedC
+	ofstream viewfile1(fnNeedS1.c_str());
+
+//	delete [] fnNeed1;
+	if(viewfile1)
+	  {TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+	   viewfile1<<"c\ncoordinates\n*echo off\n";
+	   viewfile1.setf(ios::scientific);viewfile1.precision(6); //Correction BB 1/07/2013
+	   for(i=0;i<base.npoin;i++)viewfile1<<(base.node_map[i]+1)<<" "<<base.c1[NDF*i]<<" "<<base.c1[NDF*i+1]<<" "<<base.c1[NDF*i+2]<<"\n";
+	   viewfile1<<"*echo on\nc\n";viewfile1.close();
+	   Screen->Cursor=Save_Cursor;
+////	   ofstream viewfile2("default.incid_and_blocking");
+//	   ofstream viewfile2(fnNeed2);
+
+//	   if(FileExists(fnNeedS2.w_str()))DeleteFile(fnNeedS2.w_str());
+//	   ofstream viewfile2(fnNeedS2.w_str());
+	   if(FileExists(fnNeedS2.c_str()))DeleteFile(fnNeedS2.c_str());
+	   ofstream viewfile2(fnNeedS2.c_str());
+
+//	   delete [] fnNeed2;
+	   if(viewfile2) //8-n elements throughout
+		 {TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+		  viewfile2<<"c\nincidences\n*echo off\n";
+
+//		  for(i=0;i<base.nelt;i++)viewfile2<<base.el_map[i]+1<<" "<<
+//base.nop1[MXNPEL*i+0]+1<<" "<<base.nop1[MXNPEL*i+1]+1<<" "<<base.nop1[MXNPEL*i+2]+1<<" "<<base.nop1[MXNPEL*i+3]+1<<" "<<
+//base.nop1[MXNPEL*i+4]+1<<" "<<base.nop1[MXNPEL*i+5]+1<<" "<<base.nop1[MXNPEL*i+6]+1<<" "<<base.nop1[MXNPEL*i+7]+1<<"\n";
+
+// Why no base.node_map[]?
+				 for(i=0;i<base.nelt;i++){eltype=base.matno[i]/t7;bscode=(base.matno[i]-eltype*t7)/t5;node=(base.matno[i]-eltype*t7-bscode*t5)/t3;
+										  if(eltype==8){if(node==8) //EFP 6/12/2014
+viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[MXNPEL*i+ 1]+1)<<" "<<(base.nop1[MXNPEL*i+ 2]+1)<<" "<<(base.nop1[MXNPEL*i+ 3]+1)<<" "<<
+									(base.nop1[MXNPEL*i+ 4]+1)<<" "<<(base.nop1[MXNPEL*i+ 5]+1)<<" "<<(base.nop1[MXNPEL*i+ 6]+1)<<" "<<(base.nop1[MXNPEL*i+ 7]+1)<<"\n";
+														else
+viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[MXNPEL*i+ 1]+1)<<" "<<(base.nop1[MXNPEL*i+ 2]+1)<<" "<<(base.nop1[MXNPEL*i+ 3]+1)<<" "<<
+									(base.nop1[MXNPEL*i+ 4]+1)<<" "<<(base.nop1[MXNPEL*i+ 5]+1)<<" "<<(base.nop1[MXNPEL*i+ 6]+1)<<" "<<(base.nop1[MXNPEL*i+ 7]+1)<<" "<<
+									(base.nop1[MXNPEL*i+ 8]+1)<<" "<<(base.nop1[MXNPEL*i+ 9]+1)<<" "<<(base.nop1[MXNPEL*i+10]+1)<<" "<<(base.nop1[MXNPEL*i+11]+1)<<" "<<
+									(base.nop1[MXNPEL*i+12]+1)<<" "<<(base.nop1[MXNPEL*i+13]+1)<<" "<<(base.nop1[MXNPEL*i+14]+1)<<" "<<(base.nop1[MXNPEL*i+15]+1)<<" "<<
+									(base.nop1[MXNPEL*i+16]+1)<<" "<<(base.nop1[MXNPEL*i+17]+1)<<" "<<(base.nop1[MXNPEL*i+18]+1)<<" "<<(base.nop1[MXNPEL*i+19]+1)<<"\n";
+													   }
+										  else if(eltype==7){if(node==6)
+//CORRECTION: Write 6-n wedge as degenerate WARP3D 8-n hex with order  1,2,3,1,5,6,7,5
+viewfile2<<(base.el_map[i]+1)<<","<<(base.nop1[MXNPEL*i+ 0]+1)<<","<<(base.nop1[MXNPEL*i+ 1]+1)<<","<<(base.nop1[MXNPEL*i+ 2]+1)<<","<<(base.nop1[MXNPEL*i+ 0]+1)<<","<<
+									(base.nop1[MXNPEL*i+ 3]+1)<<","<<(base.nop1[MXNPEL*i+ 4]+1)<<","<<(base.nop1[MXNPEL*i+ 5]+1)<<","<<(base.nop1[MXNPEL*i+ 3]+1)<<"\n";
+															 else
+viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[MXNPEL*i+ 1]+1)<<" "<<(base.nop1[MXNPEL*i+ 2]+1)<<" "<<(base.nop1[MXNPEL*i+ 3]+1)<<" "<<
+									(base.nop1[MXNPEL*i+ 4]+1)<<" "<<(base.nop1[MXNPEL*i+ 5]+1)<<" "<<(base.nop1[MXNPEL*i+ 6]+1)<<" "<<(base.nop1[MXNPEL*i+ 7]+1)<<" "<<
+									(base.nop1[MXNPEL*i+ 8]+1)<<" "<<(base.nop1[MXNPEL*i+ 9]+1)<<" "<<(base.nop1[MXNPEL*i+10]+1)<<" "<<(base.nop1[MXNPEL*i+11]+1)<<" "<<
+									(base.nop1[MXNPEL*i+12]+1)<<" "<<(base.nop1[MXNPEL*i+13]+1)<<" "<<(base.nop1[MXNPEL*i+14]+1)<<"\n";
+															}
+										  else if(eltype==5){if(node==4)
+viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[MXNPEL*i+ 1]+1)<<" "<<(base.nop1[MXNPEL*i+ 2]+1)<<" "<<(base.nop1[MXNPEL*i+ 3]+1)<<"\n";
+															 else
+viewfile2<<(base.el_map[i]+1)<<" "<<(base.nop1[MXNPEL*i   ]+1)<<" "<<(base.nop1[MXNPEL*i+ 1]+1)<<" "<<(base.nop1[MXNPEL*i+ 2]+1)<<" "<<(base.nop1[MXNPEL*i+ 3]+1)<<" "<<
+									(base.nop1[MXNPEL*i+ 4]+1)<<" "<<(base.nop1[MXNPEL*i+ 5]+1)<<" "<<(base.nop1[MXNPEL*i+ 6]+1)<<" "<<(base.nop1[MXNPEL*i+ 7]+1)<<" "<<
+									(base.nop1[MXNPEL*i+ 8]+1)<<" "<<(base.nop1[MXNPEL*i+ 9]+1)<<"\n";
+															}
+										  else {
+//honk<<(i+1)<<" Unsupp in exportWARP3D1a_public() "<<eltype<<" "<<bscode<<" "<<node<<"\n";
+												extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"exportWARP3D1a_public() unsupported element type",L"Terminate",MB_OK);
+												exit(0);}
+										 }
+
+
+//		  viewfile2<<"c\n*echo on\nc\nc\nc\n*echo off\nblocking automatic\n"; //BobD request to remove BLOCKING 9/04/2014
+		  viewfile2<<"c\n*echo on\nc\nc\nc\n*echo off\n";
+		  viewfile2<<"c\nc   *** MPI + threads version: sparse and pcg solvers allowed\n";
+		  viewfile2<<"c\nc   *** Threads version: sparse solver only\nc\n*echo on\n";
+		  viewfile2.close();
+//		  export_VED(gWsiAlias,&timesave2,1); // VED= virtual element detection (Abaqus 0,WARP3D 1)
+		  export_VEDtemp(gWsiAlias,&timesave2,1); // VED= virtual element detection (Abaqus 0,WARP3D 1) EFP 11/28/2016
+//aaaaaaaaaaaaaa
+		  export_WARP_BC(gWsiAlias); // Write WARP-format ASCII nodal BC  EFP 2/26/2015
+//bbbbbbbbbbbbbb
+		  Screen->Cursor=Save_Cursor;
+//		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"default_coordinates.COORDINATES & default_INCIDandBLOCK.INCIDandBLOCK\nwritten but user must use PATGO to create default_constraints.CONSTRAINTS\nBlocking info must be added to default_INCIDandBLOCK.INCIDandBLOCK",L"Successful first step",MB_OK);
+//honk<<"\n"<<" Writing four WARP3D datafiles...\n";
+		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing WARP files",MB_OK);
+///////////////////////////////////////////
+///////////////////////////////////////////
+///////////////////////////////////////////
+
+//for(i=0;i<base.nelt;i++)honk<<i<<" "<<base.matno[i]<<" BASEmatno firn\n";
+
+	   for(i=0;i<wp.nWeldPass;i++)
+		 {for(ies=0;ies<wp.memWGa;ies++)
+			{
+//			 ie=wp.eles[wp.memWGa*i+ies]/10;
+//			 if(ie>=0){k=base.matno[ie]-t3*(base.matno[ie]/t3);
+//					   base.matno[ie]= -(base.matno[ie]-k+i+1);
+//					  }
+			 if(wp.eles[wp.memWGa*i+ies]>=0){ie=wp.eles[wp.memWGa*i+ies]/10;
+											 k=base.matno[ie]-t3*(base.matno[ie]/t3);
+											 base.matno[ie]= -(base.matno[ie]-k+i+1);
+											}
+			 else break;
+			}
+		 }
+
+//for(i=0;i<base.nelt;i++)honk<<i<<" "<<base.matno[i]<<" BASEmatno secn\n";
+
+
+//	   istart=0;j=1;
+//	   iELSETtype= labs(base.matno[istart])-t3*(labs(base.matno[istart])/t3);
+//	   do {ibrsw=0;
+//		   for(i=istart+1;i<base.nelt;i++)
+//			 {k= labs(base.matno[i])-t3*(labs(base.matno[i])/t3);
+//			  if(iELSETtype != k){if(base.matno[istart]> -1)
+//								  j++;ibrsw=1;istart=i;iELSETtype=k;break;
+//								 }
+//			 }
+//		  }
+//	   while(ibrsw);
+//	   if(istart<base.nelt){if(base.matno[istart]> -1)
+//							j++;
+//						   }
+
+
+j=1;for(ir=1;ir<1000;ir++){for(i=0;i<base.nelt;i++){if(base.matno[i]> -1){k=base.matno[i]-t3*(base.matno[i]/t3);
+																		  if(k==ir){j++;break;}
+																		 }
+												   }
+						  }
+
+/////////////////////////////////////
+//honk<<j<<" iELSETactive "<<wp.nWeldPass<<" "<<wp.memWGa<<"\n";
+//if(1==1)exit(0);
+/////////////////////////////////////
+	   iELSETactive=j;iELSETarr=new long[iELSETactive];for(j=0;j<iELSETactive;j++)iELSETarr[j]= -1;
+	   istart=ies=0;
+	   iELSETtype= labs(base.matno[istart])-t3*(labs(base.matno[istart])/t3);
+	   do {ibrsw=0;
+		   for(i=istart+1;i<base.nelt;i++)
+			 {k= labs(base.matno[i])-t3*(labs(base.matno[i])/t3);
+			  if(iELSETtype != k){if(base.matno[istart]> -1){isw=1;if(ies){for(ir=0;ir<ies;ir++)if(iELSETarr[ir]==iELSETtype){isw=0;break;}}
+															 if(isw){iELSETarr[ies]=iELSETtype;ies++;}
+															}
+								  ibrsw=1;istart=i;iELSETtype=k;break;
+								 }
+			 }
+		  }
+	   while(ibrsw);
+	   if(istart<base.nelt){if(base.matno[istart]> -1){isw=1;if(ies){for(ir=0;ir<ies;ir++)if(iELSETarr[ir]==iELSETtype){isw=0;break;}}
+													   if(isw){iELSETarr[ies]=iELSETtype;ies++;}
+													  }
+						   }
+
+//for(ir=0;ir<ies;ir++)honk<<ir<<" "<<iELSETarr[ir]<<" ffffffELS\n";
+//Application->MessageBox(L"Biffo",L"Wriffo",MB_OK);
+//honk<<" STOP here X1\n";//if(1==1)exit(0);
+
+//int bufferSize=0;
+//for(j=0;j<base.allGrp;j++){bufferSize=WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,NULL,0,NULL,NULL);
+//						   char* m=new char[bufferSize];WideCharToMultiByte(CP_UTF8,0,base.ELSETinputnames[j].w_str(), -1,m,bufferSize,NULL,NULL);
+//honk<<(j+1)<<" ABAQ base.ELSETinputnames[j]= "<<m<<"\n";
+//						   delete m;m=NULL;
+//						  }
+//honk<<"\n";
+
+
+
+	   Form7=new TForm7(base.allGrp,this);
+//	   Form7=new TForm7(ies,this);
+	   Form7->Caption=L"Assign material files to non-WPs";
+//	   Form7->Label1->Caption=L"Entity";
+	   Form7->Label1->Caption=L"First, click";
+	   Form7->Label5->Caption=L"Entity";
+	   Form7->Label2->Caption=L"Chosen material";
+//	   Form7->Label3->Caption=L"Available material";
+	   Form7->Label3->Caption=L"Second, click";
+	   Form7->Label6->Caption=L"Available material";
+	   Form7->Label4->Caption=L"Usage: First click on Entity; then click Available material";
+	   Form7->Button1->Caption=L"OK";
+//	   for(ir=0;ir<ies;ir++)Form7->ListBox1->AddItem(base.ELSETinputnames[iELSETarr[ir]],this);
+
+
+///////////*********** EMERGENCY: Disconnect iELSETarr[ir] ************//////////////
+	   for(ir=0;ir<base.allGrp;ir++)Form7->ListBox1->AddItem(base.ELSETinputnames[ir],this);
+
+
+	   //	   for(ir=0;ir<base.allGrp;ir++)Form7->ListBox1->AddItem(base.ELSETinputnames[iELSETarr[ir]],this);
+	   delete [] iELSETarr;iELSETarr=NULL;
+//	   Form7->ListBox1->ItemIndex=ies;
+	   Form7->ListBox1->ItemIndex=base.allGrp;
+	   for(i=0;i<wms.nMatPropSet;i++)Form7->ListBox3->AddItem(wms.matFileName[i],this);
+//	   if(wms.nMatPropSet==1)for(i=0;i<ies;i++)Form7->ListBox2->AddItem(wms.matFileName[0],this);
+//	   else                  for(i=0;i<ies;i++)Form7->ListBox2->AddItem(L"****",this);
+
+//	   if(wms.nMatPropSet==1)for(i=0;i<base.allGrp;i++)Form7->ListBox2->AddItem(wms.matFileName[0],this);
+//	   else                  for(i=0;i<base.allGrp;i++)Form7->ListBox2->AddItem(L"****",this);
+	   for(i=0;i<base.allGrp;i++)Form7->ListBox2->AddItem(wms.matFileName[0],this); // EFP 8/07/2016
+
+//Application->MessageBox(L"Biffo",L"Wriffo",MB_OK);
+//honk<<" STOP here X1\n";if(1==1)exit(0);
+
+	   Form7->ShowModal();
+	   delete Form7;Form7=NULL; //(not in Unit1, remember, but perhaps we should not "delete"?)
+
+///////////////////////////////////////////
+///////////////////////////////////////////
+///////////////////////////////////////////
+//		  Screen->Cursor=Save_Cursor;
+////		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"default_coordinates.COORDINATES & default_INCIDandBLOCK.INCIDandBLOCK\nwritten but user must use PATGO to create default_constraints.CONSTRAINTS\nBlocking info must be added to default_INCIDandBLOCK.INCIDandBLOCK",L"Successful first step",MB_OK);
+//honk<<"\n"<<" Writing four WARP3D datafiles...\n";
+//		  extern PACKAGE void __fastcall Beep(void);Application->MessageBox(string0,L"Writing 4 WARP3D files",MB_OK);
+		 }
+	   else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unable to create default_INCID.INCID",L"Failure",MB_OK);}
+	  }
+	else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Unable to create default_coordinates.COORDINATES",L"Failure",MB_OK);}
+   }
+ else {extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Get geometry file->File/Open",L"Halt",MB_OK);}
+			   ABAQnames=NULL;
+/////////// Cursor EFP 1/21/2011
+Screen->Cursor=crSizeAll;
+///////////
+}
+//---------------------------------------------------------------------------
 //void TForm1::export_VED(char gVFTnameStem[],float *timesave2) // VED= virtual element detection  (based on WSIExportABA.java export_VED)
 void TForm1::export_VED(String gVFTnameStem,float *timesave2,int isw) // VED= virtual element detection  (based on WSIExportABA.java export_VED)
 // Note that the last number in the output file will still have a trailing comma.
@@ -17246,6 +17557,109 @@ Screen->Cursor=Save_Cursor;
 
 }
 //---------------------------------------------------------------------------
+//void TForm1::export_VEDtemp(char gVFTnameStem[],float *timesave2) // VED= virtual element detection  (based on WSIExportABA.java export_VED)
+void TForm1::export_VEDtemp(String gVFTnameStem,float *timesave2,int isw) // VED= virtual element detection  (based on WSIExportABA.java export_VED)
+// EFP 11/28/2016
+// Note that the last number in the output file will still have a trailing comma.
+// Export with element mapping
+// Centroidal distance/speed coded & Correction for non-conforming faces EFP 5/24/2011
+// Version with CTSP-compliant "element-based "centroid & weld length  EFP 3/16/2012
+// (EFP recommends an "element-area-based" centroid)
+// isw=1 WARP3D naming; 0 Abaqus
+{//int n1=0,n2=0,n3=0,n4=0,n5=0,n6=0,n7=0,n8=0;
+ long i=0,j=0,k=0,ja=0,ist=0,tranche=0,ieq=0,isideq=0,iseq=0,
+	  ie=0,in=0,nactive=0,eltype=0,bscode=0,node=0,t7=10000000,t5=100000,t3=1000;
+ int gdata8[24]={0,1,5,4, //Revised to get counterclock faces
+				 1,2,6,5,
+				 2,3,7,6,
+				 3,0,4,7,
+				 3,2,1,0,
+				 4,5,6,7},
+	 opp_arr8[6]={2,3,0,1,5,4}, *flagarr=NULL;//EFP 3/16/2012
+//////////////////
+ float xfavg=0.f,yfavg=0.f,zfavg=0.f,xpatch=0.f,ypatch=0.f,zpatch=0.f,//dist2patch=1.e20f,dist2=0.f,
+	   xup=0.f,yup=0.f,zup=0.f,time=0.f,ttime=0.f,wpTime=0.f,dist=0.f;
+
+ UnicodeString fnNeedS,extensCharS=UnicodeString(L"_VED.dat");
+
+ if(isw)fnNeedS=UnicodeString(L"VED.dat");
+ else fnNeedS=gVFTnameStem+extensCharS;
+
+
+ if(FileExists(fnNeedS.c_str()))DeleteFile(fnNeedS.c_str());
+ ofstream viewfile(fnNeedS.c_str());ofstream outfile("temp.out");
+
+  viewfile.setf(ios::scientific);outfile.setf(ios::scientific);
+
+ TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+// try {
+	  flagarr=new int[base.npoin];
+	  time=0.f;
+	  for(iseq=0;iseq<wp.nWeldPass;iseq++) //Correction EFP 8/15/2011
+		{for(i=0;i<wp.nWeldPass;i++)if(iseq+1==wp.seqNum[i])break;
+		 ist=0;for(j=wp.memWGa*i;j<wp.memWGa*(i+1);j++){if(wp.eles[j]> -1)ist++;else break;}
+		 tranche=ist/wp.n_curr_sttEl[i];
+		 wpTime=0.f;ttime=time;
+
+xpatch=ypatch=zpatch=0.f;
+for(j=0;j<wp.n_curr_sttEl[i];j++)
+  {xfavg=yfavg=zfavg=0.f;ieq=wp.sttEles[wp.memWGa*i+j]/10;isideq=wp.sttEles[wp.memWGa*i+j]-10*ieq;
+   for(k=0;k<4;k++){xfavg=xfavg+base.c1[NDF*base.nop1[MXNPEL*ieq+gdata8[4*isideq+k]]+0];
+					yfavg=yfavg+base.c1[NDF*base.nop1[MXNPEL*ieq+gdata8[4*isideq+k]]+1];
+					zfavg=zfavg+base.c1[NDF*base.nop1[MXNPEL*ieq+gdata8[4*isideq+k]]+2];
+				   }
+   xpatch=xpatch+xfavg/4.f;ypatch=ypatch+yfavg/4.f;zpatch=zpatch+zfavg/4.f;
+  }
+xpatch=xpatch/float(wp.n_curr_sttEl[i]);ypatch=ypatch/float(wp.n_curr_sttEl[i]);zpatch=zpatch/float(wp.n_curr_sttEl[i]);
+
+		 for(j=0;j<tranche;j++)
+		   {
+/////////////
+///////////////
+///////////////// start EFP 11/28/2016
+			for(k=0;k<base.npoin;k++)flagarr[k]=0;
+			for(k=0;k<wp.n_curr_sttEl[i];k++){ie=wp.eles[wp.memWGa*i+wp.n_curr_sttEl[i]*j+k]/10;
+eltype=base.matno[ie]/t7;bscode=(base.matno[ie]-eltype*t7)/t5;node=(base.matno[ie]-eltype*t7-bscode*t5)/t3;
+											  for(in=0;in<node;in++)flagarr[base.nop1[MXNPEL*ie+in]]=1;
+											 }
+			nactive=0;for(k=0;k<base.npoin;k++){if(flagarr[k])nactive++;}
+			outfile<<setw(15)<<ttime<<setw(12)<<nactive<<"\n";
+			for(k=0;k<base.npoin;k++){if(flagarr[k])outfile<<setw(7)<<(k+1)<<setw(14)<<wms.Tm[0]<<"\n";}
+///////////////// end
+///////////////
+/////////////
+			viewfile<<ttime<<", "<<wp.n_curr_sttEl[i]<<"\n";
+			for(k=0;k<wp.n_curr_sttEl[i];k++)viewfile<<(base.el_map[wp.eles[wp.memWGa*i+wp.n_curr_sttEl[i]*j+k]/10]+1)<<", ";
+			viewfile<<"\n";
+			xup=yup=zup=0.f;
+			for(ja=0;ja<wp.n_curr_sttEl[i];ja++)
+			  {xfavg=yfavg=zfavg=0.f;
+			   ieq=wp.eles[wp.memWGa*i+wp.n_curr_sttEl[i]*j+ja]/10;
+			   isideq=opp_arr8[wp.eles[wp.memWGa*i+wp.n_curr_sttEl[i]*j+ja]-10*ieq];
+			   for(k=0;k<4;k++){xfavg=xfavg+base.c1[NDF*base.nop1[MXNPEL*ieq+gdata8[4*isideq+k]]+0];
+								yfavg=yfavg+base.c1[NDF*base.nop1[MXNPEL*ieq+gdata8[4*isideq+k]]+1];
+								zfavg=zfavg+base.c1[NDF*base.nop1[MXNPEL*ieq+gdata8[4*isideq+k]]+2];
+							   }
+			   xup=xup+xfavg/4.f;yup=yup+yfavg/4.f;zup=zup+zfavg/4.f;
+			  }
+			xup=xup/float(wp.n_curr_sttEl[i]);yup=yup/float(wp.n_curr_sttEl[i]);zup=zup/float(wp.n_curr_sttEl[i]);
+			dist=sqrt((xup-xpatch)*(xup-xpatch)+(yup-ypatch)*(yup-ypatch)+(zup-zpatch)*(zup-zpatch));
+			xpatch=xup;ypatch=yup;zpatch=zup;
+			ttime=ttime+dist/wp.speed[i];
+			wpTime=wpTime+dist/wp.speed[i];
+		   }
+		 wp.wpTimes[i]=wpTime; // Correction EFP 8-25-2010
+		 time=time+wpTime+wp.timeInterval[i];
+		}
+	  *timesave2=time;
+	  delete [] flagarr;
+//	 }
+//__finally {
+Screen->Cursor=Save_Cursor;
+//}
+ viewfile.close();outfile.close();
+}
+//---------------------------------------------------------------------------
 void TForm1::exportWARP4_public()
 //Routine to write *.wrp, compute_commands_all_profiles.inp, uexternal_data_file.inp, output_commands.inp
 //limlist= number of "a-b" pairs in WARP3D list output format, before writing next line
@@ -17429,7 +17843,8 @@ outfile<<m1<<"\n";// EFP 12/10/2014
 //else {mtype=0;
 //extern PACKAGE void __fastcall Beep(void);Application->MessageBox((L"Edit *.wrp um_7 for material# "+IntToStr(__int64(ir+1))).w_str(),L"Warning: ",MB_OK);
 //	 }
-outfile<<"  properties umat  rho "<<wms.den[ir]<<"  alpha 0.0,\n";
+//outfile<<"  properties umat  rho "<<wms.den[ir]<<"  alpha 0.0,\n";
+outfile<<"  properties umat  rho 0.0  alpha 0.0,\n";
 outfile<<"       um_1 "<<(ir+1)<<" um_2 "<<wms.Ti[ir]<<" um_3 "<<wms.Ta[ir]<<",\n";
 outfile<<"       um_4 "<<wms.Tm[ir]<<" um_5 -1.0,\n";
 outfile<<"       um_6 -1.0 um_7 "<<wms.mcr[ir]<<" um_8 0\n";  //um_7=0 for isotropic
@@ -18775,7 +19190,8 @@ void TForm1::tshiftCTSP_public()
 // extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"Opening warp_temp_2_filesShift.txt",L"First check",MB_OK);
 			 viewfile1.getline(TITLEX,80);
 			 icheck=1;
-//			 outfile1<<TITLEX<<"\n";
+////			 outfile1<<TITLEX<<"\n";
+//honk<<TITLEX<<"\n";
 			 outfile1<<TITLE<<"\n";
 //			 viewfile1>>nprofile>>nnd>>nval;
 			 viewfile1.getline(descript,76);

@@ -52,6 +52,8 @@ void __fastcall TForm25::Button1Click(TObject *Sender)
 				 } //EFP 12/16/2012
 // else if(isel==1){Form1->exportABAQUS1_public();Close();} //Emergency Close() EFP 4/19/2010
 // else     Form1->exportABAQUS_public();
+ else if(isel==5){Form1->exportWARP3D2a_public();Close();} //Emergency Close() EFP 12/16/2012
+ else if(isel==4)Form1->exportWARP3Dcut_public();
 		   }
 }
 //---------------------------------------------------------------------------

@@ -191,6 +191,10 @@ object Form1: TForm1
           Action = exportWARP3D
           Caption = 'WARP3D files...'
         end
+        object exportWARP3Dcut1: TMenuItem
+          Action = exportWARP3Dcut
+          Caption = 'WARP3D cut...'
+        end
       end
       object imeshift1: TMenuItem
         Caption = 'Timeshift'
@@ -924,6 +928,11 @@ object Form1: TForm1
       Category = 'Weld'
       Caption = 'WeldPassEditingandSequencing2'
       OnExecute = WeldPassEditingandSequencing2Execute
+    end
+    object exportWARP3Dcut: TAction
+      Category = 'File'
+      Caption = 'exportWARP3Dcut'
+      OnExecute = exportWARP3DcutExecute
     end
   end
 end
