@@ -209,7 +209,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.60g_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.60h_64 2016";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -17125,7 +17125,10 @@ void TForm1::exportWARP3D2a_public() //EFP 11/28/2016
 
 //	delete [] fnNeed1;
 	if(viewfile1)
-	  {TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
+	  {
+	   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"This must follow ExportCTSP & ExportWARP3D",L"Policy",MB_OK);
+
+	   TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 	   viewfile1<<"c\ncoordinates\n*echo off\n";
 	   viewfile1.setf(ios::scientific);viewfile1.precision(6); //Correction BB 1/07/2013
 	   for(i=0;i<base.npoin;i++)viewfile1<<(base.node_map[i]+1)<<" "<<base.c1[NDF*i]<<" "<<base.c1[NDF*i+1]<<" "<<base.c1[NDF*i+2]<<"\n";
@@ -17318,6 +17321,7 @@ j=1;for(ir=1;ir<1000;ir++){for(i=0;i<base.nelt;i++){if(base.matno[i]> -1){k=base
 	   Form7->ShowModal();
 	   delete Form7;Form7=NULL; //(not in Unit1, remember, but perhaps we should not "delete"?)
 
+	   system("TEMP_CONVERT.x");
 ///////////////////////////////////////////
 ///////////////////////////////////////////
 ///////////////////////////////////////////
