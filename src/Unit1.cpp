@@ -17321,7 +17321,15 @@ j=1;for(ir=1;ir<1000;ir++){for(i=0;i<base.nelt;i++){if(base.matno[i]> -1){k=base
 	   Form7->ShowModal();
 	   delete Form7;Form7=NULL; //(not in Unit1, remember, but perhaps we should not "delete"?)
 
-	   system("TEMP_CONVERT.x");
+	   int status;
+	   if (const char* temp_convert = getenv("TEMP_CONVERT"))
+		 status = system(temp_convert);
+	   else
+		 status = system("TEMP_CONVERT.x");
+	   if (status != 0) {
+		 extern PACKAGE void __fastcall Beep(void);
+		 Application->MessageBox(L"Something bad happened when attempting to run TEMP_CONVERT.x",L"Failure",MB_OK);
+	   }
 ///////////////////////////////////////////
 ///////////////////////////////////////////
 ///////////////////////////////////////////
