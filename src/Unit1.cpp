@@ -17688,7 +17688,7 @@ void TForm1::exportWARP4_public()
  UnicodeString fnNeedS1,fnNeedS2,nameforsys,extensCharS1=UnicodeString(L".wrp"),
  extensCharS2=UnicodeString(L"MustIncludeThese.list"),
 // leftend=UnicodeString(L"\"mv MustIncludeThese.list "),//REMEMBER never use this
- leftend=UnicodeString(L"\"move /y MustIncludeThese.list "), //Must be used with WINE
+ leftend=UnicodeString(L"\"echo y | move /-y MustIncludeThese.list "), //Must be used with WINE
  rightend=UnicodeString(L".list\"");
 
  rollcall=NULL;iELSETorder=NULL;sArr=NULL;
