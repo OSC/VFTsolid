@@ -17126,7 +17126,7 @@ void TForm1::exportWARP3D2a_public() //EFP 11/28/2016
 //	delete [] fnNeed1;
 	if(viewfile1)
 	  {
-	   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"This must follow ExportCTSP & ExportWARP3D",L"Policy",MB_OK);
+	   extern PACKAGE void __fastcall Beep(void);Application->MessageBox(L"This must follow ExportCTSP and ExportWARP3D",L"Policy",MB_OK);
 
 	   TCursor Save_Cursor=Screen->Cursor;Screen->Cursor=crHourGlass;
 	   viewfile1<<"c\ncoordinates\n*echo off\n";
