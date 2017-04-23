@@ -209,7 +209,7 @@ TForm30 *WeldPassEditSeqn; // (Modeless)
 TForm31 *About_VFT; //Modal
 
 //ofstream honk("VFTsolidlog.out");
-String VFTversion=L"VFTsolid (WARP3D) version 3.2.60h_64 2016";
+String VFTversion=L"VFTsolid (WARP3D) version 3.2.60i_64 2017";
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner)
 {
@@ -1710,7 +1710,10 @@ if(listAmbiguity){extern PACKAGE void __fastcall Beep(void);Application->Message
 ////										else if(isspace(cht[i]))break;
 //										else kp++;
 //									   }
-kp= -1;for(i=jrec;i<int(strlen(cht));i++){kp++;if(cht[i]==',')break;}
+kp= -1;for(i=jrec;i<int(strlen(cht));i++){kp++;
+//										  if(cht[i]==',')break;
+										  if(cht[i]==',' || cht[i]==' ' || cht[i]=='\0')break;
+										 }
 //if(isspace(cht[int(strlen(cht))-1]))kp--;
 //if(isspace(cht[kp]))kp--;
 temp_cht1=new char[kp+1];
@@ -1725,7 +1728,10 @@ temp_cht1[kp]='\0';
 ////										 else if(isspace(cht[i]))break;
 //										 else kp2++;
 //										}
-kp2= -1;for(i=jrec;i<int(strlen(cht));i++){kp2++;if(cht[i]==',')break;}
+kp2= -1;for(i=jrec;i<int(strlen(cht));i++){kp2++;
+//										   if(cht[i]==',')break;
+										   if(cht[i]==',' || cht[i]==' ' || cht[i]=='\0')break;
+										  }
 temp_cht2=new char[kp2+1];for(i=0;i<kp2;i++){temp_cht2[i]=cht[i+jrec];
 //bufferCh[i]=cht[i+jrec];
 											 base.ELSETinputnamesCh[(79+1)*nGID+i]=cht[i+jrec];
